@@ -154,7 +154,7 @@ namespace DeliverySystem
         std::string GetLastName() const;
         std::string GetPhoneNumber() const;
         Type GetType() const;
-        std::vector<Cargo *> GetCargos() const;
+        std::vector<Cargo *> GetCargos();
 
         void SetNickname(const std::string &nickname);
         void SetFirstName(const std::string &firstName);

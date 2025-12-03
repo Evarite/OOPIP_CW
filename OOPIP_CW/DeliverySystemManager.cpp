@@ -476,7 +476,7 @@ namespace DeliverySystem
 					else
 					{
 						int choiceCity;
-						std::cout << "Выбярыце горал: ";
+						std::cout << "Выбярыце горад: ";
 						std::cin >> choiceCity;
 						if (!std::cin.good())
 						{
@@ -495,9 +495,11 @@ namespace DeliverySystem
 
 						std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-						availableCargos[i]->RequestDelivery(account, availableCities[j]);
+						availableCargos[i - 1]->RequestDelivery(account, availableCities[j - 1]);
 
 						std::cout << "Заказ сфарміраваны. Дастаўка пачнецца ў бліжайшы час." << std::endl;
+
+						return;
 					}
 				}
 
@@ -513,8 +515,8 @@ namespace DeliverySystem
 			return;
 		}
 		int i = 0;
-		for (const auto& cargo : account->GetCargos())
-			std::cout << ++i << ". " << cargo << std::endl << std::endl;
+		for (auto& cargo : account->GetCargos())
+			std::cout << ++i << ". " << *cargo << std::endl << std::endl;
 	}
 	void Manager::ShowSupportedArea()
 	{
@@ -1496,10 +1498,6 @@ namespace DeliverySystem
 			for (const auto& country : countries)
 			{
 				std::cout << ++i << ". " << country << std::endl;
-				for (const auto& city : country.GetCities())
-				{
-					std::cout << "   - " << city << std::endl;
-				}
 			}
 
 			std::cout << "\nВыбярыце пункт меню:\n1. Дадаць краіну\n2. Дадаць горад\n3. Выдаліць краіну\n4. Выдаліць горад\n5. Выхад\n";
@@ -1578,7 +1576,7 @@ namespace DeliverySystem
 				std::cin >> y;
 				std::cin.ignore();
 
-				countries[countryChoice - 1].AddCity(City(name, abbreviation, countries[countryChoice - 1], x, y, countries));
+				City(name, abbreviation, countries[countryChoice - 1], x, y, countries);
 				std::cout << "Горад паспяхова дададзены!\n";
 				break;
 			}
