@@ -65,6 +65,11 @@ namespace DeliverySystem
 		return unsigned int(sqrt(x * x + y * y));
 	}
 
+	bool City::operator==(const City& obj)
+	{
+		return GetName() == obj.GetName() && GetCountryAbbreviation() == obj.GetCountryAbbreviation();
+	}
+
 	std::ostream& operator<<(std::ostream& os, const City& obj)
 	{		
 		os << "Назва горада: " << obj.name << std::endl;

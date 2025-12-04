@@ -67,6 +67,20 @@ namespace DeliverySystem
 
 		cities.erase(cities.begin() + index);
 	}
+	void Country::RemoveCity(City* city)
+	{
+		for(size_t i = 0; i < cities.size(); i++)
+			if (cities[i] == *city)
+			{
+				cities.erase(cities.begin() + i);
+				return;
+			}
+	}
+	
+	bool Country::operator==(const Country& other)
+	{
+		return GetName() == other.GetName();
+	}
 
 	std::ostream& operator<<(std::ostream& os, const Country& obj)
 	{

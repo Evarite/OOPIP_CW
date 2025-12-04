@@ -60,6 +60,8 @@ namespace DeliverySystem
         
         static unsigned int CalculateDistance(const City &city1, const City &city2);
         
+        bool operator==(const City& obj);
+
         friend std::ostream &operator<<(std::ostream &os, const City &obj);
         friend std::ostream &operator<<(std::ofstream &os, const City &obj);
         friend std::istream &operator>>(std::ifstream &is, City &obj);
@@ -119,6 +121,9 @@ namespace DeliverySystem
 
         void AddCity(const City &city);
         void RemoveCity(unsigned int index);
+        void RemoveCity(City* city);
+
+        bool operator==(const Country& obj);
 
         friend std::ostream &operator<<(std::ostream &os, const Country &obj);
         friend std::ostream &operator<<(std::ofstream &os, const Country &obj);
