@@ -522,13 +522,15 @@ namespace DeliverySystem
         static void UserRequestDelivery();
         static void UserShowCargos();
         static void ShowSupportedArea();
-        static void BecomeADriver();
+        static void BecomeADriver(); 
+        static void UserSort();
 
         // Driver
         static void AcceptDelivery(Driver *driver);
         static void DriverQuit(Driver *driver);
         static void ShowCurrentDelivery(Driver *driver);
         static void DropDelivery(Driver *driver);
+        static void DriverSort();
 
         // Moderator
         static void ShowAllUsers();
@@ -537,6 +539,7 @@ namespace DeliverySystem
         static void TrailersList();
         static void ConsiderJobApplications();
         static void ModAdmQuit();
+        static void ModSort();
 
         // Admin
         static void ShowAllAccounts();
@@ -545,9 +548,10 @@ namespace DeliverySystem
         static void LorriesList();
         static void AreasList();
         static void DeliveriesList();
+        static void AdminSort();
 
     public:
-        template <FindType T> static void *FindWithID(unsigned int id) 
+        template <FindType T> static void* FindWithID(unsigned int id) 
         {
             if (id == 0)
                 return nullptr;
@@ -614,4 +618,7 @@ namespace DeliverySystem
     // Functions
     std::string TrimWhitespace(const std::string &str);
     std::string GetPasswordWithAsterisks();
-} // namespace DeliverySystem
+    int GetInt(const std::string& message = "Ваш выбар: ");
+    int GetIntWithinRange(int left, int right, const std::string& message = "Ваш выбар: ");
+    float GetFloat(const std::string& message = "Ваш выбар");
+} 

@@ -136,7 +136,6 @@
     <ClCompile Include="DeliverySystemCountry.cpp" />
     <ClCompile Include="DeliverySystemDelivery.cpp" />
     <ClCompile Include="DeliverySystemDriver.cpp" />
-    <ClCompile Include="DeliverySystemFile.cpp" />
     <ClCompile Include="DeliverySystemFunctions.cpp" />
     <ClCompile Include="DeliverySystemIDGenerator.cpp" />
     <ClCompile Include="DeliverySystemJobApplication.cpp" />

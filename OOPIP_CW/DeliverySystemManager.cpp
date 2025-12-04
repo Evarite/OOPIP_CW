@@ -186,229 +186,186 @@ namespace DeliverySystem
 	void Manager::EditAccount()
 	{
 		int choice;
-		while (true)
+		std::cout << "Што хаціце адрэдагаваць?\n"
+			<< "1. Імя акаўнту\n2. Пароль\n3. Уласнае імя\n4. Прозвішча\n5. Нумар тэлефону\n0. Выхад\n"
+			<< "Ваш выбар: ";
+		choice = GetIntWithinRange(0, 5);
+
+		switch (choice)
 		{
-			std::cout << "Што хаціце адрэдагаваць?\n"
-				<< "1. Імя акаўнту\n2. Пароль\n3. Уласнае імя\n4. Прозвішча\n5. Нумар тэлефону\n0. Выхад\n"
-				<< "Ваш выбар: ";
+		case 0:
+			return;
+		case 1:
+		{
+			std::string nickname;
+
 			while (true)
 			{
-				std::cin >> choice;
+				std::cout << "Увядзіце новае імя акаўнту\n";
+				std::getline(std::cin, nickname);
+				nickname = TrimWhitespace(nickname);
+
+				if (nickname.size() < MIN_NAME_SIZE)
+				{
+					std::cout << "\x1b[31;1m" << "Мінімальны памер імя: " << MIN_NAME_SIZE
+						<< ". Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
+					continue;
+				}
+				else if (nickname.size() > NAME_SIZE - 1)
+				{
+					std::cout << "\x1b[31;1m" << "Максімальны памер імя: " << NAME_SIZE - 1
+						<< ". Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
+					continue;
+				}
+				else if (nickname.find_first_of(FORBIDDEN_NICKNAME_SYMBOLS) != std::string::npos)
+				{
+					std::cout << "\x1b[31;1m" << "Імя не можа мець наступныя сімвалы: "
+						<< FORBIDDEN_NICKNAME_SYMBOLS << std::endl;
+					std::cout << "Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
+
+					continue;
+				}
+				else
+				{
+					bool isOccupied = false;
+					for (const auto& account : accounts)
+						if (account.GetNickname() == nickname)
+						{
+							std::cout << "\x1b[31;1m" << "Імя ўжо занята. Паспрабуйце яшчэ раз"
+								<< "\x1b[0m" << std::endl;
+							isOccupied = true;
+							break;
+						}
+					if (isOccupied)
+						continue;
+				}
+			}
+
+			account->SetNickname(nickname);
+
+			break;
+		}
+		case 2:
+		{
+			std::string password;
+			while (true)
+			{
+				std::cout << std::endl << "Увядзіце новы пароль" << std::endl;
+				password = GetPasswordWithAsterisks();
+
+				if (password.size() < MIN_PASSWORD_SIZE)
+				{
+					std::cout << "\x1b[31;1m" << "Мінімальны памер пароля: " << MIN_PASSWORD_SIZE
+						<< ". Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
+					continue;
+				}
+
+				std::cout << std::endl << "Паўтарыце пароль" << std::endl;
+
+				if (password != GetPasswordWithAsterisks())
+				{
+					std::cout << "\x1b[31;1m" << "Паролі не супадаюць. Паспрабуйце яшчэ раз"
+						<< "\x1b[0m" << std::endl;
+					continue;
+				}
+
+				account->SetPassword(password);
+
+				break;
+			}
+			break;
+		}
+		case 3:
+		{
+			std::string firstName;
+			while (true)
+			{
+				std::cout << std::endl << "Увядзіце ваша новае імя" << std::endl;
+				std::getline(std::cin, firstName);
+
+				if (firstName.size() > NAME_SIZE)
+				{
+					std::cout << "\x1b[31;1m" << "Максімальны памер імя: " << NAME_SIZE - 1
+						<< ". Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
+					continue;
+				}
+				else if (firstName.find_first_of(FORBIDDEN_NAME_SYMBOLS) != std::string::npos)
+				{
+					std::cout << "\x1b[31;1m" << "Некарэктны фармат імя. Паспрабуйце яшчэ раз"
+						<< "\x1b[0m" << std::endl;
+
+					continue;
+				}
+
+				account->SetFirstName(firstName);
+
+				break;
+			}
+			break;
+		}
+		case 4:
+		{
+			std::string lastName;
+			while (true)
+			{
+				std::cout << std::endl << "Увядзіце ваша прозвішча" << std::endl;
+				std::getline(std::cin, lastName);
+
+				if (lastName.size() > NAME_SIZE)
+				{
+					std::cout << "\x1b[31;1m" << "Максімальны памер прозвішча: " << NAME_SIZE - 1
+						<< ". Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
+					continue;
+				}
+				else if (lastName.find_first_of(FORBIDDEN_NAME_SYMBOLS) != std::string::npos)
+				{
+					std::cout << "\x1b[31;1m" << "Некарэктны фармат прозвишча. Паспрабуйце яшчэ раз"
+						<< "\x1b[0m" << std::endl;
+
+					continue;
+				}
+
+				account->SetLastName(lastName);
+
+				break;
+			}
+			break;
+		}
+		case 5:
+		{
+			std::string phoneCode;
+			unsigned long long phoneNumber;
+
+			std::cout << std::endl;
+			for (size_t i = 0; i < countries.size(); i++)
+			{
+				std::cout << i + 1 << ". " << countries[i].GetName() << std::endl;
+			}
+
+			choice = GetIntWithinRange(1, countries.size(), "Выбярыце вашу краіну: ");
+
+			while (true)
+			{
+				phoneCode = countries[choice - 1].GetPhoneCode();
+
+				std::cout << std::endl << "Увядзіце ваш нумар тэлефону" << std::endl
+					<< phoneCode;
+				std::cin >> phoneNumber;
 
 				if (!std::cin.good())
 				{
 					std::cin.clear();
-					std::cout << "\x1b[31;1m" << "Памылка ўводу. Паспрабуйце яшчэ раз" << "\x1b[0m"
-						<< std::endl << std::endl;
+					std::cout << "\x1b[31;1m" << "Памылка ўводу. Паспрабуйце яшчэ раз"
+						<< "\x1b[0m" << std::endl << std::endl;
 					std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 					continue;
 				}
 
-				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+				account->SetPhoneNumber(phoneCode + std::to_string(phoneNumber));
 
-				switch (choice)
-				{
-				case 0:
-					return;
-				case 1:
-				{
-					std::string nickname;
-
-					while (true)
-					{
-						std::cout << "Увядзіце новае імя акаўнту\n";
-						std::getline(std::cin, nickname);
-						nickname = TrimWhitespace(nickname);
-
-						if (nickname.size() < MIN_NAME_SIZE)
-						{
-							std::cout << "\x1b[31;1m" << "Мінімальны памер імя: " << MIN_NAME_SIZE
-								<< ". Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
-							continue;
-						}
-						else if (nickname.size() > NAME_SIZE - 1)
-						{
-							std::cout << "\x1b[31;1m" << "Максімальны памер імя: " << NAME_SIZE - 1
-								<< ". Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
-							continue;
-						}
-						else if (nickname.find_first_of(FORBIDDEN_NICKNAME_SYMBOLS) != std::string::npos)
-						{
-							std::cout << "\x1b[31;1m" << "Імя не можа мець наступныя сімвалы: "
-								<< FORBIDDEN_NICKNAME_SYMBOLS << std::endl;
-							std::cout << "Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
-
-							continue;
-						}
-						else
-						{
-							bool isOccupied = false;
-							for (const auto& account : accounts)
-								if (account.GetNickname() == nickname)
-								{
-									std::cout << "\x1b[31;1m" << "Імя ўжо занята. Паспрабуйце яшчэ раз"
-										<< "\x1b[0m" << std::endl;
-									isOccupied = true;
-									break;
-								}
-							if (isOccupied)
-								continue;
-						}
-					}
-
-					account->SetNickname(nickname);
-
-					break;
-				}
-				case 2:
-				{
-					std::string password;
-					while (true)
-					{
-						std::cout << std::endl << "Увядзіце новы пароль" << std::endl;
-						password = GetPasswordWithAsterisks();
-
-						if (password.size() < MIN_PASSWORD_SIZE)
-						{
-							std::cout << "\x1b[31;1m" << "Мінімальны памер пароля: " << MIN_PASSWORD_SIZE
-								<< ". Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
-							continue;
-						}
-
-						std::cout << std::endl << "Паўтарыце пароль" << std::endl;
-
-						if (password != GetPasswordWithAsterisks())
-						{
-							std::cout << "\x1b[31;1m" << "Паролі не супадаюць. Паспрабуйце яшчэ раз"
-								<< "\x1b[0m" << std::endl;
-							continue;
-						}
-
-						account->SetPassword(password);
-
-						break;
-					}
-					break;
-				}
-				case 3:
-				{
-					std::string firstName;
-					while (true)
-					{
-						std::cout << std::endl << "Увядзіце ваша новае імя" << std::endl;
-						std::getline(std::cin, firstName);
-
-						if (firstName.size() > NAME_SIZE)
-						{
-							std::cout << "\x1b[31;1m" << "Максімальны памер імя: " << NAME_SIZE - 1
-								<< ". Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
-							continue;
-						}
-						else if (firstName.find_first_of(FORBIDDEN_NAME_SYMBOLS) != std::string::npos)
-						{
-							std::cout << "\x1b[31;1m" << "Некарэктны фармат імя. Паспрабуйце яшчэ раз"
-								<< "\x1b[0m" << std::endl;
-
-							continue;
-						}
-
-						account->SetFirstName(firstName);
-
-						break;
-					}
-					break;
-				}
-				case 4:
-				{
-					std::string lastName;
-					while (true)
-					{
-						std::cout << std::endl << "Увядзіце ваша прозвішча" << std::endl;
-						std::getline(std::cin, lastName);
-
-						if (lastName.size() > NAME_SIZE)
-						{
-							std::cout << "\x1b[31;1m" << "Максімальны памер прозвішча: " << NAME_SIZE - 1
-								<< ". Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
-							continue;
-						}
-						else if (lastName.find_first_of(FORBIDDEN_NAME_SYMBOLS) != std::string::npos)
-						{
-							std::cout << "\x1b[31;1m" << "Некарэктны фармат прозвишча. Паспрабуйце яшчэ раз"
-								<< "\x1b[0m" << std::endl;
-
-							continue;
-						}
-
-						account->SetLastName(lastName);
-
-						break;
-					}
-					break;
-				}
-				case 5:
-				{
-					std::string phoneCode;
-					unsigned long long phoneNumber;
-
-					while (true)
-					{
-						std::cout << std::endl;
-						for (size_t i = 0; i < countries.size(); i++)
-						{
-							std::cout << i + 1 << ". " << countries[i].GetName() << std::endl;
-						}
-
-						std::cout << std::endl << "Выбярыце вашу краіну: ";
-						std::cin >> choice;
-
-						if (!std::cin.good())
-						{
-							std::cin.clear();
-							std::cout << "\x1b[31;1m" << "Памылка ўводу. Паспрабуйце яшчэ раз" << "\x1b[0m"
-								<< std::endl << std::endl;
-							std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-							continue;
-						}
-						else if (choice > countries.size() || choice < 1)
-						{
-							std::cout << "\x1b[31;1m" << "Няверны выбар. Паспрабуйце яшчэ раз" << "\x1b[0m"
-								<< std::endl;
-							continue;
-						}
-
-						while (true)
-						{
-							phoneCode = countries[choice - 1].GetPhoneCode();
-
-							std::cout << std::endl << "Увядзіце ваш нумар тэлефону" << std::endl
-								<< phoneCode;
-							std::cin >> phoneNumber;
-
-							if (!std::cin.good())
-							{
-								std::cin.clear();
-								std::cout << "\x1b[31;1m" << "Памылка ўводу. Паспрабуйце яшчэ раз"
-									<< "\x1b[0m" << std::endl << std::endl;
-								std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-								continue;
-							}
-
-							break;
-						}
-
-						account->SetPhoneNumber(phoneCode + std::to_string(phoneNumber));
-
-						break;
-					}
-
-					break;
-				}
-				default:
-					std::cout << "\x1b[31;1m" << "Няверны выбар. Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
-					continue;
-				}
+				break;
 			}
+		}
 		}
 	}
 
@@ -436,24 +393,7 @@ namespace DeliverySystem
 			}
 			else
 			{
-				int choiceCargo;
-				std::cout << "Выбярыце груз: ";
-				std::cin >> choiceCargo;
-				if (!std::cin.good())
-				{
-					std::cin.clear();
-					std::cout << "\x1b[31;1m" << "Памылка ўводу. Паспрабуйце яшчэ раз" << "\x1b[0m"
-						<< std::endl << std::endl;
-					std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-					continue;
-				}
-				else if (choiceCargo > i || choiceCargo < 0)
-				{
-					std::cout << "\x1b[31;1m" << "Няверны выбар. Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
-					continue;
-				}
-
-				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+				int choiceCargo = GetIntWithinRange(0, i, "Выбярыце груз: ");
 
 				while (true)
 				{
@@ -475,25 +415,7 @@ namespace DeliverySystem
 					}
 					else
 					{
-						int choiceCity;
-						std::cout << "Выбярыце горад: ";
-						std::cin >> choiceCity;
-						if (!std::cin.good())
-						{
-							std::cin.clear();
-							std::cout << "\x1b[31;1m" << "Памылка ўводу. Паспрабуйце яшчэ раз" << "\x1b[0m"
-								<< std::endl << std::endl;
-							std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-							continue;
-						}
-						else if (choiceCity > j || choiceCity < 0)
-						{
-							std::cout << "\x1b[31;1m" << "Няверны выбар. Паспрабуйце яшчэ раз" << "\x1b[0m"
-								<< std::endl;
-							continue;
-						}
-
-						std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+						int choiceCity = GetIntWithinRange(0, j, "Выбярыце горад: ");
 
 						availableCargos[i - 1]->RequestDelivery(account, availableCities[j - 1]);
 
@@ -534,33 +456,17 @@ namespace DeliverySystem
 			std::cout << "Вы ўжо адправілі заяўку. Жадаеце выдаліць яе?\n"
 				<< "1. Так\t2. Не\n";
 
-			while (true)
+			choice = GetIntWithinRange(1, 2);
+
+			switch (choice)
 			{
-				std::cin >> choice;
-				if (!std::cin.good())
-				{
-					std::cin.clear();
-					std::cout << "\x1b[31;1m" << "Памылка ўводу. Паспрабуйце яшчэ раз" << "\x1b[0m"
-						<< std::endl << std::endl;
-					std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-					continue;
-				}
-
-				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-				switch (choice)
-				{
-				case 1:
-					applications.pop_back();
-					std::cout << "\nЗаяўка паспяхова выдалена\n";
-					return;
-				case 2:
-					std::cout << '\n';
-					return;
-				default:
-					std::cout << "\x1b[31;1m" << "Няверны выбар. Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
-					continue;
-				}
+			case 1:
+				applications.pop_back();
+				std::cout << "\nЗаяўка паспяхова выдалена\n";
+				return;
+			case 2:
+				std::cout << '\n';
+				return;
 			}
 		}
 
@@ -571,6 +477,255 @@ namespace DeliverySystem
 		applications.emplace_back(account, message);
 
 		std::cout << "\nВаша заяўка паспяхова сфарміравана\n";
+	}
+	void Manager::UserSort()
+	{
+		enum class SortContainer
+		{
+			Countries,
+			Cities,
+			Cargos,
+			Deliveries
+		};
+		enum class SortOrder
+		{
+			Ascending,
+			Descending
+		};
+
+		SortContainer container;
+		int choice;
+		std::cout << "Выбярыце, што вы жадаеце адсартаваць\n"
+			<< "1. Спіс краін\n"
+			<< "2. Спіс гарадоў\n"
+			<< "3. Спіс грузаў\n"
+			<< "4. Спіс даставак\n";
+
+		choice = GetIntWithinRange(1, 4);
+
+		container = static_cast<SortContainer>(choice - 1);
+		
+		switch (container)
+		{
+		case SortContainer::Countries:
+		{
+			enum class SortAttribute
+			{
+				Name,
+				Code
+			};
+			SortAttribute attribute;
+			std::cout << "Выбярыце атрыбут сартавання:\n"
+				<< "1. Назва краіны\n"
+				<< "2. Тэлефонны код краіны\n";
+
+			choice = GetIntWithinRange(1, 2);
+			attribute = static_cast<SortAttribute>(choice - 1);
+
+			SortOrder order;
+			std::cout << "Выбярыце парадак сартавання:\n"
+				<< "1. Па ўзрастанні\n"
+				<< "2. Па змяншэнні\n";
+
+			choice = GetIntWithinRange(1, 2);
+			order = static_cast<SortOrder>(choice - 1);
+
+			std::sort(countries.begin(), countries.end(),
+				[attribute, order](const Country& a, const Country& b)
+				{
+					auto compare = [attribute, a, b]() -> bool
+						{
+							switch (attribute)
+							{
+							case SortAttribute::Name:
+								return a.GetName() < b.GetName();
+							case SortAttribute::Code:
+								return a.GetPhoneCode() < b.GetPhoneCode();
+							}
+						};
+
+					return order == SortOrder::Ascending ? compare() : !compare();
+				}
+			);
+
+			return;
+		}
+		case SortContainer::Cities:
+		{
+			enum class SortAttribute
+			{
+				Name,
+				CountryAbbreviation
+			};
+
+			SortAttribute attribute;
+			std::cout << "Выбярыце атрыбут сартавання:\n"
+				<< "1. Назва краіны\n"
+				<< "2. Абрэвіатура краіны\n";
+
+			choice = GetIntWithinRange(1, 2);
+			attribute = static_cast<SortAttribute>(choice - 1);
+
+			SortOrder order;
+			std::cout << "Выбярыце парадак сартавання:\n"
+				<< "1. Па ўзрастанні\n"
+				<< "2. Па змяншэнні\n";
+
+			choice = GetIntWithinRange(1, 2);
+			order = static_cast<SortOrder>(choice - 1);
+
+			for (auto& country : countries)
+			{
+				std::sort(countries.begin(), countries.end(),
+					[attribute, order](const City& a, const City& b)
+					{
+						auto compare = [attribute, a, b]() -> bool
+							{
+								switch (attribute)
+								{
+								case SortAttribute::Name:
+									return a.GetName() < b.GetName();
+								case SortAttribute::CountryAbbreviation:
+									return a.GetCountryAbbreviation() < b.GetCountryAbbreviation();
+								}
+							};
+
+						return order == SortOrder::Ascending ? compare() : !compare();
+					}
+				);
+			}
+
+			return;
+		}
+		case SortContainer::Cargos:
+		{
+			enum class SortAttribute
+			{
+				Name,
+				Mass,
+				CityFrom,
+				CityTo,
+				Type
+			};
+
+			SortAttribute attribute;
+			std::cout << "Выбярыце атрыбут сартавання:\n"
+				<< "1. Назва груза\n"
+				<< "2. Маса груза\n"
+				<< "3. Горад адпраўлення\n"
+				<< "4. Горад прыбыцця\n"
+				<< "4. Тып груза\n";
+
+			choice = GetIntWithinRange(1, 5);
+			attribute = static_cast<SortAttribute>(choice - 1);
+
+			SortOrder order;
+			std::cout << "Выбярыце парадак сартавання:\n"
+				<< "1. Па ўзрастанні\n"
+				<< "2. Па змяншэнні\n";
+
+			choice = GetIntWithinRange(1, 2);
+			order = static_cast<SortOrder>(choice - 1);
+
+			std::sort(cargos.begin(), cargos.end(),
+				[attribute, order](const Cargo& a, const Cargo& b)
+				{
+					auto compare = [attribute, a, b]() -> bool
+						{
+							switch (attribute)
+							{
+							case SortAttribute::Name:
+								return a.GetName() < b.GetName();
+							case SortAttribute::Mass:
+								return a.GetMass() < b.GetMass();
+							case SortAttribute::CityFrom:
+								return a.GetCityFrom()->GetName() < b.GetCityFrom()->GetName();
+							case SortAttribute::CityTo:
+								if (a.GetCityTo() == nullptr)
+									return true;
+								else if (b.GetCityTo() == nullptr)
+									return false;
+								else
+									return a.GetCityTo()->GetName() < b.GetCityFrom()->GetName();
+							case SortAttribute::Type:
+								return static_cast<int>(a.GetType()) < static_cast<int>(b.GetType());
+							}
+						};
+
+					return order == SortOrder::Ascending ? compare() : !compare();
+				}
+			);
+
+			break;
+		}
+		case SortContainer::Deliveries:
+		{
+			enum class SortAttribute
+			{
+				DriverName,
+				CargoName,
+				CargoMass,
+				CargoCityFrom,
+				CargoCityTo,
+				CargoType
+			};
+
+			SortAttribute attribute;
+			std::cout << "Выбярыце атрыбут сартавання:\n"
+				<< "1. Імя кіроўцы\n"
+				<< "2. Назва груза\n"
+				<< "3. Маса груза\n"
+				<< "4. Горад адпраўлення\n"
+				<< "5. Горад прыбыцця\n"
+				<< "6. Тып груза\n";
+
+			choice = GetIntWithinRange(1, 6);
+			attribute = static_cast<SortAttribute>(choice - 1);
+
+			SortOrder order;
+			std::cout << "Выбярыце парадак сартавання:\n"
+				<< "1. Па ўзрастанні\n"
+				<< "2. Па змяншэнні\n";
+
+			choice = GetIntWithinRange(1, 2);
+			order = static_cast<SortOrder>(choice - 1);
+
+			std::sort(deliveries.begin(), deliveries.end(),
+				[attribute, order](const Delivery& a, const Delivery& b)
+				{
+					auto compare = [attribute, a, b]() -> bool
+						{
+							switch (attribute)
+							{
+							case SortAttribute::DriverName:
+								return a.GetDriver()->GetAccount()->GetNickname()
+									< b.GetDriver()->GetAccount()->GetNickname();
+							case SortAttribute::CargoName:
+								return a.GetCargo()->GetName() < b.GetCargo()->GetName();
+							case SortAttribute::CargoMass:
+								return a.GetCargo()->GetMass() < b.GetCargo()->GetMass();
+							case SortAttribute::CargoCityFrom:
+								return a.GetCityFrom()->GetName() < b.GetCityFrom()->GetName();
+							case SortAttribute::CargoCityTo:
+								if (a.GetCityTo() == nullptr)
+									return true;
+								else if (b.GetCityTo() == nullptr)
+									return false;
+								else
+									return a.GetCityTo()->GetName() < b.GetCityFrom()->GetName();
+							case SortAttribute::CargoType:
+								return static_cast<int>(a.GetCargo()->GetType())
+									< static_cast<int>(b.GetCargo()->GetType());
+							}
+						};
+
+					return order == SortOrder::Ascending ? compare() : !compare();
+				}
+			);
+
+			return;
+		}
+		}
 	}
 
 	//Driver
@@ -594,114 +749,56 @@ namespace DeliverySystem
 			return;
 		}
 
-		int choiceCargo;
-		while (true)
+		int choiceCargo = GetIntWithinRange(0, availableCargos.size(), "Выбярыце груз (0 для адмовы): ");
+
+		if (choiceCargo == 0)
+			return;
+
+		std::cout << "Даступныя прычэпы для гэтага тыпу грузу:\n" << std::endl;
+		int j = 0;
+		for (auto& trailer : trailers)
 		{
-			std::cout << "Выбярыце груз (0 для адмовы): ";
-			std::cin >> choiceCargo;
-
-			if (!std::cin.good())
+			if (trailer->GetCurrentDelivery() == nullptr && trailer->IsCargoSupported(availableCargos[choiceCargo - 1]))
 			{
-				std::cin.clear();
-				std::cout << "\x1b[31;1m" << "Памылка ўводу. Паспрабуйце яшчэ раз" << "\x1b[0m"
-					<< std::endl << std::endl;
-				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-				continue;
+				availableTrailers.push_back(trailer.get());
+				std::cout << ++j << ".\n" << trailer << "\n\n";
 			}
-
-			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-			if (choiceCargo > availableCargos.size() || choiceCargo < 0)
-			{
-				std::cout << "\x1b[31;1m" << "Няверны выбар. Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
-				continue;
-			}
-			if (choiceCargo == 0)
-				return;
-
-			std::cout << "Даступныя прычэпы для гэтага тыпу грузу:\n" << std::endl;
-			int j = 0;
-			for (auto& trailer : trailers)
-			{
-				if (trailer->GetCurrentDelivery() == nullptr && trailer->IsCargoSupported(availableCargos[choiceCargo - 1]))
-				{
-					availableTrailers.push_back(trailer.get());
-					std::cout << ++j << ".\n" << trailer << "\n\n";
-				}
-			}
-			if (availableTrailers.empty())
-			{
-				std::cout << "Няма даступных прычэпаў. Звярніцеся да мадэратараў\n";
-				return;
-			}
-
-			int choiceTrailer;
-			std::cout << "Выбярыце прычэп (0 для адмовы): ";
-			std::cin >> choiceTrailer;
-
-			if (!std::cin.good())
-			{
-				std::cin.clear();
-				std::cout << "\x1b[31;1m" << "Памылка ўводу. Паспрабуйце яшчэ раз" << "\x1b[0m"
-					<< std::endl << std::endl;
-				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-				continue;
-			}
-
-			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-			if (choiceTrailer > availableCargos.size() || choiceTrailer < 0)
-			{
-				std::cout << "\x1b[31;1m" << "Няверны выбар. Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
-				continue;
-			}
-
-			if (choiceTrailer == 0)
-				return;
-
-			deliveries.emplace_back(driver, driver->GetLorry(), availableCargos[choiceCargo - 1],
-				availableTrailers[choiceTrailer - 1]);
 		}
+		if (availableTrailers.empty())
+		{
+			std::cout << "Няма даступных прычэпаў. Звярніцеся да мадэратараў\n";
+			return;
+		}
+
+		int choiceTrailer = GetIntWithinRange(0, availableTrailers.size(), "Выбярыце прычэп (0 для адмовы): ");
+
+		if (choiceTrailer == 0)
+			return;
+
+		deliveries.emplace_back(driver, driver->GetLorry(), availableCargos[choiceCargo - 1],
+			availableTrailers[choiceTrailer - 1]);
+		
 	}
 	void Manager::DriverQuit(Driver* driver)
 	{
-		int choice;
 		std::cout << "Гэта дзеянне нельга будзе адмовіць.\nВы ўпэўнены?\n1. Так\t2. Не" << std::endl;
-		std::cout << "Ваш выбар: ";
+		int choice = GetIntWithinRange(1, 2);
 
-		while (true)
+		switch (choice)
 		{
-			std::cin >> choice;
-			if (!std::cin.good())
+		case 1:
+			driver->GetLorry()->SetOwner(nullptr);
+			for (size_t i = 0; i < drivers.size(); i++)
 			{
-				std::cin.clear();
-				std::cout << "\x1b[31;1m" << "Памылка ўводу. Паспрабуйце яшчэ раз" << "\x1b[0m"
-					<< std::endl << std::endl;
-				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-				continue;
+				if (*driver == drivers[i])
+					drivers.erase(drivers.begin() + i);
 			}
 
-			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-			switch (choice)
-			{
-			case 1:
-				driver->GetLorry()->SetOwner(nullptr);
-				for (size_t i = 0; i < drivers.size(); i++)
-				{
-					if (*driver == drivers[i])
-						drivers.erase(drivers.begin() + i);
-				}
-
-				account->SetType(Account::Type::User);
-				std::cout << "Вы звольнены." << std::endl;
-				return;
-			case 2:
-				return;
-			default:
-				std::cout << "\x1b[31;1m" << "Няверны выбар. Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
-				continue;
-			}
+			account->SetType(Account::Type::User);
+			std::cout << "Вы звольнены." << std::endl;
+			return;
+		case 2:
+			return;
 		}
 	}
 	void Manager::ShowCurrentDelivery(Driver* driver)
@@ -741,217 +838,166 @@ namespace DeliverySystem
 	}
 	void Manager::CargosList()
 	{
-		int choice;
-		while (true)
+		std::cout << "\nСпіс грузаў:\n";
+
+		int i = 0;
+		for (const auto& cargo : cargos)
+			std::cout << ++i << '\n' << cargo << "\n\n";
+
+		std::cout << "\nВыбярыце пункт меню:\n1. Дадаць груз\n2. Выдаліць груз\n3. Выхад\n";
+		int choice = GetIntWithinRange(1, 3);
+
+		switch (choice)
 		{
-			std::cout << "\nСпіс грузаў:\n";
+		case 1:
+		{
+			std::string name;
+			float mass;
+			int typeChoice;
+			City* from = nullptr;
 
-			int i = 0;
-			for (const auto& cargo : cargos)
-				std::cout << ++i << '\n' << cargo << "\n\n";
+			std::cout << "Увядзіце назву грузу: ";
+			std::getline(std::cin, name);
 
-			std::cout << "\nВыбярыце пункт меню:\n1. Дадаць груз\n2. Выдаліць груз\n3. Выхад\n";
-			std::cout << "Ваш выбар: ";
-			std::cin >> choice;
+			std::cout << "Увядзіце масу грузу: ";
+			std::cin >> mass;
+			std::cin.ignore();
 
-			if (!std::cin.good())
+			std::cout << "Выбярыце тып грузу:\n";
+			std::cout << "1. Драўніна" << std::endl
+				<< "2. Ежа" << std::endl
+				<< "3. Аўтамабілі" << std::endl
+				<< "4. Паліва" << std::endl
+				<< "5. Хімічныя рэчыва" << std::endl
+				<< "6. Малако" << std::endl
+				<< "7. Жвір, друз" << std::endl
+				<< "8. Крупы" << std::endl
+				<< "9. Пясок" << std::endl
+				<< "10. Бетон" << std::endl
+				<< "11. Сталёвыя канструкцыі" << std::endl
+				<< "12. Цэгла" << std::endl
+				<< "13. Прамысловае абсталяванне" << std::endl
+				<< "14. Будаўнічая тэхніка" << std::endl
+				<< "15. Кантэйнеры" << std::endl
+				<< "16. Выбуховыя рэчы" << std::endl
+				<< "17. Таксічныя матэрыялы" << std::endl
+				<< "18. Замарожаныя прадукты" << std::endl
+				<< "19. Медыкаменты" << std::endl;
+
+			std::cin >> typeChoice;
+			std::cin.ignore();
+
+			std::cout << "Даступныя гарады:\n";
+			int j = 0;
+			std::vector<City*> availableCities;
+			for (auto& country : countries)
 			{
-				std::cin.clear();
-				std::cout << "\x1b[31;1m" << "Памылка ўводу. Паспрабуйце яшчэ раз" << "\x1b[0m"
-					<< std::endl << std::endl;
-				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-				continue;
+				for (auto& city : country.GetCitiesL())
+				{
+					std::cout << ++j << ". " << city.GetName() << std::endl;
+					availableCities.push_back(&city);
+				}
 			}
 
-			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+			int cityChoice;
+			std::cout << "Выбярыце горад адпраўлення: ";
+			std::cin >> cityChoice;
+			std::cin.ignore();
 
-			switch (choice)
+			if (cityChoice > 0 && cityChoice <= availableCities.size())
 			{
-			case 1:
+				from = availableCities[cityChoice - 1];
+			}
+
+			Cargo::Type selectedType = static_cast<Cargo::Type>(typeChoice - 1);
+			cargos.emplace_back(name, mass, selectedType, from, cargos);
+			std::cout << "Груз паспяхова дададзены!\n";
+			break;
+		}
+		case 2:
+		{
+			int cargoChoice;
+			std::cout << "Увядзіце нумар груза для выдалення: ";
+			std::cin >> cargoChoice;
+			std::cin.ignore();
+
+			if (cargoChoice > 0 && cargoChoice <= cargos.size())
 			{
-				std::string name;
-				float mass;
-				int typeChoice;
-				City* from = nullptr;
-
-				std::cout << "Увядзіце назву грузу: ";
-				std::getline(std::cin, name);
-
-				std::cout << "Увядзіце масу грузу: ";
-				std::cin >> mass;
-				std::cin.ignore();
-
-				std::cout << "Выбярыце тып грузу:\n";
-				std::cout << "1. Драўніна" << std::endl
-					<< "2. Ежа" << std::endl
-					<< "3. Аўтамабілі" << std::endl
-					<< "4. Паліва" << std::endl
-					<< "5. Хімічныя рэчыва" << std::endl
-					<< "6. Малако" << std::endl
-					<< "7. Жвір, друз" << std::endl
-					<< "8. Крупы" << std::endl
-					<< "9. Пясок" << std::endl
-					<< "10. Бетон" << std::endl
-					<< "11. Сталёвыя канструкцыі" << std::endl
-					<< "12. Цэгла" << std::endl
-					<< "13. Прамысловае абсталяванне" << std::endl
-					<< "14. Будаўнічая тэхніка" << std::endl
-					<< "15. Кантэйнеры" << std::endl
-					<< "16. Выбуховыя рэчы" << std::endl
-					<< "17. Таксічныя матэрыялы" << std::endl
-					<< "18. Замарожаныя прадукты" << std::endl
-					<< "19. Медыкаменты" << std::endl;
-
-				std::cin >> typeChoice;
-				std::cin.ignore();
-
-				std::cout << "Даступныя гарады:\n";
-				int j = 0;
-				std::vector<City*> availableCities;
-				for (auto& country : countries)
-				{
-					for (auto& city : country.GetCitiesL())
-					{
-						std::cout << ++j << ". " << city.GetName() << std::endl;
-						availableCities.push_back(&city);
-					}
-				}
-
-				int cityChoice;
-				std::cout << "Выбярыце горад адпраўлення: ";
-				std::cin >> cityChoice;
-				std::cin.ignore();
-
-				if (cityChoice > 0 && cityChoice <= availableCities.size())
-				{
-					from = availableCities[cityChoice - 1];
-				}
-
-				Cargo::Type selectedType = static_cast<Cargo::Type>(typeChoice - 1);
-				cargos.emplace_back(name, mass, selectedType, from, cargos);
-				std::cout << "Груз паспяхова дададзены!\n";
-				break;
+				cargos.erase(cargos.begin() + cargoChoice - 1);
+				std::cout << "Груз паспяхова выдалены!\n";
 			}
-			case 2:
+			else
 			{
-				int cargoChoice;
-				std::cout << "Увядзіце нумар груза для выдалення: ";
-				std::cin >> cargoChoice;
-				std::cin.ignore();
-
-				if (cargoChoice > 0 && cargoChoice <= cargos.size())
-				{
-					cargos.erase(cargos.begin() + cargoChoice - 1);
-					std::cout << "Груз паспяхова выдалены!\n";
-				}
-				else
-				{
-					std::cout << "\x1b[31;1m" << "Няверны нумар груза!" << "\x1b[0m" << std::endl;
-				}
-				break;
+				std::cout << "\x1b[31;1m" << "Няверны нумар груза!" << "\x1b[0m" << std::endl;
 			}
-			case 3:
-				return;
-			default:
-				std::cout << "\x1b[31;1m" << "Няверны выбар. Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
-			}
+			break;
+		}
+		case 3:
+			return;
 		}
 	}
 	void Manager::TrailersList()
 	{
-		int choice;
-		while (true)
+		std::cout << "\nСпіс прычэпаў:\n";
+		int i = 0;
+		for (const auto& trailer : trailers)
+			std::cout << ++i << '\n' << *trailer << '\n';
+
+		std::cout << "\nВыбярыце пункт меню:\n1. Дадаць прычэп\n2. Выдаліць прычэп\n3. Выхад\n";
+		int choice = GetIntWithinRange(1, 3);
+
+		switch (choice)
 		{
-			std::cout << "\nСпіс прычэпаў:\n";
-			int i = 0;
-			for (const auto& trailer : trailers)
-				std::cout << ++i << '\n' << *trailer << '\n';
+		case 1:
+		{
+			float length, maxPayload;
+			int typeChoice;
 
-			std::cout << "\nВыбярыце пункт меню:\n1. Дадаць прычэп\n2. Выдаліць прычэп\n3. Выхад\n";
-			std::cout << "Ваш выбар: ";
-			std::cin >> choice;
+			length = GetFloat("Увядзіце даўжыню прычэпа: ");
+			maxPayload = GetFloat("Увядзіце максімальную нагрузку: ");
 
-			if (!std::cin.good())
-			{
-				std::cin.clear();
-				std::cout << "\x1b[31;1m" << "Памылка ўводу. Паспрабуйце яшчэ раз" << "\x1b[0m"
-					<< std::endl << std::endl;
-				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-				continue;
-			}
+			std::cout << "Выбярыце тып прычэпа:\n";
+			std::cout << "1. Аўтавоз\n2. Цыстэрна\n3. Лесавоз\n4. Трал\n5. Тэнтавы\n6. Рэфрыжэратар\n";
+			typeChoice = GetIntWithinRange(1, 6);
 
-			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-			switch (choice)
+			std::unique_ptr<Trailer> newTrailer;
+			switch (typeChoice)
 			{
 			case 1:
-			{
-				float length, maxPayload;
-				int typeChoice;
-
-				std::cout << "Увядзіце даўжыню прычэпа: ";
-				std::cin >> length;
-				std::cout << "Увядзіце максімальную нагрузку: ";
-				std::cin >> maxPayload;
-
-				std::cout << "Выбярыце тып прычэпа:\n";
-				std::cout << "1. Аўтавоз\n2. Цыстэрна\n3. Лесавоз\n4. Трал\n5. Тэнтавы\n6. Рэфрыжэратар\n";
-				std::cin >> typeChoice;
-				std::cin.ignore();
-
-				std::unique_ptr<Trailer> newTrailer;
-				switch (typeChoice)
-				{
-				case 1:
-					newTrailer = std::make_unique<CarTrailer>(length, maxPayload, trailers);
-					break;
-				case 2:
-					newTrailer = std::make_unique<TankTrailer>(length, maxPayload, trailers);
-					break;
-				case 3:
-					newTrailer = std::make_unique<TimberTrailer>(length, maxPayload, trailers);
-					break;
-				case 4:
-					newTrailer = std::make_unique<LowboyTrailer>(length, maxPayload, trailers);
-					break;
-				case 5:
-					newTrailer = std::make_unique<TarpTrailer>(length, maxPayload, trailers);
-					break;
-				case 6:
-					newTrailer = std::make_unique<RefrigeratedTrailer>(length, maxPayload, trailers);
-					break;
-				default:
-					std::cout << "\x1b[31;1m" << "Няверны тып прычэпа!" << "\x1b[0m" << std::endl;
-					continue;
-				}
-
-				trailers.push_back(std::move(newTrailer));
-				std::cout << "Прычэп паспяхова дададзены!\n";
+				newTrailer = std::make_unique<CarTrailer>(length, maxPayload, trailers);
 				break;
-			}
 			case 2:
-			{
-				int trailerChoice;
-				std::cout << "Увядзіце нумар прычэпа для выдалення: ";
-				std::cin >> trailerChoice;
-				std::cin.ignore();
-
-				if (trailerChoice > 0 && trailerChoice <= trailers.size())
-				{
-					trailers.erase(trailers.begin() + trailerChoice - 1);
-					std::cout << "Прычэп паспяхова выдалены!\n";
-				}
-				else
-				{
-					std::cout << "\x1b[31;1m" << "Няверны нумар прычэпа!" << "\x1b[0m" << std::endl;
-				}
+				newTrailer = std::make_unique<TankTrailer>(length, maxPayload, trailers);
+				break;
+			case 3:
+				newTrailer = std::make_unique<TimberTrailer>(length, maxPayload, trailers);
+				break;
+			case 4:
+				newTrailer = std::make_unique<LowboyTrailer>(length, maxPayload, trailers);
+				break;
+			case 5:
+				newTrailer = std::make_unique<TarpTrailer>(length, maxPayload, trailers);
+				break;
+			case 6:
+				newTrailer = std::make_unique<RefrigeratedTrailer>(length, maxPayload, trailers);
 				break;
 			}
-			case 3:
-				return;
-			default:
-				std::cout << "\x1b[31;1m" << "Няверны выбар. Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
-			}
+
+			trailers.push_back(std::move(newTrailer));
+			std::cout << "Прычэп паспяхова дададзены!\n";
+			break;
+		}
+		case 2:
+		{
+			int trailerChoice = GetIntWithinRange(0, trailers.size(), "Увядзіце нумар прычэпа для выдалення: ");
+
+			trailers.erase(trailers.begin() + trailerChoice - 1);
+			std::cout << "Прычэп паспяхова выдалены!\n";
+
+			break;
+		}
+		case 3:
+			return;
 		}
 	}
 	void Manager::ConsiderJobApplications()
@@ -965,127 +1011,56 @@ namespace DeliverySystem
 		int choiceApp;
 		int choice;
 
-		while (true)
+		int i = 0;
+		for (const auto& application : applications)
+			std::cout << ++i << ". " << application << '\n';
+
+		choiceApp = GetIntWithinRange(1, i, "\nВыбярыце заяўку да разгляду: ");
+
+		std::cout << "Падцвердзіць заяўку?\n1. Так\t2. Не\n";
+		choice = GetIntWithinRange(1, 2);
+
+		switch (choice)
 		{
-			int i = 0;
-			for (const auto& application : applications)
-				std::cout << ++i << ". " << application << '\n';
+		case 1:
+			applications[choiceApp - 1].GetAccount()->SetType(Account::Type::Driver);
+			applications.erase(applications.begin() + choiceApp - 1);
+			std::cout << "Заяўка паспяхова прынята\n";
+			break;
+		case 2:
+			applications.erase(applications.begin() + choiceApp - 1);
+			std::cout << "Заяўка паспяхова адмоўлена\n";
+			break;
+		}
 
-			while (true)
-			{
-				std::cout << "Выбярыце заяўку да разгляду: ";
-				std::cin >> choiceApp;
+		if (applications.empty())
+			return;
 
-				if (!std::cin.good())
-				{
-					std::cin.clear();
-					std::cout << "\x1b[31;1m" << "Памылка ўводу. Паспрабуйце яшчэ раз" << "\x1b[0m"
-						<< std::endl << std::endl;
-					std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-					continue;
-				}
+		std::cout << "Жадаеце працягнуць?\n1. Так\t2. Не\n";
 
-				while (true)
-				{
-					std::cout << "Падцвердзіць заяўку?\n1. Так\t2. Не";
-					std::cin >> choice;
+		choice = GetIntWithinRange(1, 2);
 
-					if (!std::cin.good())
-					{
-						std::cin.clear();
-						std::cout << "\x1b[31;1m" << "Памылка ўводу. Паспрабуйце яшчэ раз" << "\x1b[0m"
-							<< std::endl << std::endl;
-						std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-						continue;
-					}
-
-					std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-					switch (choice)
-					{
-					case 1:
-						applications[choiceApp - 1].GetAccount()->SetType(Account::Type::Driver);
-						applications.erase(applications.begin() + choiceApp - 1);
-						std::cout << "Заяўка паспяхова прынята\n";
-						break;
-					case 2:
-						applications.erase(applications.begin() + choiceApp - 1);
-						std::cout << "Заяўка паспяхова адмоўлена\n";
-						break;
-					default:
-						std::cout << "\x1b[31;1m" << "Няверны выбар. Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
-						continue;
-					}
-
-					if (applications.empty())
-						return;
-
-					std::cout << "Жадаеце працягнуць?\n1. Так\t2. Не\n";
-
-					while (true)
-					{
-						std::cin >> choice;
-						if (!std::cin.good())
-						{
-							std::cin.clear();
-							std::cout << "\x1b[31;1m" << "Памылка ўводу. Паспрабуйце яшчэ раз" << "\x1b[0m"
-								<< std::endl << std::endl;
-							std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-							continue;
-						}
-
-						std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-						switch (choice)
-						{
-						case 1:
-							break;
-						case 2:
-							return;
-						default:
-							std::cout << "\x1b[31;1m" << "Няверны выбар. Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
-							continue;
-						}
-					}
-
-					break;
-				}
-				break;
-			}
+		switch (choice)
+		{
+		case 1:
+			break;
+		case 2:
+			return;
 		}
 	}
 	void Manager::ModAdmQuit()
 	{
-		int choice;
-		std::cout << "Гэта дзеянне нельга будзе адмовіць.\nВы ўпэўнены?\n1. Так\t2. Не" << std::endl;
-		std::cout << "Ваш выбар: ";
+		std::cout << "Гэта дзеянне нельга будзе адмовіць.\nВы ўпэўнены?\n1. Так\t2. Не\n" << std::endl;
+		int choice = GetIntWithinRange(1, 2);
 
-		while (true)
+		switch (choice)
 		{
-			std::cin >> choice;
-			if (!std::cin.good())
-			{
-				std::cin.clear();
-				std::cout << "\x1b[31;1m" << "Памылка ўводу. Паспрабуйце яшчэ раз" << "\x1b[0m"
-					<< std::endl << std::endl;
-				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-				continue;
-			}
-
-			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-			switch (choice)
-			{
-			case 1:
-				account->SetType(Account::Type::User);
-				std::cout << "Вы звольнены." << std::endl;
-				return;
-			case 2:
-				return;
-			default:
-				std::cout << "\x1b[31;1m" << "Няверны выбар. Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
-				continue;
-			}
+		case 1:
+			account->SetType(Account::Type::User);
+			std::cout << "Вы звольнены." << std::endl;
+			return;
+		case 2:
+			return;
 		}
 	}
 
@@ -1098,270 +1073,216 @@ namespace DeliverySystem
 	}
 	void Manager::EditAccounts()
 	{
-		int choice;
-		while (true)
+		std::cout << "\nСпіс уліковых запісаў:\n";
+		int i = 0;
+		for (const auto& acc : accounts)
+			std::cout << ++i << '\n' << acc << '\n';
+
+		std::cout << "\nВыбярыце пункт меню:\n1. Змяніць тып акаўнту\n2. Выдаліць акаўнт\n3. Выхад\n";
+		int choice = GetIntWithinRange(1, 3);
+
+		switch (choice)
 		{
-			std::cout << "\nСпіс уліковых запісаў:\n";
-			int i = 0;
-			for (const auto& acc : accounts)
-				std::cout << ++i << '\n' << acc << '\n';
+		case 1:
+		{
+			int accountChoice, typeChoice;
+			accountChoice = GetIntWithinRange(1, accounts.size(), "Увядзіце нумар акаўнту для змены: ");
 
-			std::cout << "\nВыбярыце пункт меню:\n1. Змяніць тып акаўнту\n2. Выдаліць акаўнт\n3. Выхад\n";
-			std::cout << "Ваш выбар: ";
-			std::cin >> choice;
+			Account& selectedAccount = accounts[accountChoice - 1];
 
-			if (!std::cin.good())
-			{
-				std::cin.clear();
-				std::cout << "\x1b[31;1m" << "Памылка ўводу. Паспрабуйце яшчэ раз" << "\x1b[0m"
-					<< std::endl << std::endl;
-				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-				continue;
-			}
+			std::cout << "Выбярыце новы тып акаўнту:\n";
+			std::cout << "1. User\n2. Driver\n3. Moderator\n4. Admin\n";
+			typeChoice = GetIntWithinRange(1, 4);
 
-			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-			switch (choice)
+			Account::Type newType;
+			switch (typeChoice)
 			{
 			case 1:
-			{
-				int accountChoice, typeChoice;
-				std::cout << "Увядзіце нумар акаўнту для змены: ";
-				std::cin >> accountChoice;
-				std::cin.ignore();
-
-				if (accountChoice > 0 && accountChoice <= accounts.size())
-				{
-					Account& selectedAccount = accounts[accountChoice - 1];
-
-					std::cout << "Выбярыце новы тып акаўнту:\n";
-					std::cout << "1. User\n2. Driver\n3. Moderator\n4. Admin\n";
-					std::cin >> typeChoice;
-					std::cin.ignore();
-
-					Account::Type newType;
-					switch (typeChoice)
-					{
-					case 1:
-						newType = Account::Type::User;
-						break;
-					case 2:
-						newType = Account::Type::Driver;
-						break;
-					case 3:
-						newType = Account::Type::Moderator;
-						break;
-					case 4:
-						newType = Account::Type::Admin;
-						break;
-					default:
-						std::cout << "\x1b[31;1m" << "Няверны тып акаўнту!" << "\x1b[0m" << std::endl;
-						continue;
-					}
-
-					selectedAccount.SetType(newType);
-					std::cout << "Тып акаўнту паспяхова зменены!\n";
-				}
-				else
-				{
-					std::cout << "\x1b[31;1m" << "Няверны нумар акаўнту!" << "\x1b[0m" << std::endl;
-				}
+				newType = Account::Type::User;
+				break;
+			case 2:
+				newType = Account::Type::Driver;
+				break;
+			case 3:
+				newType = Account::Type::Moderator;
+				break;
+			case 4:
+				newType = Account::Type::Admin;
 				break;
 			}
-			case 2:
+
+			selectedAccount.SetType(newType);
+			std::cout << "Тып акаўнту паспяхова зменены!\n";
+
+			break;
+		}
+		case 2:
+		{
+			int accountChoice = GetIntWithinRange(1, accounts.size(), "Увядзіце нумар акаўнту для выдалення: ");
+
+			Account* accountToRemove = &accounts[accountChoice - 1];
+
+			for (const auto& driver : drivers)
 			{
-				int accountChoice;
-				std::cout << "Увядзіце нумар акаўнту для выдалення: ";
-				std::cin >> accountChoice;
-				std::cin.ignore();
-
-				if (accountChoice > 0 && accountChoice <= accounts.size())
+				if (driver.GetAccount() == accountToRemove)
 				{
-					Account& accountToRemove = accounts[accountChoice - 1];
+					std::cout << "\x1b[31;1m" << "Немагчыма выдаліць акаўнт, які выкарыстоўваецца кіроўцай!"
+						<< "\x1b[0m" << std::endl;
 
+					break;
+				}
+			}
+
+			accounts.erase(accounts.begin() + accountChoice - 1);
+			std::cout << "Акаўнт паспяхова выдалены!\n";
+
+			break;
+		}
+		case 3:
+			return;
+		}
+	}
+	/*EDIT*/ /*Update Input*/void Manager::DriversList()
+	{
+		std::cout << "\nСпіс кіроўцаў:\n";
+		int i = 0;
+		for (const auto& driver : drivers)
+			std::cout << ++i << '\n' << driver << '\n';
+
+		std::cout << "\nВыбярыце пункт меню:\n1. Дадаць кіроўцу\n2. Выдаліць кіроўцу\n3. Выхад\n";
+		int choice = GetIntWithinRange(1, 3);
+
+		switch (choice)
+		{
+		case 1:
+		{
+			Account* freeAccount = nullptr;
+			std::vector<Account*> availableAccounts;
+
+			std::cout << "Даступныя аккаунты:\n";
+			int j = 0;
+			for (auto& account : accounts)
+			{
+				if (account.GetType() == Account::Type::User)
+				{
+					bool isDriver = false;
 					for (const auto& driver : drivers)
 					{
-						if (driver.GetAccount() == &accountToRemove)
+						if (driver.GetAccount() == &account)
 						{
-							std::cout << "\x1b[31;1m" << "Немагчыма выдаліць акаўнт, які выкарыстоўваецца кіроўцам!"
-								<< "\x1b[0m" << std::endl;
+							isDriver = true;
 							break;
 						}
 					}
 
-					accounts.erase(accounts.begin() + accountChoice - 1);
-					std::cout << "Акаўнт паспяхова выдалены!\n";
+					if (!isDriver)
+					{
+						std::cout << ++j << ". " << account.GetNickname() << std::endl;
+						availableAccounts.push_back(&account);
+					}
 				}
-				else
-				{
-					std::cout << "\x1b[31;1m" << "Няверны нумар акаўнту!" << "\x1b[0m" << std::endl;
-				}
+			}
+
+			if (availableAccounts.empty())
+			{
+				std::cout << "Няма даступных аккаунтаў для прызначэння кіроўцам!\n";
 				break;
 			}
-			case 3:
-				return;
-			default:
-				std::cout << "\x1b[31;1m" << "Няверны выбар. Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
+
+			int accountChoice;
+			std::cout << "Выбярыце аккаунт: ";
+			std::cin >> accountChoice;
+			std::cin.ignore();
+
+			if (accountChoice > 0 && accountChoice <= availableAccounts.size())
+			{
+				freeAccount = availableAccounts[accountChoice - 1];
 			}
+			else
+			{
+				std::cout << "\x1b[31;1m" << "Няверны выбар аккаунта!" << "\x1b[0m" << std::endl;
+				break;
+			}
+
+			Lorry* freeLorry = nullptr;
+			std::vector<Lorry*> availableLorries;
+
+			std::cout << "Даступныя грузавікі:\n";
+			int k = 0;
+			for (auto& lorry : lorries)
+			{
+				if (lorry.GetOwner() == nullptr)
+				{
+					std::cout << ++k << ". " << lorry.GetMake() << " " << lorry.GetModel() << std::endl;
+					availableLorries.push_back(&lorry);
+				}
+			}
+
+			if (availableLorries.empty())
+			{
+				std::cout << "Няма даступных грузавікоў!\n";
+				break;
+			}
+
+			int lorryChoice;
+			std::cout << "Выбярыце грузавік: ";
+			std::cin >> lorryChoice;
+			std::cin.ignore();
+
+			if (lorryChoice > 0 && lorryChoice <= availableLorries.size())
+			{
+				freeLorry = availableLorries[lorryChoice - 1];
+			}
+			else
+			{
+				std::cout << "\x1b[31;1m" << "Няверны выбар грузавіка!" << "\x1b[0m" << std::endl;
+				break;
+			}
+
+			drivers.emplace_back(freeAccount, freeLorry);
+			freeAccount->SetType(Account::Type::Driver);
+			freeLorry->SetOwner(&drivers.back());
+
+			std::cout << "Кіроўца паспяхова дададзены!\n";
+			break;
 		}
-	}
-	void Manager::DriversList()
-	{
-		int choice;
-		while (true)
+		case 2:
 		{
-			std::cout << "\nСпіс кіроўцаў:\n";
-			int i = 0;
-			for (const auto& driver : drivers)
-				std::cout << ++i << '\n' << driver << '\n';
+			int driverChoice;
+			std::cout << "Увядзіце нумар кіроўцы для выдалення: ";
+			std::cin >> driverChoice;
+			std::cin.ignore();
 
-			std::cout << "\nВыбярыце пункт меню:\n1. Дадаць кіроўцу\n2. Выдаліць кіроўцу\n3. Выхад\n";
-			std::cout << "Ваш выбар: ";
-			std::cin >> choice;
-
-			if (!std::cin.good())
+			if (driverChoice > 0 && driverChoice <= drivers.size())
 			{
-				std::cin.clear();
-				std::cout << "\x1b[31;1m" << "Памылка ўводу. Паспрабуйце яшчэ раз" << "\x1b[0m"
-					<< std::endl << std::endl;
-				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-				continue;
+				Driver& driverToRemove = drivers[driverChoice - 1];
+
+				if (driverToRemove.GetLorry())
+				{
+					driverToRemove.GetLorry()->SetOwner(nullptr);
+				}
+
+				if (driverToRemove.GetAccount())
+				{
+					driverToRemove.GetAccount()->SetType(Account::Type::User);
+				}
+
+				drivers.erase(drivers.begin() + driverChoice - 1);
+				std::cout << "Кіроўца паспяхова выдалены!\n";
 			}
-
-			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-			switch (choice)
+			else
 			{
-			case 1:
-			{
-				Account* freeAccount = nullptr;
-				std::vector<Account*> availableAccounts;
-
-				std::cout << "Даступныя аккаунты:\n";
-				int j = 0;
-				for (auto& account : accounts)
-				{
-					if (account.GetType() == Account::Type::User)
-					{
-						bool isDriver = false;
-						for (const auto& driver : drivers)
-						{
-							if (driver.GetAccount() == &account)
-							{
-								isDriver = true;
-								break;
-							}
-						}
-
-						if (!isDriver)
-						{
-							std::cout << ++j << ". " << account.GetNickname() << std::endl;
-							availableAccounts.push_back(&account);
-						}
-					}
-				}
-
-				if (availableAccounts.empty())
-				{
-					std::cout << "Няма даступных аккаунтаў для прызначэння кіроўцам!\n";
-					break;
-				}
-
-				int accountChoice;
-				std::cout << "Выбярыце аккаунт: ";
-				std::cin >> accountChoice;
-				std::cin.ignore();
-
-				if (accountChoice > 0 && accountChoice <= availableAccounts.size())
-				{
-					freeAccount = availableAccounts[accountChoice - 1];
-				}
-				else
-				{
-					std::cout << "\x1b[31;1m" << "Няверны выбар аккаунта!" << "\x1b[0m" << std::endl;
-					break;
-				}
-
-				Lorry* freeLorry = nullptr;
-				std::vector<Lorry*> availableLorries;
-
-				std::cout << "Даступныя грузавікі:\n";
-				int k = 0;
-				for (auto& lorry : lorries)
-				{
-					if (lorry.GetOwner() == nullptr)
-					{
-						std::cout << ++k << ". " << lorry.GetMake() << " " << lorry.GetModel() << std::endl;
-						availableLorries.push_back(&lorry);
-					}
-				}
-
-				if (availableLorries.empty())
-				{
-					std::cout << "Няма даступных грузавікоў!\n";
-					break;
-				}
-
-				int lorryChoice;
-				std::cout << "Выбярыце грузавік: ";
-				std::cin >> lorryChoice;
-				std::cin.ignore();
-
-				if (lorryChoice > 0 && lorryChoice <= availableLorries.size())
-				{
-					freeLorry = availableLorries[lorryChoice - 1];
-				}
-				else
-				{
-					std::cout << "\x1b[31;1m" << "Няверны выбар грузавіка!" << "\x1b[0m" << std::endl;
-					break;
-				}
-
-				drivers.emplace_back(freeAccount, freeLorry);
-				freeAccount->SetType(Account::Type::Driver);
-				freeLorry->SetOwner(&drivers.back());
-
-				std::cout << "Кіроўца паспяхова дададзены!\n";
-				break;
+				std::cout << "\x1b[31;1m" << "Няверны нумар кіроўцы!" << "\x1b[0m" << std::endl;
 			}
-			case 2:
-			{
-				int driverChoice;
-				std::cout << "Увядзіце нумар кіроўцы для выдалення: ";
-				std::cin >> driverChoice;
-				std::cin.ignore();
-
-				if (driverChoice > 0 && driverChoice <= drivers.size())
-				{
-					Driver& driverToRemove = drivers[driverChoice - 1];
-
-					if (driverToRemove.GetLorry())
-					{
-						driverToRemove.GetLorry()->SetOwner(nullptr);
-					}
-
-					if (driverToRemove.GetAccount())
-					{
-						driverToRemove.GetAccount()->SetType(Account::Type::User);
-					}
-
-					drivers.erase(drivers.begin() + driverChoice - 1);
-					std::cout << "Кіроўца паспяхова выдалены!\n";
-				}
-				else
-				{
-					std::cout << "\x1b[31;1m" << "Няверны нумар кіроўцы!" << "\x1b[0m" << std::endl;
-				}
-				break;
-			}
-			case 3:
-				return;
-			default:
-				std::cout << "\x1b[31;1m" << "Няверны выбар. Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
-			}
+			break;
+		}
+		case 3:
+			return;
+		default:
+			std::cout << "\x1b[31;1m" << "Няверны выбар. Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
 		}
 	}
-	void Manager::LorriesList()
+	/*Update Input*/void Manager::LorriesList()
 	{
 		int choice;
 		while (true)
@@ -1488,7 +1409,7 @@ namespace DeliverySystem
 			}
 		}
 	}
-	void Manager::AreasList()
+	/*Update Input*/void Manager::AreasList()
 	{
 		int choice;
 		while (true)
@@ -1662,7 +1583,7 @@ namespace DeliverySystem
 			}
 		}
 	}
-	void Manager::DeliveriesList()
+	/*Update Input*/void Manager::DeliveriesList()
 	{
 		int choice;
 		while (true)
@@ -1827,7 +1748,7 @@ namespace DeliverySystem
 		}
 	}
 
-	void Manager::Menu()
+	/*Update Input*/void Manager::Menu()
 	{
 	menu_begin:
 

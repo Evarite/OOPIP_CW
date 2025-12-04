@@ -60,9 +60,6 @@
     <ClCompile Include="DeliverySystemTimberTrailer.cpp">
       <Filter>Файлы ресурсов</Filter>
     </ClCompile>
-    <ClCompile Include="DeliverySystemFile.cpp">
-      <Filter>Файлы ресурсов</Filter>
-    </ClCompile>
     <ClCompile Include="DeliverySystemIDGenerator.cpp">
       <Filter>Файлы ресурсов</Filter>
     </ClCompile>
