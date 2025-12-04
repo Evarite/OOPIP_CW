@@ -78,8 +78,8 @@ namespace DeliverySystem
 		remainingDistance -= trailer->GetSpeedLimit();
 		if (remainingDistance <= 0)
 		{
-			std::cout << "Толькі што была завершана наступная перавозка:" << std::endl << std::endl;
-			std::cout << *this;
+			std::cout << "\nТолькі што была завершана наступная перавозка:\n";
+			std::cout << *this << '\n';
 			this->StopDelivery(deliveries);
 		}
 	}

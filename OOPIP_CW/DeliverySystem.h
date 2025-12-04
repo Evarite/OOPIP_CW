@@ -523,6 +523,7 @@ namespace DeliverySystem
 
         // All
         static void EditAccount();
+        static void UpdateDistance();
 
         // User
         static void UserRequestDelivery();
