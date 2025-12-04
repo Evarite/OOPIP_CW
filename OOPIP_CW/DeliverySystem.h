@@ -87,9 +87,10 @@ namespace DeliverySystem
         Trailer *GetTrailer() const;
         unsigned int GetRemainingDistance() const;
 
-        void StopDelivery();
+        void StopDelivery(std::vector<Delivery>& deliveries);
+        void UpdateDistance(std::vector<Delivery>& deliveries);
 
-        void UpdateDistance();
+        bool operator==(const Delivery& obj);
 
         friend std::ostream &operator<<(std::ostream &os, const Delivery &obj);
         friend std::ostream &operator<<(std::ofstream &os, const Delivery &obj);
@@ -186,7 +187,7 @@ namespace DeliverySystem
         void SetDelivery(Delivery *delivery);
         void StopDelivery();
 
-        friend void Delivery::StopDelivery();
+        friend void Delivery::StopDelivery(std::vector<Delivery>& deliveries);
         friend Delivery::Delivery(Driver *driver, Lorry *lorry, Cargo *cargo, Trailer *trailer);
         friend std::istream &operator>>(std::ifstream &is, Delivery &obj);
 
@@ -224,7 +225,7 @@ namespace DeliverySystem
         friend Delivery::Delivery(Driver *driver, Lorry *lorry, Cargo *cargo, Trailer *trailer);
 
         void StopDelivery();
-        friend void Delivery::StopDelivery();
+        friend void Delivery::StopDelivery(std::vector<Delivery>& deliveries);
         friend std::istream &operator>>(std::ifstream &is, Delivery &obj);
 
     public:
@@ -297,7 +298,7 @@ namespace DeliverySystem
         friend Delivery::Delivery(Driver *driver, Lorry *lorry, Cargo *cargo, Trailer *trailer);
 
         void StopDelivery();
-        friend void Delivery::StopDelivery();
+        friend void Delivery::StopDelivery(std::vector<Delivery>& deliveries);
 
         friend std::istream &operator>>(std::ifstream &is, Delivery &obj);
 
@@ -349,7 +350,7 @@ namespace DeliverySystem
         friend Delivery::Delivery(Driver *driver, Lorry *lorry, Cargo *cargo, Trailer *trailer);
 
         void StopDelivery();
-        friend void Delivery::StopDelivery();
+        friend void Delivery::StopDelivery(std::vector<Delivery>& deliveries);
         friend std::istream &operator>>(std::ifstream &is, Delivery &obj);
 
     public:

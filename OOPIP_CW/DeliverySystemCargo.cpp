@@ -12,7 +12,7 @@ namespace DeliverySystem
 	void Cargo::StopDelivery()
 	{
 		currentDelivery = nullptr;
-
+		to = nullptr;
 	}
 
 	Cargo::Cargo()

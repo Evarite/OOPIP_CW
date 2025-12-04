@@ -19,6 +19,7 @@ namespace DeliverySystem
 		length = 0;
 		maxPayload = 0;
 		currentDelivery = nullptr;
+		id = 0;
 	}
 	Trailer::Trailer(float length, float maxPayload, const std::vector<std::unique_ptr<Trailer>>& trailers)
 		: length(length), maxPayload(maxPayload), currentDelivery(nullptr)

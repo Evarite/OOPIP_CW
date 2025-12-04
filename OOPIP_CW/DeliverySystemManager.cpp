@@ -1144,142 +1144,32 @@ namespace DeliverySystem
 	}
 	/*EDIT*/ /*Update Input*/void Manager::DriversList()
 	{
-		std::cout << "\nСпіс кіроўцаў:\n";
+		std::cout << "Спіс кіроўцаў:\n";
 		int i = 0;
 		for (const auto& driver : drivers)
-			std::cout << ++i << '\n' << driver << '\n';
+			std::cout << ++i << ".\n" << driver << "\n\n";
 
-		std::cout << "\nВыбярыце пункт меню:\n1. Дадаць кіроўцу\n2. Выдаліць кіроўцу\n3. Выхад\n";
-		int choice = GetIntWithinRange(1, 3);
+		std::cout << "Выбярыце пункт меню:\n1. Зволніць кіроўцу\n2. Выхад\n";
+		int choice = GetIntWithinRange(1, 2);
 
 		switch (choice)
 		{
 		case 1:
 		{
-			Account* freeAccount = nullptr;
-			std::vector<Account*> availableAccounts;
+			int driverChoice = GetIntWithinRange(0, drivers.size(), 
+				"Выбярыце кіроўцу да звальнення (0 для адмовы): ");
+			if (driverChoice == 0)
+				return;
 
-			std::cout << "Даступныя аккаунты:\n";
-			int j = 0;
-			for (auto& account : accounts)
+			if (drivers[driverChoice - 1].GetCurrentDelivery() != nullptr)
 			{
-				if (account.GetType() == Account::Type::User)
-				{
-					bool isDriver = false;
-					for (const auto& driver : drivers)
-					{
-						if (driver.GetAccount() == &account)
-						{
-							isDriver = true;
-							break;
-						}
-					}
-
-					if (!isDriver)
-					{
-						std::cout << ++j << ". " << account.GetNickname() << std::endl;
-						availableAccounts.push_back(&account);
-					}
-				}
+				drivers[driverChoice - 1].GetCurrentDelivery()->StopDelivery(deliveries);
 			}
 
-			if (availableAccounts.empty())
-			{
-				std::cout << "Няма даступных аккаунтаў для прызначэння кіроўцам!\n";
-				break;
-			}
-
-			int accountChoice;
-			std::cout << "Выбярыце аккаунт: ";
-			std::cin >> accountChoice;
-			std::cin.ignore();
-
-			if (accountChoice > 0 && accountChoice <= availableAccounts.size())
-			{
-				freeAccount = availableAccounts[accountChoice - 1];
-			}
-			else
-			{
-				std::cout << "\x1b[31;1m" << "Няверны выбар аккаунта!" << "\x1b[0m" << std::endl;
-				break;
-			}
-
-			Lorry* freeLorry = nullptr;
-			std::vector<Lorry*> availableLorries;
-
-			std::cout << "Даступныя грузавікі:\n";
-			int k = 0;
-			for (auto& lorry : lorries)
-			{
-				if (lorry.GetOwner() == nullptr)
-				{
-					std::cout << ++k << ". " << lorry.GetMake() << " " << lorry.GetModel() << std::endl;
-					availableLorries.push_back(&lorry);
-				}
-			}
-
-			if (availableLorries.empty())
-			{
-				std::cout << "Няма даступных грузавікоў!\n";
-				break;
-			}
-
-			int lorryChoice;
-			std::cout << "Выбярыце грузавік: ";
-			std::cin >> lorryChoice;
-			std::cin.ignore();
-
-			if (lorryChoice > 0 && lorryChoice <= availableLorries.size())
-			{
-				freeLorry = availableLorries[lorryChoice - 1];
-			}
-			else
-			{
-				std::cout << "\x1b[31;1m" << "Няверны выбар грузавіка!" << "\x1b[0m" << std::endl;
-				break;
-			}
-
-			drivers.emplace_back(freeAccount, freeLorry);
-			freeAccount->SetType(Account::Type::Driver);
-			freeLorry->SetOwner(&drivers.back());
-
-			std::cout << "Кіроўца паспяхова дададзены!\n";
 			break;
 		}
 		case 2:
-		{
-			int driverChoice;
-			std::cout << "Увядзіце нумар кіроўцы для выдалення: ";
-			std::cin >> driverChoice;
-			std::cin.ignore();
-
-			if (driverChoice > 0 && driverChoice <= drivers.size())
-			{
-				Driver& driverToRemove = drivers[driverChoice - 1];
-
-				if (driverToRemove.GetLorry())
-				{
-					driverToRemove.GetLorry()->SetOwner(nullptr);
-				}
-
-				if (driverToRemove.GetAccount())
-				{
-					driverToRemove.GetAccount()->SetType(Account::Type::User);
-				}
-
-				drivers.erase(drivers.begin() + driverChoice - 1);
-				std::cout << "Кіроўца паспяхова выдалены!\n";
-			}
-			else
-			{
-				std::cout << "\x1b[31;1m" << "Няверны нумар кіроўцы!" << "\x1b[0m" << std::endl;
-			}
-			break;
-		}
-		case 3:
 			return;
-		default:
-			std::cout << "\x1b[31;1m" << "Няверны выбар. Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
 		}
 	}
 	void Manager::LorriesList()
@@ -1546,7 +1436,7 @@ namespace DeliverySystem
 		{
 			int deliveryChoice = GetIntWithinRange(0, deliveries.size(), "Увядзіце нумар дастаўкі для выдалення: ");
 
-			deliveries[deliveryChoice - 1].StopDelivery();
+			deliveries[deliveryChoice - 1].StopDelivery(deliveries);
 
 			deliveries.erase(deliveries.begin() + deliveryChoice - 1);
 			std::cout << "Дастаўка паспяхова выдалена!\n";

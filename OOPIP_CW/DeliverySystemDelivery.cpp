@@ -57,15 +57,22 @@ namespace DeliverySystem
 		return remainingDistance;
 	}
 
-	void Delivery::StopDelivery()
+	void Delivery::StopDelivery(std::vector<Delivery>& deliveries)
 	{
+		for (size_t i = 0; i < deliveries.size(); i++)
+		{
+			if (deliveries[i] == *this)
+			{
+				deliveries.erase(deliveries.begin() + i);
+			}
+		}
+
 		driver->StopDelivery();
 		lorry->StopDelivery();
 		cargo->StopDelivery();
 		trailer->StopDelivery();
 	}
-
-	void Delivery::UpdateDistance()
+	void Delivery::UpdateDistance(std::vector<Delivery>& deliveries)
 	{
 		//Skipping an hour
 		remainingDistance -= trailer->GetSpeedLimit();
@@ -73,8 +80,13 @@ namespace DeliverySystem
 		{
 			std::cout << "Толькі што была завершана наступная перавозка:" << std::endl << std::endl;
 			std::cout << *this;
-			this->StopDelivery();
+			this->StopDelivery(deliveries);
 		}
+	}
+
+	bool Delivery::operator==(const Delivery& obj)
+	{
+		return driver->GetAccount()->GetNickname() == obj.GetDriver()->GetAccount()->GetNickname();
 	}
 
 	std::ostream& operator<<(std::ostream& os, const Delivery& obj)
