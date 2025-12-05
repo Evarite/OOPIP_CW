@@ -60,7 +60,7 @@ namespace DeliverySystem
         
         static unsigned int CalculateDistance(const City &city1, const City &city2);
         
-        bool operator==(const City& obj);
+        bool operator==(const City& obj) const;
 
         friend std::ostream &operator<<(std::ostream &os, const City &obj);
         friend std::ostream &operator<<(std::ofstream &os, const City &obj);
@@ -90,7 +90,7 @@ namespace DeliverySystem
         void StopDelivery(std::vector<Delivery>& deliveries);
         void UpdateDistance(std::vector<Delivery>& deliveries);
 
-        bool operator==(const Delivery& obj);
+        bool operator==(const Delivery& obj) const;
 
         friend std::ostream &operator<<(std::ostream &os, const Delivery &obj);
         friend std::ostream &operator<<(std::ofstream &os, const Delivery &obj);
@@ -179,7 +179,8 @@ namespace DeliverySystem
         friend std::istream &operator>>(std::ifstream &is, Account &obj);
     };
 
-    class Driver {
+    class Driver
+    {
         Account *account;
         Lorry *lorry;
         Delivery *currentDelivery;
@@ -199,8 +200,8 @@ namespace DeliverySystem
         Lorry *GetLorry() const;
         Delivery *GetCurrentDelivery() const;
 
-        void CancelDelivery();
-        void Fire();
+        void CancelDelivery(std::vector<Delivery>& deliveries);
+        void Fire(std::vector<Delivery>& deliveries);
 
         bool operator==(Driver &obj);
 
@@ -627,5 +628,5 @@ namespace DeliverySystem
     std::string GetPasswordWithAsterisks();
     int GetInt(const std::string& message = "Ваш выбар: ");
     int GetIntWithinRange(int left, int right, const std::string& message = "Ваш выбар: ");
-    float GetFloat(const std::string& message = "Ваш выбар");
+    float GetFloat(const std::string& message = "Ваш выбар: ");
 } 

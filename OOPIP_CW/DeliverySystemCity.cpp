@@ -65,7 +65,7 @@ namespace DeliverySystem
 		return unsigned int(sqrt(x * x + y * y));
 	}
 
-	bool City::operator==(const City& obj)
+	bool City::operator==(const City& obj) const
 	{
 		return GetName() == obj.GetName() && GetCountryAbbreviation() == obj.GetCountryAbbreviation();
 	}

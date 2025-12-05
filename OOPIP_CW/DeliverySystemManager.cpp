@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <algorithm>
 
 constexpr auto COUNTRIES = "Countries.bin";
 constexpr auto ACCOUNTS = "Accounts.bin";
@@ -542,7 +543,7 @@ namespace DeliverySystem
 			std::sort(countries.begin(), countries.end(),
 				[attribute, order](const Country& a, const Country& b)
 				{
-					auto compare = [attribute, a, b]() -> bool
+					auto compare = [attribute, &a, &b]() -> bool
 						{
 							switch (attribute)
 							{
@@ -585,10 +586,10 @@ namespace DeliverySystem
 
 			for (auto& country : countries)
 			{
-				std::sort(countries.begin(), countries.end(),
+				std::sort(country.GetCitiesL().begin(), country.GetCitiesL().end(),
 					[attribute, order](const City& a, const City& b)
 					{
-						auto compare = [attribute, a, b]() -> bool
+						auto compare = [attribute, &a, &b]() -> bool
 							{
 								switch (attribute)
 								{
@@ -623,7 +624,7 @@ namespace DeliverySystem
 				<< "2. Маса груза\n"
 				<< "3. Горад адпраўлення\n"
 				<< "4. Горад прыбыцця\n"
-				<< "4. Тып груза\n";
+				<< "5. Тып груза\n";
 
 			choice = GetIntWithinRange(1, 5);
 			attribute = static_cast<SortAttribute>(choice - 1);
@@ -639,7 +640,7 @@ namespace DeliverySystem
 			std::sort(cargos.begin(), cargos.end(),
 				[attribute, order](const Cargo& a, const Cargo& b)
 				{
-					auto compare = [attribute, a, b]() -> bool
+					auto compare = [attribute, &a, &b]() -> bool
 						{
 							switch (attribute)
 							{
@@ -702,7 +703,7 @@ namespace DeliverySystem
 			std::sort(deliveries.begin(), deliveries.end(),
 				[attribute, order](const Delivery& a, const Delivery& b)
 				{
-					auto compare = [attribute, a, b]() -> bool
+					auto compare = [attribute, &a, &b]() -> bool
 						{
 							switch (attribute)
 							{
@@ -736,7 +737,7 @@ namespace DeliverySystem
 		}
 		}
 	}
-
+	
 	//Driver
 	void Manager::AcceptDelivery(Driver* driver)
 	{
@@ -1430,8 +1431,7 @@ namespace DeliverySystem
 	}
 	void Manager::DeliveriesList()
 	{
-		\
-			std::cout << "\nСпіс даставак:\n";
+		std::cout << "\nСпіс даставак:\n";
 		int i = 0;
 		for (const auto& delivery : deliveries)
 			std::cout << ++i << '\n' << delivery << '\n';
@@ -1475,10 +1475,11 @@ namespace DeliverySystem
 					<< "3. Рэдагаваць асабістыя дадзеныя" << std::endl
 					<< "4. Праглядзець даступныя гарады і краіны" << std::endl
 					<< "5. Аднавіць дастаўкі" << std::endl
-					<< "6. Стань кіроўцай!" << std::endl
-					<< "7. Выхад" << std::endl;
+					<< "6. Сартаванне" << std::endl
+					<< "7. Стань кіроўцай!" << std::endl
+					<< "8. Выхад" << std::endl;
 
-				choice = GetIntWithinRange(1, 7, "Выбярыце пункт меню: ");
+				choice = GetIntWithinRange(1, 8, "Выбярыце пункт меню: ");
 
 				std::cout << std::endl;
 
@@ -1500,9 +1501,12 @@ namespace DeliverySystem
 					UpdateDistance();
 					break;
 				case 6:
-					BecomeADriver();
+					UserSort();
 					break;
 				case 7:
+					BecomeADriver();
+					break;
+				case 8:
 					return;
 				}
 			}

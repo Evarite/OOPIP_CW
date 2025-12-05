@@ -43,7 +43,7 @@ namespace DeliverySystem
 		return password;
 	}
 
-	int GetInt(const std::string& message = "Ваш выбар: ")
+	int GetInt(const std::string& message)
 	{
 		int result;
 		
@@ -66,7 +66,7 @@ namespace DeliverySystem
 		}
 	}
 
-	int GetIntWithinRange(int left, int right, const std::string& message = "Ваш выбар")
+	int GetIntWithinRange(int left, int right, const std::string& message)
 	///Get a number within the given range, borders included
 	{
 		int result;
@@ -86,7 +86,7 @@ namespace DeliverySystem
 		}
 	}
 
-	float GetFloat(const std::string& message = "Ваш выбар: ")
+	float GetFloat(const std::string& message)
 	{
 		float result;
 

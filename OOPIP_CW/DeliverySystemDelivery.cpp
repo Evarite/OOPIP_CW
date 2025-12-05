@@ -84,7 +84,7 @@ namespace DeliverySystem
 		}
 	}
 
-	bool Delivery::operator==(const Delivery& obj)
+	bool Delivery::operator==(const Delivery& obj) const
 	{
 		return driver->GetAccount()->GetNickname() == obj.GetDriver()->GetAccount()->GetNickname();
 	}

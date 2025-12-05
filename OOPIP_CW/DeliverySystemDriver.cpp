@@ -40,15 +40,15 @@ namespace DeliverySystem
 		return currentDelivery;
 	}
 
-	void Driver::CancelDelivery()
+	void Driver::CancelDelivery(std::vector<Delivery>& deliveries)
 	{
 		if(currentDelivery != nullptr)
-			currentDelivery->StopDelivery();
+			currentDelivery->StopDelivery(deliveries);
 	}
-	void Driver::Fire()
+	void Driver::Fire(std::vector<Delivery>& deliveries)
 	{
 		if (currentDelivery != nullptr)
-			currentDelivery->StopDelivery();
+			currentDelivery->StopDelivery(deliveries);
 		lorry->SetOwner(nullptr);
 		account->SetType(Account::Type::User);
 	}
