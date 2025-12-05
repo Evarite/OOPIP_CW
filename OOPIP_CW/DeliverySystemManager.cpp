@@ -2031,6 +2031,44 @@ namespace DeliverySystem
 		}
 		case SortContainer::Lorries:
 		{
+			enum class SortAttribute
+			{
+				Make,
+				Mileage
+			};
+
+			std::cout << "Выбярыце атрыбут сартавання\n"
+				<< "1. Марка\n"
+				<< "2. Прабег\n";
+			choice = GetIntWithinRange(1, 2);
+
+			SortAttribute attribute = static_cast<SortAttribute>(choice - 1);
+			
+			std::cout << "Выбярыце парадак сартавання:\n"
+				<< "1. Па ўзрастанні\n"
+				<< "2. Па змяншэнні\n";
+
+			choice = GetIntWithinRange(1, 2);
+			order = static_cast<SortOrder>(choice - 1);
+
+			std::sort(lorries.begin(), lorries.end(),
+				[attribute, order](const Lorry& a, const Lorry& b)
+				{
+					auto compare = [attribute, &a, &b]() -> bool
+						{
+							switch (attribute)
+							{
+							case SortAttribute::Make:
+								return a.GetMake() < b.GetMake();
+							case SortAttribute::Mileage:
+								return a.GetMileage() < b.GetMileage();
+							}
+						};
+
+					return order == SortOrder::Ascending ? compare() : !compare();
+				}
+			);
+
 			return;
 		}
 		case SortContainer::Cargos:
