@@ -815,14 +815,86 @@ namespace DeliverySystem
 	{
 		std::cout << driver->GetCurrentDelivery() << '\n';
 	}
-	/*In progress*/ void Manager::DropDelivery(Driver* driver)
+	void Manager::DropDelivery(Driver* driver)
 	{
 		std::cout << "Гэта дзеянне нельга будзе адмовіць. За няўстойкі вы будзеце аштрафаваны\n"
 			<< "Вы ўпэўнены? \n1.Так\t2.Не" << std::endl;
-		std::cout << "Ваш выбар: ";
+		int choice = GetIntWithinRange(1, 2);
 
-		int choice;
-		std::cin >> choice;
+		switch (choice)
+		{
+		case 1:
+			driver->CancelDelivery(deliveries);
+			return;
+		case 2:
+			return;
+		}
+	}
+	void Manager::DriverSort()
+	///Sorts cargo only
+	{
+		enum class SortOrder
+		{
+			Ascending,
+			Descending
+		};
+		enum class SortAttribute
+		{
+			Name,
+			Mass,
+			CityFrom,
+			CityTo,
+			Type
+		};
+
+		SortAttribute attribute;
+		SortOrder order;
+
+		std::cout << "Выбярыце атрыбут сартавання:\n"
+			<< "1. Назва груза\n"
+			<< "2. Маса груза\n"
+			<< "3. Горад адпраўлення\n"
+			<< "4. Горад прыбыцця\n"
+			<< "5. Тып груза\n";
+
+		int choice = GetIntWithinRange(1, 5);
+		attribute = static_cast<SortAttribute>(choice - 1);
+
+		std::cout << "Выбярыце парадак сартавання:\n"
+			<< "1. Па ўзрастанні\n"
+			<< "2. Па змяншэнні\n";
+
+		choice = GetIntWithinRange(1, 2);
+		order = static_cast<SortOrder>(choice - 1);
+
+		std::sort(cargos.begin(), cargos.end(),
+			[attribute, order](const Cargo& a, const Cargo& b)
+			{
+				auto compare = [attribute, &a, &b]() -> bool
+					{
+						switch (attribute)
+						{
+						case SortAttribute::Name:
+							return a.GetName() < b.GetName();
+						case SortAttribute::Mass:
+							return a.GetMass() < b.GetMass();
+						case SortAttribute::CityFrom:
+							return a.GetCityFrom()->GetName() < b.GetCityFrom()->GetName();
+						case SortAttribute::CityTo:
+							if (a.GetCityTo() == nullptr)
+								return true;
+							else if (b.GetCityTo() == nullptr)
+								return false;
+							else
+								return a.GetCityTo()->GetName() < b.GetCityFrom()->GetName();
+						case SortAttribute::Type:
+							return static_cast<int>(a.GetType()) < static_cast<int>(b.GetType());
+						}
+					};
+
+				return order == SortOrder::Ascending ? compare() : !compare();
+			}
+		);
 	}
 
 	//Moderator
@@ -1071,6 +1143,272 @@ namespace DeliverySystem
 			return;
 		case 2:
 			return;
+		}
+	}
+	void Manager::ModSort()
+	{
+		enum class SortContainer
+		{
+			Accounts,
+			Drivers,
+			Cargos,
+			Trailers
+		};
+		enum class SortOrder
+		{
+			Ascending,
+			Descending
+		};
+
+		SortContainer container;
+		SortOrder order;
+
+		std::cout << "Выбярыце, што вы жадаеце адсартаваць\n"
+			<< "1. Спіс акаўнтаў\n"
+			<< "2. Спіс кіроўцаў\n"
+			<< "3. Спіс грузаў\n"
+			<< "4. Спіс прычэпаў\n";
+		int choice = GetIntWithinRange(1, 4);
+
+		container = static_cast<SortContainer>(choice - 1);
+
+		switch (container)
+		{
+		case SortContainer::Accounts:
+		{
+			enum class SortAttribute
+			{
+				Nickname,
+				Firstname,
+				Lastname
+			};
+			SortAttribute attribute;
+
+			std::cout << "Выбярыце атрыбут сартавання:\n"
+				<< "1. Імя акаўнту\n"
+				<< "2. Уласнае імя\n"
+				<< "3. Прозвішча\n";
+			choice = GetIntWithinRange(1, 3);
+			attribute = static_cast<SortAttribute>(choice - 1);
+
+			std::cout << "Выбярыце парадак сартавання:\n"
+				<< "1. Па ўзрастанні\n"
+				<< "2. Па змяншэнні\n";
+			choice = GetIntWithinRange(1, 2);
+			order = static_cast<SortOrder>(choice - 1);
+
+			std::sort(accounts.begin(), accounts.end(),
+				[attribute, order](const Account& a, const Account& b)
+				{
+					auto compare = [attribute, &a, &b]() -> bool
+						{
+							switch (attribute)
+							{
+							case SortAttribute::Nickname:
+								return a.GetNickname() < b.GetNickname();
+							case SortAttribute::Firstname:
+								return a.GetFirstName() < b.GetFirstName();
+							case SortAttribute::Lastname:
+								return a.GetLastName() < b.GetLastName();
+							}
+						};
+
+					return order == SortOrder::Ascending ? compare() : !compare();
+				}
+			);
+
+			return;
+		}
+		case SortContainer::Drivers:
+		{
+			enum class SortAttribute
+			{
+				Nickname,
+				Firstname,
+				Lastname,
+				DeliveryCityFrom,
+				DeliveryCityTo
+			};
+			SortAttribute attribute;
+
+			std::cout << "Выбярыце атрыбут сартавання:\n"
+				<< "1. Імя акаўнту\n"
+				<< "2. Уласнае імя\n"
+				<< "3. Прозвішча\n"
+				<< "4. Горад адпраўлення\n"
+				<< "5. Горад прыбыцця\n";
+			choice = GetIntWithinRange(1, 5);
+			attribute = static_cast<SortAttribute>(choice - 1);
+
+			std::cout << "Выбярыце парадак сартавання:\n"
+				<< "1. Па ўзрастанні\n"
+				<< "2. Па змяншэнні\n";
+			choice = GetIntWithinRange(1, 2);
+			order = static_cast<SortOrder>(choice - 1);
+
+			std::sort(drivers.begin(), drivers.end(),
+				[attribute, order](const Driver& a, const Driver& b)
+				{
+					auto compare = [attribute, &a, &b]() -> bool
+						{
+							switch (attribute)
+							{
+							case SortAttribute::Nickname:
+								return a.GetAccount()->GetNickname() < b.GetAccount()->GetNickname();
+							case SortAttribute::Firstname:
+								return a.GetAccount()->GetFirstName() < b.GetAccount()->GetFirstName();
+							case SortAttribute::Lastname:
+								return a.GetAccount()->GetLastName() < b.GetAccount()->GetLastName();
+							case SortAttribute::DeliveryCityFrom:
+								if (a.GetCurrentDelivery() == nullptr)
+									return true;
+								else if (b.GetCurrentDelivery() == nullptr)
+									return false;
+								else
+									return a.GetCurrentDelivery()->GetCityFrom()->GetName() < 
+									b.GetCurrentDelivery()->GetCityFrom()->GetName();
+							case SortAttribute::DeliveryCityTo:
+								if (a.GetCurrentDelivery() == nullptr)
+									return true;
+								else if (b.GetCurrentDelivery() == nullptr)
+									return false;
+								else
+									return a.GetCurrentDelivery()->GetCityTo()->GetName() <
+									b.GetCurrentDelivery()->GetCityTo()->GetName();
+							}
+						};
+
+					return order == SortOrder::Ascending ? compare() : !compare();
+				}
+			);
+
+			return;
+		}
+		case SortContainer::Cargos:
+		{
+			enum class SortAttribute
+			{
+				Name,
+				Mass,
+				CityFrom,
+				CityTo,
+				Type
+			};
+			SortAttribute attribute;
+
+			std::cout << "Выбярыце атрыбут сартавання:\n"
+				<< "1. Назва груза\n"
+				<< "2. Маса груза\n"
+				<< "3. Горад адпраўлення\n"
+				<< "4. Горад прыбыцця\n"
+				<< "5. Тып груза\n";
+
+			int choice = GetIntWithinRange(1, 5);
+			attribute = static_cast<SortAttribute>(choice - 1);
+
+			std::cout << "Выбярыце парадак сартавання:\n"
+				<< "1. Па ўзрастанні\n"
+				<< "2. Па змяншэнні\n";
+
+			choice = GetIntWithinRange(1, 2);
+			order = static_cast<SortOrder>(choice - 1);
+
+			std::sort(cargos.begin(), cargos.end(),
+				[attribute, order](const Cargo& a, const Cargo& b)
+				{
+					auto compare = [attribute, &a, &b]() -> bool
+						{
+							switch (attribute)
+							{
+							case SortAttribute::Name:
+								return a.GetName() < b.GetName();
+							case SortAttribute::Mass:
+								return a.GetMass() < b.GetMass();
+							case SortAttribute::CityFrom:
+								return a.GetCityFrom()->GetName() < b.GetCityFrom()->GetName();
+							case SortAttribute::CityTo:
+								if (a.GetCityTo() == nullptr)
+									return true;
+								else if (b.GetCityTo() == nullptr)
+									return false;
+								else
+									return a.GetCityTo()->GetName() < b.GetCityFrom()->GetName();
+							case SortAttribute::Type:
+								return static_cast<int>(a.GetType()) < static_cast<int>(b.GetType());
+							}
+						};
+
+					return order == SortOrder::Ascending ? compare() : !compare();
+				}
+			);
+
+			return;
+		}
+		case SortContainer::Trailers:
+		{
+			enum class SortAttribute
+			{
+				Length,
+				MaxPayload,
+				CityFrom,
+				CityTo,
+				Type
+			};
+			SortAttribute attribute;
+
+			std::cout << "Выбярыце атрыбут сартавання:\n"
+				<< "1. Даўжыня\n"
+				<< "2. Максімальная загрузка\n"
+				<< "3. Горад адпраўлення\n"
+				<< "4. Горад прыбыцця\n"
+				<< "5. Тып прычепу\n";
+			choice = GetIntWithinRange(1, 5);
+			attribute = static_cast<SortAttribute>(choice - 1);
+
+			std::cout << "Выбярыце парадак сартавання:\n"
+				<< "1. Па ўзрастанні\n"
+				<< "2. Па змяншэнні\n";
+			choice = GetIntWithinRange(1, 2);
+			order = static_cast<SortOrder>(choice - 1);
+
+			std::sort(trailers.begin(), trailers.end(),
+				[attribute, order](const std::unique_ptr<Trailer>& a, const std::unique_ptr<Trailer>& b)
+				{
+					auto compare = [attribute, &a, &b]() -> bool
+						{
+							switch (attribute)
+							{
+							case SortAttribute::Length:
+								return a->GetLength() < b->GetLength();
+							case SortAttribute::MaxPayload:
+								return a->GetMaxPayload() < b->GetMaxPayload();
+							case SortAttribute::CityFrom:
+								if (a->GetCurrentDelivery() == nullptr)
+									return true;
+								else if (b->GetCurrentDelivery() == nullptr)
+									return false;
+								else
+									return a->GetCurrentDelivery()->GetCityFrom()->GetName()
+									< b->GetCurrentDelivery()->GetCityFrom()->GetName();
+							case SortAttribute::CityTo:
+								if (a->GetCurrentDelivery() == nullptr)
+									return true;
+								else if (b->GetCurrentDelivery() == nullptr)
+									return false;
+								else
+									return a->GetCurrentDelivery()->GetCityTo()->GetName()
+									< b->GetCurrentDelivery()->GetCityTo()->GetName();
+							case SortAttribute::Type:
+								return static_cast<int>(a->GetType()) < static_cast<int>(b->GetType());
+							}
+						};
+
+					return order == SortOrder::Ascending ? compare() : !compare();
+				}
+			);
+
+			return;
+		}
 		}
 	}
 
@@ -1522,9 +1860,10 @@ namespace DeliverySystem
 				{
 					std::cout << std::endl << std::setw(20) << "\x1b[33;1m" << "Меню:" << "\x1b[0m" << std::endl;
 					std::cout << "1. Прыняць заказ" << std::endl
-						<< "2. Рэдагаваць асабістыя дадзеныя" << std::endl
-						<< "3. Звольніцца" << std::endl
-						<< "4. Выхад" << std::endl;
+						<< "2. Сартаванне грузаў" << std::endl
+						<< "3. Рэдагаваць асабістыя дадзеныя" << std::endl
+						<< "4. Звольніцца" << std::endl
+						<< "5. Выхад" << std::endl;
 
 					choice = GetIntWithinRange(1, 4, "Выбярыце пункт меню: ");
 
@@ -1536,12 +1875,15 @@ namespace DeliverySystem
 						AcceptDelivery(driver);
 						break;
 					case 2:
-						EditAccount();
+						DriverSort();
 						break;
 					case 3:
+						EditAccount();
+						break;
+					case 4:
 						DriverQuit(driver);
 						goto menu_begin;
-					case 4:
+					case 5:
 						return;
 					}
 				}

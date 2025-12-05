@@ -134,7 +134,13 @@ namespace DeliverySystem
     class Account 
     {
     public:
-        enum class Type { User, Driver, Moderator, Admin };
+        enum class Type
+        {
+            User,
+            Driver,
+            Moderator,
+            Admin
+        };
 
     private:
         char nickname[NAME_SIZE];
