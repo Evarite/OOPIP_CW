@@ -460,7 +460,7 @@ namespace DeliverySystem
 	}
 	void Manager::BecomeADriver()
 	{
-		if (applications.back().GetAccount() == account)
+		if (!applications.empty() && applications.back().GetAccount() == account)
 		{
 			int choice;
 			std::cout << "Вы ўжо адправілі заяўку. Жадаеце выдаліць яе?\n"
@@ -1105,10 +1105,41 @@ namespace DeliverySystem
 		switch (choice)
 		{
 		case 1:
-			applications[choiceApp - 1].GetAccount()->SetType(Account::Type::Driver);
-			applications.erase(applications.begin() + choiceApp - 1);
-			std::cout << "Заяўка паспяхова прынята\n";
+		{
+			if (lorries.empty())
+			{
+				std::cout << "\x1b[31;1m"
+					<< "Немагчыма падцвердзіць заяўку, бо адсутнічаюць свабодныя грузавікі\n"
+					<< "\x1b[0m";
+				break;
+			}
+
+			int i = 0;
+			std::vector<Lorry*> availableLorries;
+			std::cout << "Свабодныя грузавікі:\n";
+			for (auto& lorry : lorries)
+			{
+				if (lorry.GetOwner() == nullptr)
+				{
+					std::cout << ++i << ".\n" << lorry << "\n\n";
+					availableLorries.push_back(&lorry);
+				}
+			}
+
+			if (i == 0)
+			{
+				std::cout << "\x1b[31;1m" 
+					<< "Немагчыма падцвердзіць заяўку, бо адсутнічаюць свабодныя грузавікі\n"
+					<< "\x1b[0m";
+				break;
+			}
+
+			choice = GetIntWithinRange(1, availableLorries.size(), "Выбярыце грузавік для кіроўцы: ");
+
+			drivers.emplace_back(applications[choiceApp - 1].GetAccount(), &availableLorries[choice - 1]);
+
 			break;
+		}
 		case 2:
 			applications.erase(applications.begin() + choiceApp - 1);
 			std::cout << "Заяўка паспяхова адмоўлена\n";
