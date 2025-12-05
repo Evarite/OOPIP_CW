@@ -403,7 +403,7 @@ namespace DeliverySystem
 			}
 			else
 			{
-				int choiceCargo = GetIntWithinRange(0, i, "Выбярыце груз: ");
+				int choiceCargo = GetIntWithinRange(1, i, "Выбярыце груз: ");
 
 				while (true)
 				{
@@ -425,9 +425,9 @@ namespace DeliverySystem
 					}
 					else
 					{
-						int choiceCity = GetIntWithinRange(0, j, "Выбярыце горад: ");
+						int choiceCity = GetIntWithinRange(1, j, "Выбярыце горад: ");
 
-						availableCargos[i - 1]->RequestDelivery(account, availableCities[j - 1]);
+						availableCargos[choiceCargo - 1]->RequestDelivery(account, availableCities[choiceCity - 1]);
 
 						std::cout << "Заказ сфарміраваны. Дастаўка пачнецца ў бліжайшы час." << std::endl;
 
