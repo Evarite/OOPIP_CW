@@ -387,12 +387,13 @@ namespace DeliverySystem
 
 		while (true)
 		{
+			std::cout << "Спіс даступных грузаў:\n";
 			int i = 0;
 			for (auto& cargo : cargos)
 			{
 				if (cargo.GetCurrentDelivery() == nullptr)
 				{
-					std::cout << ++i << ". " << cargo << std::endl;
+					std::cout << ++i << ". " << cargo << "\n\n";
 					availableCargos.push_back(&cargo);
 				}
 			}
@@ -403,12 +404,12 @@ namespace DeliverySystem
 			}
 			else
 			{
-				int choiceCargo = GetIntWithinRange(0, i, "Выбярыце груз: ");
+				int choiceCargo = GetIntWithinRange(1, i, "Выбярыце груз: ");
 
 				while (true)
 				{
 					int j = 0;
-
+					std::cout << "\nСпіс даступных гарадоў:\n";
 					std::cout << std::endl << std::endl;
 					for (auto& country : countries)
 					{
@@ -425,9 +426,9 @@ namespace DeliverySystem
 					}
 					else
 					{
-						int choiceCity = GetIntWithinRange(0, j, "Выбярыце горад: ");
+						int choiceCity = GetIntWithinRange(1, j, "Выбярыце горад: ");
 
-						availableCargos[i - 1]->RequestDelivery(account, availableCities[j - 1]);
+						availableCargos[choiceCargo - 1]->RequestDelivery(account, availableCities[choiceCity - 1]);
 
 						std::cout << "Заказ сфарміраваны. Дастаўка пачнецца ў бліжайшы час." << std::endl;
 
