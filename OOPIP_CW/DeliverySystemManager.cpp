@@ -941,9 +941,7 @@ namespace DeliverySystem
 			std::cout << "Увядзіце назву грузу: ";
 			std::getline(std::cin, name);
 
-			std::cout << "Увядзіце масу грузу: ";
-			std::cin >> mass;
-			std::cin.ignore();
+			mass = GetFloat("Увядзіце масу грузу: ");
 
 			std::cout << "Выбярыце тып грузу:\n";
 			std::cout << "1. Драўніна" << std::endl
@@ -966,30 +964,32 @@ namespace DeliverySystem
 				<< "18. Замарожаныя прадукты" << std::endl
 				<< "19. Медыкаменты" << std::endl;
 
-			std::cin >> typeChoice;
-			std::cin.ignore();
+			typeChoice = GetIntWithinRange(1, 19);
 
-			std::cout << "Даступныя гарады:\n";
+			std::cout << "\nДаступныя гарады:\n";
 			int j = 0;
 			std::vector<City*> availableCities;
 			for (auto& country : countries)
 			{
 				for (auto& city : country.GetCitiesL())
 				{
-					std::cout << ++j << ". " << city.GetName() << std::endl;
+					std::cout << ++j << ". " << city.GetName() << "\t" << city.GetCountryAbbreviation() << std::endl;
 					availableCities.push_back(&city);
 				}
 			}
 
-			int cityChoice;
-			std::cout << "Выбярыце горад адпраўлення: ";
-			std::cin >> cityChoice;
-			std::cin.ignore();
-
-			if (cityChoice > 0 && cityChoice <= availableCities.size())
+			if (availableCities.empty())
 			{
-				from = availableCities[cityChoice - 1];
+				std::cout << "\x1b[31;1m" << "Няма даступных гарадоў" << "\x1b[0m" << "\n";
+				return;
 			}
+
+			std::cout << "Выбярыце горад адпраўлення (0 для адмовы): ";
+			int cityChoice = GetIntWithinRange(0, availableCities.size());
+			if (cityChoice == 0)
+				return;
+
+			from = availableCities[cityChoice - 1];
 
 			Cargo::Type selectedType = static_cast<Cargo::Type>(typeChoice - 1);
 			cargos.emplace_back(name, mass, selectedType, from, cargos);
@@ -1751,6 +1751,10 @@ namespace DeliverySystem
 		{
 			int countryChoice, cityChoice;
 
+			int i = 0;
+			for (const auto& country : countries)
+				std::cout << ++i << ". " << country.GetName() << '\n';
+
 			countryChoice = GetIntWithinRange(0, countries.size(), "Выбярыце краіну (0 для адмовы): ");
 			if (countryChoice == 0)
 				return;
@@ -1765,14 +1769,21 @@ namespace DeliverySystem
 
 			std::vector<City*> availableCities;
 			for (auto& city : selectedCountry.GetCitiesL())
+			{
+				bool isUsed = false;
 				for (const auto& cargo : cargos)
+				{
 					if (*cargo.GetCityFrom() == city || (cargo.GetCityTo() != nullptr && *cargo.GetCityTo() == city))
 					{
 						std::cout << "Немагчыма выдаліць горад " << city.GetName()
 							<< ", бо ён існуе ў адным з грузаў\n";
+						isUsed = true;
 					}
-					else
-						availableCities.push_back(&city);
+				}
+
+				if (!isUsed)
+					availableCities.push_back(&city);
+			}
 
 			std::cout << '\n';
 
