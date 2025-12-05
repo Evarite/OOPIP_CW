@@ -4,14 +4,14 @@
 #include <iomanip>
 #include <algorithm>
 
-constexpr auto COUNTRIES = "Countries.bin";
-constexpr auto ACCOUNTS = "Accounts.bin";
-constexpr auto CARGOS = "Cargos.bin";
-constexpr auto DELIVERIES = "Deliveries.bin";
-constexpr auto LORRIES = "Lorries.bin";
-constexpr auto TRAILERS = "Trailers.bin";
-constexpr auto DRIVERS = "Drivers.bin";
-constexpr auto APPLICATIONS = "Applications.bin";
+constexpr auto COUNTRIES = "Countries.dat";
+constexpr auto ACCOUNTS = "Accounts.dat";
+constexpr auto CARGOS = "Cargos.dat";
+constexpr auto DELIVERIES = "Deliveries.dat";
+constexpr auto LORRIES = "Lorries.dat";
+constexpr auto TRAILERS = "Trailers.dat";
+constexpr auto DRIVERS = "Drivers.dat";
+constexpr auto APPLICATIONS = "Applications.dat";
 
 namespace DeliverySystem
 {
@@ -1136,7 +1136,7 @@ namespace DeliverySystem
 
 			choice = GetIntWithinRange(1, availableLorries.size(), "Выбярыце грузавік для кіроўцы: ");
 
-			drivers.emplace_back(applications[choiceApp - 1].GetAccount(), &availableLorries[choice - 1]);
+			drivers.emplace_back(applications[choiceApp - 1].GetAccount(), availableLorries[choice - 1]);
 
 			break;
 		}
@@ -1470,8 +1470,8 @@ namespace DeliverySystem
 			Account& selectedAccount = accounts[accountChoice - 1];
 
 			std::cout << "Выбярыце новы тып акаўнту:\n";
-			std::cout << "1. User\n2. Driver\n3. Moderator\n4. Admin\n";
-			typeChoice = GetIntWithinRange(1, 4);
+			std::cout << "1. Карыстальнік\n2. Мадэратар\n3. Адміністратар\n";
+			typeChoice = GetIntWithinRange(1, 3);
 
 			Account::Type newType;
 			switch (typeChoice)
@@ -1480,12 +1480,9 @@ namespace DeliverySystem
 				newType = Account::Type::User;
 				break;
 			case 2:
-				newType = Account::Type::Driver;
-				break;
-			case 3:
 				newType = Account::Type::Moderator;
 				break;
-			case 4:
+			case 3:
 				newType = Account::Type::Admin;
 				break;
 			}
@@ -1510,6 +1507,14 @@ namespace DeliverySystem
 
 					break;
 				}
+			}
+
+			if (!accountToRemove->GetCargos().empty())
+			{
+				std::cout << "\x1b[31;1m" << "Немагчыма выдаліць акаўнт, які мае актыўныя дастаўкі!"
+					<< "\x1b[0m" << std::endl;
+
+				break;
 			}
 
 			accounts.erase(accounts.begin() + accountChoice - 1);
