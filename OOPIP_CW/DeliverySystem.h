@@ -369,6 +369,7 @@ namespace DeliverySystem
         unsigned int GetID() const;
         virtual Type GetType() const;
         void SetDelivery(Delivery *delivery);
+        void InitialiseType(const Type& type);
 
         virtual unsigned short GetSpeedLimit() const = 0;
         virtual std::vector<Cargo::Type> GetSupportedCargoTypes() const = 0;
@@ -634,4 +635,7 @@ namespace DeliverySystem
     int GetInt(const std::string& message = "Ваш выбар: ");
     int GetIntWithinRange(int left, int right, const std::string& message = "Ваш выбар: ");
     float GetFloat(const std::string& message = "Ваш выбар: ");
+
+    //Operators
+    std::ostream& operator<<(std::ostream& os, const Trailer::Type& type);
 } 

@@ -106,6 +106,7 @@ namespace DeliverySystem
 			default:
 				throw std::runtime_error("Невядомы тып трэйлера");
 			}
+			trailer->InitialiseType(type);
 			trailersFile >> *trailer;
 
 			trailers.push_back(std::move(trailer));
@@ -777,10 +778,11 @@ namespace DeliverySystem
 		int j = 0;
 		for (auto& trailer : trailers)
 		{
-			if (trailer->GetCurrentDelivery() == nullptr && trailer->IsCargoSupported(availableCargos[choiceCargo - 1]))
+			if (trailer->GetCurrentDelivery() == nullptr && trailer->IsCargoSupported(availableCargos[choiceCargo - 1])
+				&& trailer->GetMaxPayload() >= availableCargos[choiceCargo - 1]->GetMass())
 			{
 				availableTrailers.push_back(trailer.get());
-				std::cout << ++j << ".\n" << trailer << "\n\n";
+				std::cout << ++j << ".\n" << *trailer << "\n\n";
 			}
 		}
 		if (availableTrailers.empty())
@@ -824,7 +826,7 @@ namespace DeliverySystem
 	}
 	void Manager::ShowCurrentDelivery(Driver* driver)
 	{
-		std::cout << driver->GetCurrentDelivery() << '\n';
+		std::cout << *driver->GetCurrentDelivery() << '\n';
 	}
 	void Manager::DropDelivery(Driver* driver)
 	{
@@ -1125,7 +1127,7 @@ namespace DeliverySystem
 
 			int i = 0;
 			std::vector<Lorry*> availableLorries;
-			std::cout << "Свабодныя грузавікі:\n";
+			std::cout << "\nСвабодныя грузавікі:\n";
 			for (auto& lorry : lorries)
 			{
 				if (lorry.GetOwner() == nullptr)
@@ -2402,7 +2404,7 @@ namespace DeliverySystem
 						<< "4. Звольніцца" << std::endl
 						<< "5. Выхад" << std::endl;
 
-					choice = GetIntWithinRange(1, 4, "Выбярыце пункт меню: ");
+					choice = GetIntWithinRange(1, 5, "Выбярыце пункт меню: ");
 
 					std::cout << std::endl;
 

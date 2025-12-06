@@ -72,6 +72,9 @@
     <ClCompile Include="DeliverySystemJobApplication.cpp">
       <Filter>Файлы ресурсов</Filter>
     </ClCompile>
+    <ClCompile Include="DeliverySystemOperators.cpp">
+      <Filter>Файлы ресурсов</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DeliverySystem.h">

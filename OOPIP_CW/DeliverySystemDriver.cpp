@@ -60,9 +60,9 @@ namespace DeliverySystem
 
 	std::ostream& operator<<(std::ostream& os, const Driver& obj)
 	{
-		os << *obj.account << std::endl << std::endl;
+		os << *obj.account << '\n';
 		os << "√рузав≥к: " << obj.lorry->GetMake() << ' ' << obj.lorry->GetModel();
-		os << std::endl << std::endl;
+		os << '\n';
 		os << "Ѕ€гучае заданне: ";
 		if (obj.currentDelivery == nullptr)
 		{

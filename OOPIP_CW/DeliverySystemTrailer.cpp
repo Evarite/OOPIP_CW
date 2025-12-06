@@ -68,9 +68,14 @@ namespace DeliverySystem
 				return true;
 		return false;
 	}
+	void Trailer::InitialiseType(const Type& type)
+	{
+		this->type = type;
+	}
 
 	std::ostream& operator<<(std::ostream& os, const Trailer& obj)
 	{
+		os << "Тып: " << obj.type << '\n';
 		os << "Даўжыня прычэпа: " << obj.length << 'м' << std::endl;
 		os << "Максімальная грузападымальнасць: " << obj.maxPayload << "кг" << std::endl;
 		os << "Бягучае заданне: ";
