@@ -40,12 +40,12 @@ namespace DeliverySystem
 		return currentDelivery;
 	}
 
-	void Driver::CancelDelivery(std::vector<Delivery>& deliveries)
+	void Driver::CancelDelivery(std::list<Delivery>& deliveries)
 	{
 		if(currentDelivery != nullptr)
 			currentDelivery->StopDelivery(deliveries);
 	}
-	void Driver::Fire(std::vector<Delivery>& deliveries)
+	void Driver::Fire(std::list<Delivery>& deliveries)
 	{
 		if (currentDelivery != nullptr)
 			currentDelivery->StopDelivery(deliveries);

@@ -6,7 +6,7 @@ namespace DeliverySystem
 	unsigned short TankTrailer::speedLimit = 70;
 
 	TankTrailer::TankTrailer() : Trailer() {}
-	TankTrailer::TankTrailer(float length, float maxPayload, const std::vector<std::unique_ptr<Trailer>>& trailers) 
+	TankTrailer::TankTrailer(float length, float maxPayload, const std::list<std::unique_ptr<Trailer>>& trailers) 
 		: Trailer(length, maxPayload, trailers)
 	{
 		type = Trailer::Type::Tank;

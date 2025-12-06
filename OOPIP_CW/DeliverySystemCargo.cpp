@@ -26,7 +26,7 @@ namespace DeliverySystem
 		id = 0;
 		client = nullptr;
 	}
-	Cargo::Cargo(const std::string& name, float mass, const Type& type, City* from, const std::vector<Cargo>& cargos)
+	Cargo::Cargo(const std::string& name, float mass, const Type& type, City* from, const std::list<Cargo>& cargos)
 		: mass(mass), type(type), from(from), to(nullptr), client(nullptr), currentDelivery(nullptr)
 	{
 		strcpy_s(this->name, name.c_str());
@@ -226,7 +226,6 @@ namespace DeliverySystem
 		if (clientName[0] != '\0')
 		{
 			obj.client = Manager::FindAccount(clientName);
-			obj.client->AddCargo(&obj);
 		}
 		else
 			obj.client = nullptr;

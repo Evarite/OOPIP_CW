@@ -17,10 +17,10 @@ namespace DeliverySystem
 {
 	Account* Manager::FindAccount(const std::string& nickname)
 	{
-		for (size_t i = 0; i < accounts.size(); i++)
+		for (auto& account : accounts)
 		{
-			if (nickname == accounts[i].GetNickname())
-				return &accounts[i];
+			if (nickname == account.GetNickname())
+				return &account;
 		}
 
 		throw std::runtime_error("Акаўнт з імём " + nickname + " не зноёдзены");
@@ -62,14 +62,18 @@ namespace DeliverySystem
 		while (driversFile >> driverBuf)
 		{
 			drivers.push_back(driverBuf);
-			driverBuf.GetLorry()->SetOwner(&driverBuf);
+			driverBuf.GetLorry()->SetOwner(&drivers.back());
 		}
 		driversFile.close();
 
 		std::ifstream cargosFile(CARGOS, std::ios::binary);
 		Cargo cargoBuf;
 		while (cargosFile >> cargoBuf)
+		{
 			cargos.push_back(cargoBuf);
+			if (cargoBuf.GetClient() != nullptr)
+				cargoBuf.GetClient()->AddCargo(&cargos.back());
+		}
 		cargosFile.close();
 
 		std::ifstream trailersFile(TRAILERS, std::ios::binary);
@@ -111,7 +115,13 @@ namespace DeliverySystem
 		std::ifstream deliveriesFile(DELIVERIES, std::ios::binary);
 		Delivery deliveryBuf;
 		while (deliveriesFile >> deliveryBuf)
+		{
 			deliveries.push_back(deliveryBuf);
+			deliveryBuf.GetDriver()->SetDelivery(&deliveries.back());
+			deliveryBuf.GetLorry()->SetDelivery(&deliveries.back());
+			deliveryBuf.GetCargo()->SetDelivery(&deliveries.back());
+			deliveryBuf.GetTrailer()->SetDelivery(&deliveries.back());
+		}
 		deliveriesFile.close();
 
 		std::ifstream applicationsFile(APPLICATIONS, std::ios::binary);
@@ -338,16 +348,19 @@ namespace DeliverySystem
 			unsigned long long phoneNumber;
 
 			std::cout << std::endl;
-			for (size_t i = 0; i < countries.size(); i++)
+			int i = 0;
+			for (const auto& country : countries)
 			{
-				std::cout << i + 1 << ". " << countries[i].GetName() << std::endl;
+				std::cout << ++i << ". " << country.GetName() << std::endl;
 			}
 
 			choice = GetIntWithinRange(1, countries.size(), "Выбярыце вашу краіну: ");
 
 			while (true)
 			{
-				phoneCode = countries[choice - 1].GetPhoneCode();
+				auto country = countries.begin();
+				std::advance(country, choice);
+				phoneCode = country->GetPhoneCode();
 
 				std::cout << std::endl << "Увядзіце ваш нумар тэлефону" << std::endl
 					<< phoneCode;
@@ -540,8 +553,7 @@ namespace DeliverySystem
 			choice = GetIntWithinRange(1, 2);
 			order = static_cast<SortOrder>(choice - 1);
 
-			std::sort(countries.begin(), countries.end(),
-				[attribute, order](const Country& a, const Country& b)
+			countries.sort([attribute, order](const Country& a, const Country& b)
 				{
 					auto compare = [attribute, &a, &b]() -> bool
 						{
@@ -586,8 +598,7 @@ namespace DeliverySystem
 
 			for (auto& country : countries)
 			{
-				std::sort(country.GetCitiesL().begin(), country.GetCitiesL().end(),
-					[attribute, order](const City& a, const City& b)
+				country.GetCitiesL().sort([attribute, order](const City& a, const City& b)
 					{
 						auto compare = [attribute, &a, &b]() -> bool
 							{
@@ -637,8 +648,7 @@ namespace DeliverySystem
 			choice = GetIntWithinRange(1, 2);
 			order = static_cast<SortOrder>(choice - 1);
 
-			std::sort(cargos.begin(), cargos.end(),
-				[attribute, order](const Cargo& a, const Cargo& b)
+			cargos.sort([attribute, order](const Cargo& a, const Cargo& b)
 				{
 					auto compare = [attribute, &a, &b]() -> bool
 						{
@@ -700,8 +710,7 @@ namespace DeliverySystem
 			choice = GetIntWithinRange(1, 2);
 			order = static_cast<SortOrder>(choice - 1);
 
-			std::sort(deliveries.begin(), deliveries.end(),
-				[attribute, order](const Delivery& a, const Delivery& b)
+			deliveries.sort([attribute, order](const Delivery& a, const Delivery& b)
 				{
 					auto compare = [attribute, &a, &b]() -> bool
 						{
@@ -798,10 +807,12 @@ namespace DeliverySystem
 		{
 		case 1:
 			driver->GetLorry()->SetOwner(nullptr);
-			for (size_t i = 0; i < drivers.size(); i++)
+			for (auto i = drivers.begin(); i != drivers.end();)
 			{
-				if (*driver == drivers[i])
-					drivers.erase(drivers.begin() + i);
+				if (*driver == *i)
+					drivers.erase(i);
+
+				std::advance(i, 1);
 			}
 
 			account->SetType(Account::Type::User);
@@ -867,8 +878,7 @@ namespace DeliverySystem
 		choice = GetIntWithinRange(1, 2);
 		order = static_cast<SortOrder>(choice - 1);
 
-		std::sort(cargos.begin(), cargos.end(),
-			[attribute, order](const Cargo& a, const Cargo& b)
+		cargos.sort([attribute, order](const Cargo& a, const Cargo& b)
 			{
 				auto compare = [attribute, &a, &b]() -> bool
 					{
@@ -1000,18 +1010,14 @@ namespace DeliverySystem
 		{
 			int cargoChoice;
 			std::cout << "Увядзіце нумар груза для выдалення: ";
-			std::cin >> cargoChoice;
-			std::cin.ignore();
+			cargoChoice = GetIntWithinRange(1, cargos.size());
+		
+			auto cargo = cargos.begin();
+			std::advance(cargo, cargoChoice - 1);
 
-			if (cargoChoice > 0 && cargoChoice <= cargos.size())
-			{
-				cargos.erase(cargos.begin() + cargoChoice - 1);
-				std::cout << "Груз паспяхова выдалены!\n";
-			}
-			else
-			{
-				std::cout << "\x1b[31;1m" << "Няверны нумар груза!" << "\x1b[0m" << std::endl;
-			}
+			cargos.erase(cargo);
+			std::cout << "Груз паспяхова выдалены!\n";
+
 			break;
 		}
 		case 3:
@@ -1071,9 +1077,12 @@ namespace DeliverySystem
 		}
 		case 2:
 		{
-			int trailerChoice = GetIntWithinRange(0, trailers.size(), "Увядзіце нумар прычэпа для выдалення: ");
+			int trailerChoice = GetIntWithinRange(1, trailers.size(), "Увядзіце нумар прычэпа для выдалення: ");
 
-			trailers.erase(trailers.begin() + trailerChoice - 1);
+			auto trailer = trailers.begin();
+			std::advance(trailer, trailerChoice - 1);
+
+			trailers.erase(trailer);
 			std::cout << "Прычэп паспяхова выдалены!\n";
 
 			break;
@@ -1136,12 +1145,17 @@ namespace DeliverySystem
 
 			choice = GetIntWithinRange(1, availableLorries.size(), "Выбярыце грузавік для кіроўцы: ");
 
-			drivers.emplace_back(applications[choiceApp - 1].GetAccount(), availableLorries[choice - 1]);
+			auto application = applications.begin();
+			std::advance(application, choiceApp - 1);
+
+			drivers.emplace_back(application->GetAccount(), availableLorries[choice - 1]);
 
 			break;
 		}
 		case 2:
-			applications.erase(applications.begin() + choiceApp - 1);
+			auto application = applications.begin();
+			std::advance(application, choiceApp - 1);
+			applications.erase(application);
 			std::cout << "Заяўка паспяхова адмоўлена\n";
 			break;
 		}
@@ -1228,8 +1242,7 @@ namespace DeliverySystem
 			choice = GetIntWithinRange(1, 2);
 			order = static_cast<SortOrder>(choice - 1);
 
-			std::sort(accounts.begin(), accounts.end(),
-				[attribute, order](const Account& a, const Account& b)
+			accounts.sort([attribute, order](const Account& a, const Account& b)
 				{
 					auto compare = [attribute, &a, &b]() -> bool
 						{
@@ -1277,8 +1290,7 @@ namespace DeliverySystem
 			choice = GetIntWithinRange(1, 2);
 			order = static_cast<SortOrder>(choice - 1);
 
-			std::sort(drivers.begin(), drivers.end(),
-				[attribute, order](const Driver& a, const Driver& b)
+			drivers.sort([attribute, order](const Driver& a, const Driver& b)
 				{
 					auto compare = [attribute, &a, &b]() -> bool
 						{
@@ -1344,8 +1356,7 @@ namespace DeliverySystem
 			choice = GetIntWithinRange(1, 2);
 			order = static_cast<SortOrder>(choice - 1);
 
-			std::sort(cargos.begin(), cargos.end(),
-				[attribute, order](const Cargo& a, const Cargo& b)
+			cargos.sort([attribute, order](const Cargo& a, const Cargo& b)
 				{
 					auto compare = [attribute, &a, &b]() -> bool
 						{
@@ -1402,8 +1413,7 @@ namespace DeliverySystem
 			choice = GetIntWithinRange(1, 2);
 			order = static_cast<SortOrder>(choice - 1);
 
-			std::sort(trailers.begin(), trailers.end(),
-				[attribute, order](const std::unique_ptr<Trailer>& a, const std::unique_ptr<Trailer>& b)
+			trailers.sort([attribute, order](const std::unique_ptr<Trailer>& a, const std::unique_ptr<Trailer>& b)
 				{
 					auto compare = [attribute, &a, &b]() -> bool
 						{
@@ -1467,7 +1477,8 @@ namespace DeliverySystem
 			int accountChoice, typeChoice;
 			accountChoice = GetIntWithinRange(1, accounts.size(), "Увядзіце нумар акаўнту для змены: ");
 
-			Account& selectedAccount = accounts[accountChoice - 1];
+			auto account = accounts.begin();
+			std::advance(account, accountChoice - 1);
 
 			std::cout << "Выбярыце новы тып акаўнту:\n";
 			std::cout << "1. Карыстальнік\n2. Мадэратар\n3. Адміністратар\n";
@@ -1487,7 +1498,7 @@ namespace DeliverySystem
 				break;
 			}
 
-			selectedAccount.SetType(newType);
+			account->SetType(newType);
 			std::cout << "Тып акаўнту паспяхова зменены!\n";
 
 			break;
@@ -1496,11 +1507,12 @@ namespace DeliverySystem
 		{
 			int accountChoice = GetIntWithinRange(1, accounts.size(), "Увядзіце нумар акаўнту для выдалення: ");
 
-			Account* accountToRemove = &accounts[accountChoice - 1];
+			auto account = accounts.begin();
+			std::advance(account, accountChoice);
 
 			for (const auto& driver : drivers)
 			{
-				if (driver.GetAccount() == accountToRemove)
+				if (driver.GetAccount() == &*account)
 				{
 					std::cout << "\x1b[31;1m" << "Немагчыма выдаліць акаўнт, які выкарыстоўваецца кіроўцай!"
 						<< "\x1b[0m" << std::endl;
@@ -1509,7 +1521,7 @@ namespace DeliverySystem
 				}
 			}
 
-			if (!accountToRemove->GetCargos().empty())
+			if (!account->GetCargos().empty())
 			{
 				std::cout << "\x1b[31;1m" << "Немагчыма выдаліць акаўнт, які мае актыўныя дастаўкі!"
 					<< "\x1b[0m" << std::endl;
@@ -1517,7 +1529,7 @@ namespace DeliverySystem
 				break;
 			}
 
-			accounts.erase(accounts.begin() + accountChoice - 1);
+			accounts.erase(account);
 			std::cout << "Акаўнт паспяхова выдалены!\n";
 
 			break;
@@ -1545,9 +1557,12 @@ namespace DeliverySystem
 			if (driverChoice == 0)
 				return;
 
-			if (drivers[driverChoice - 1].GetCurrentDelivery() != nullptr)
+			auto driver = drivers.begin();
+			std::advance(driver, driverChoice);
+
+			if (driver->GetCurrentDelivery() != nullptr)
 			{
-				drivers[driverChoice - 1].GetCurrentDelivery()->StopDelivery(deliveries);
+				driver->GetCurrentDelivery()->StopDelivery(deliveries);
 			}
 
 			break;
@@ -1596,43 +1611,47 @@ namespace DeliverySystem
 				std::cout << ++j << ". " << country.GetName() << std::endl;
 			}
 
-			countryChoice = GetIntWithinRange(0, countries.size(), "Выбярыце краіну: ");
+			countryChoice = GetIntWithinRange(1, countries.size(), "Выбярыце краіну: ");
 
-			Country& selectedCountry = countries[countryChoice - 1];
+			auto country = countries.begin();
+			std::advance(country, countryChoice - 1);
 
 			std::cout << "Даступныя гарады:\n";
 			int k = 0;
-			for (const auto& city : selectedCountry.GetCities())
+			for (const auto& city : country->GetCities())
 			{
 				std::cout << ++k << ". " << city.GetName() << std::endl;
 			}
 
 			std::cout << "Выбярыце горад: ";
-			cityChoice = GetIntWithinRange(0, selectedCountry.GetCities().size());
+			cityChoice = GetIntWithinRange(1, country->GetCities().size());
 
-			City& selectedCity = selectedCountry.GetCitiesL()[cityChoice - 1];
+			auto city = country->GetCitiesL().begin();
+			std::advance(city, cityChoice - 1);
 
 			std::cout << "Увядзіце рэгістрацыйныя знакі: ";
 			std::getline(std::cin, registrationSigns);
 
-			lorries.emplace_back(make, model, mileage, selectedCountry, selectedCity,
+			lorries.emplace_back(make, model, mileage, *country, *city,
 				registrationSigns, gasolineCost, lorries);
 			std::cout << "Грузавік паспяхова дададзены!\n";
 			break;
 		}
 		case 2:
 		{
-			int lorryChoice = GetIntWithinRange(0, lorries.size(), "Увядзіце нумар грузавіка для выдалення: ");
+			int lorryChoice = GetIntWithinRange(1, lorries.size(), "Увядзіце нумар грузавіка для выдалення: ");
 
-			Lorry& lorryToRemove = lorries[lorryChoice - 1];
-			if (lorryToRemove.GetOwner() != nullptr)
+			auto lorry = lorries.begin();
+			std::advance(lorry, lorryChoice- 1);
+
+			if (lorry->GetOwner() != nullptr)
 			{
 				std::cout << "\x1b[31;1m" << "Немагчыма выдаліць грузавік, які выкарыстоўваецца кіроўцай!"
 					<< "\x1b[0m" << std::endl;
 				break;
 			}
 
-			lorries.erase(lorries.begin() + lorryChoice - 1);
+			lorries.erase(lorry);
 			std::cout << "Грузавік паспяхова выдалены!\n";
 
 			break;
@@ -1692,7 +1711,7 @@ namespace DeliverySystem
 				std::cout << ++j << ". " << country.GetName() << std::endl;
 			}
 
-			countryChoice = GetIntWithinRange(0, countries.size(), "Выбярыце краіну: ");
+			countryChoice = GetIntWithinRange(1, countries.size(), "Выбярыце краіну: ");
 
 			std::cout << "Увядзіце назву горада: ";
 			std::getline(std::cin, name);
@@ -1703,7 +1722,10 @@ namespace DeliverySystem
 			x = GetInt("Увядзіце каардынату X: ");
 			y = GetInt("Увядзіце каардынату Y: ");
 
-			City(name, abbreviation, countries[countryChoice - 1], x, y, countries);
+			auto country = countries.begin();
+			std::advance(country, countryChoice - 1);
+
+			City(name, abbreviation, *country, x, y, countries);
 			std::cout << "Горад паспяхова дададзены!\n";
 			break;
 		}
@@ -1739,7 +1761,9 @@ namespace DeliverySystem
 				j++;
 				if (country == *availableCountries[countryChoice - 1])
 				{
-					countries.erase(countries.begin() + j);
+					auto it = countries.begin();
+					std::advance(it, j);
+					countries.erase(it);
 				}
 			}
 
@@ -1759,16 +1783,17 @@ namespace DeliverySystem
 			if (countryChoice == 0)
 				return;
 
-			Country& selectedCountry = countries[countryChoice - 1];
+			auto country = countries.begin();
+			std::advance(country, countryChoice - 1);
 
-			if (selectedCountry.GetCities().empty())
+			if (country->GetCities().empty())
 			{
 				std::cout << "\x1b[31;1m" << "У гэтай краіне няма гарадоў!" << "\x1b[0m" << std::endl;
 				break;
 			}
 
 			std::vector<City*> availableCities;
-			for (auto& city : selectedCountry.GetCitiesL())
+			for (auto& city : country->GetCitiesL())
 			{
 				bool isUsed = false;
 				for (const auto& cargo : cargos)
@@ -1805,7 +1830,7 @@ namespace DeliverySystem
 			if (cityChoice == 0)
 				return;
 
-			selectedCountry.RemoveCity(availableCities[cityChoice - 1]);
+			country->RemoveCity(availableCities[cityChoice - 1]);
 			std::cout << "Горад паспяхова выдалены!\n";
 			
 			break;
@@ -1828,11 +1853,14 @@ namespace DeliverySystem
 		{
 		case 1:
 		{
-			int deliveryChoice = GetIntWithinRange(0, deliveries.size(), "Увядзіце нумар дастаўкі для выдалення: ");
+			int deliveryChoice = GetIntWithinRange(1, deliveries.size(), "Увядзіце нумар дастаўкі для выдалення: ");
 
-			deliveries[deliveryChoice - 1].StopDelivery(deliveries);
+			auto delivery = deliveries.begin();
+			std::advance(delivery, deliveryChoice);
 
-			deliveries.erase(deliveries.begin() + deliveryChoice - 1);
+			delivery->StopDelivery(deliveries);
+
+			deliveries.erase(delivery);
 			std::cout << "Дастаўка паспяхова выдалена!\n";
 		
 			break;
@@ -1900,8 +1928,7 @@ namespace DeliverySystem
 			choice = GetIntWithinRange(1, 2);
 			order = static_cast<SortOrder>(choice - 1);
 
-			std::sort(countries.begin(), countries.end(),
-				[attribute, order](const Country& a, const Country& b)
+			countries.sort([attribute, order](const Country& a, const Country& b)
 				{
 					auto compare = [attribute, &a, &b]() -> bool
 						{
@@ -1945,8 +1972,7 @@ namespace DeliverySystem
 
 			for (auto& country : countries)
 			{
-				std::sort(country.GetCitiesL().begin(), country.GetCitiesL().end(),
-					[attribute, order](const City& a, const City& b)
+				country.GetCitiesL().sort([attribute, order](const City& a, const City& b)
 					{
 						auto compare = [attribute, &a, &b]() -> bool
 							{
@@ -1989,8 +2015,7 @@ namespace DeliverySystem
 			choice = GetIntWithinRange(1, 2);
 			order = static_cast<SortOrder>(choice - 1);
 
-			std::sort(accounts.begin(), accounts.end(),
-				[attribute, order](const Account& a, const Account& b)
+			accounts.sort([attribute, order](const Account& a, const Account& b)
 				{
 					auto compare = [attribute, &a, &b]() -> bool
 						{
@@ -2038,8 +2063,7 @@ namespace DeliverySystem
 			choice = GetIntWithinRange(1, 2);
 			order = static_cast<SortOrder>(choice - 1);
 
-			std::sort(drivers.begin(), drivers.end(),
-				[attribute, order](const Driver& a, const Driver& b)
+			drivers.sort([attribute, order](const Driver& a, const Driver& b)
 				{
 					auto compare = [attribute, &a, &b]() -> bool
 						{
@@ -2098,8 +2122,7 @@ namespace DeliverySystem
 			choice = GetIntWithinRange(1, 2);
 			order = static_cast<SortOrder>(choice - 1);
 
-			std::sort(lorries.begin(), lorries.end(),
-				[attribute, order](const Lorry& a, const Lorry& b)
+			lorries.sort([attribute, order](const Lorry& a, const Lorry& b)
 				{
 					auto compare = [attribute, &a, &b]() -> bool
 						{
@@ -2147,8 +2170,7 @@ namespace DeliverySystem
 			choice = GetIntWithinRange(1, 2);
 			order = static_cast<SortOrder>(choice - 1);
 
-			std::sort(cargos.begin(), cargos.end(),
-				[attribute, order](const Cargo& a, const Cargo& b)
+			cargos.sort([attribute, order](const Cargo& a, const Cargo& b)
 				{
 					auto compare = [attribute, &a, &b]() -> bool
 						{
@@ -2209,8 +2231,7 @@ namespace DeliverySystem
 			choice = GetIntWithinRange(1, 2);
 			order = static_cast<SortOrder>(choice - 1);
 
-			std::sort(deliveries.begin(), deliveries.end(),
-				[attribute, order](const Delivery& a, const Delivery& b)
+			deliveries.sort([attribute, order](const Delivery& a, const Delivery& b)
 				{
 					auto compare = [attribute, &a, &b]() -> bool
 						{
@@ -2271,8 +2292,7 @@ namespace DeliverySystem
 			choice = GetIntWithinRange(1, 2);
 			order = static_cast<SortOrder>(choice - 1);
 
-			std::sort(trailers.begin(), trailers.end(),
-				[attribute, order](const std::unique_ptr<Trailer>& a, const std::unique_ptr<Trailer>& b)
+			trailers.sort([attribute, order](const std::unique_ptr<Trailer>& a, const std::unique_ptr<Trailer>& b)
 				{
 					auto compare = [attribute, &a, &b]() -> bool
 						{

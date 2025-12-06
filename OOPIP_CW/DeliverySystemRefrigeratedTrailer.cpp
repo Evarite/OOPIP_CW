@@ -7,7 +7,7 @@ namespace DeliverySystem
 
 	RefrigeratedTrailer::RefrigeratedTrailer() : Trailer() {}
 	RefrigeratedTrailer::RefrigeratedTrailer(float length, float maxPayload,
-		const std::vector<std::unique_ptr<Trailer>>& trailers) : Trailer(length, maxPayload, trailers)
+		const std::list<std::unique_ptr<Trailer>>& trailers) : Trailer(length, maxPayload, trailers)
 	{
 		type = Trailer::Type::Refrigerated;
 	}

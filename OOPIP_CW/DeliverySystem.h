@@ -4,7 +4,7 @@
 #include <memory>
 #include <random>
 #include <string>
-#include <vector>
+#include <list>
 
 
 namespace DeliverySystem 
@@ -27,6 +27,7 @@ namespace DeliverySystem
     inline constexpr auto FORBIDDEN_NICKNAME_SYMBOLS = "\\\'\",/";
     inline constexpr auto FORBIDDEN_NAME_SYMBOLS = "1234567890!=+_/*\\\'\"?.,|~@#№$;%^&:";
     inline constexpr auto MIN_PASSWORD_SIZE = 6;
+    inline constexpr auto VEC_RESERVE = 100;
 
     // Forward declaring for the relations
     class Account;
@@ -51,7 +52,7 @@ namespace DeliverySystem
     public:
         City();
         City(const std::string &name, const std::string &abbreviation,
-             Country &country, int x, int y, const std::vector<Country> &countries);
+             Country &country, int x, int y, const std::list<Country> &countries);
         
         std::string GetName() const;
         std::string GetAbbreviation() const;
@@ -87,8 +88,8 @@ namespace DeliverySystem
         Trailer *GetTrailer() const;
         unsigned int GetRemainingDistance() const;
 
-        void StopDelivery(std::vector<Delivery>& deliveries);
-        void UpdateDistance(std::vector<Delivery>& deliveries);
+        void StopDelivery(std::list<Delivery>& deliveries);
+        void UpdateDistance(std::list<Delivery>& deliveries);
 
         bool operator==(const Delivery& obj) const;
 
@@ -103,7 +104,7 @@ namespace DeliverySystem
         char abbreviation[COUNTRY_ABBREVIATION_SIZE];
         char phoneCode[CODE_SIZE];
 
-        std::vector<City> cities;
+        std::list<City> cities;
 
     public:
         Country();
@@ -112,13 +113,13 @@ namespace DeliverySystem
         Country(const std::string &name, const std::string &abbreviation,
             const std::string &phoneCode, const City &city);
         Country(const std::string &name, const std::string &abbreviation,
-            const std::string &phoneCode, const std::vector<City> &cities);
+            const std::string &phoneCode, const std::list<City> &cities);
 
         std::string GetName() const;
         std::string GetPhoneCode() const;
         std::string GetAbbreviation() const;
-        const std::vector<City> &GetCities() const;
-        std::vector<City> &GetCitiesL();
+        const std::list<City> &GetCities() const;
+        std::list<City> &GetCitiesL();
 
         void AddCity(const City &city);
         void RemoveCity(unsigned int index);
@@ -176,8 +177,9 @@ namespace DeliverySystem
         void SetPassword(const std::string &password);
         void AddCargo(Cargo *cargo);
         void RemoveCargo(Cargo *cargo);
+        void ReplaceCargo(Cargo* cargo);
 
-        static Account *Authorise(std::vector<Account> &accounts, const std::vector<Country> &countries);
+        static Account *Authorise(std::list<Account> &accounts, const std::list<Country> &countries);
 
         bool operator==(const Account &obj);
         friend std::ostream &operator<<(std::ostream &os, const Account &obj);
@@ -191,12 +193,10 @@ namespace DeliverySystem
         Lorry *lorry;
         Delivery *currentDelivery;
 
-        void SetDelivery(Delivery *delivery);
         void StopDelivery();
 
-        friend void Delivery::StopDelivery(std::vector<Delivery>& deliveries);
+        friend void Delivery::StopDelivery(std::list<Delivery>& deliveries);
         friend Delivery::Delivery(Driver *driver, Lorry *lorry, Cargo *cargo, Trailer *trailer);
-        friend std::istream &operator>>(std::ifstream &is, Delivery &obj);
 
     public:
         Driver();
@@ -206,8 +206,9 @@ namespace DeliverySystem
         Lorry *GetLorry() const;
         Delivery *GetCurrentDelivery() const;
 
-        void CancelDelivery(std::vector<Delivery>& deliveries);
-        void Fire(std::vector<Delivery>& deliveries);
+        void CancelDelivery(std::list<Delivery>& deliveries);
+        void Fire(std::list<Delivery>& deliveries);
+        void SetDelivery(Delivery* delivery);
 
         bool operator==(Driver &obj);
 
@@ -228,23 +229,21 @@ namespace DeliverySystem
         Driver *owner;
         Delivery *currentDelivery;
 
-        void SetDelivery(Delivery *delivery);
         friend Delivery::Delivery(Driver *driver, Lorry *lorry, Cargo *cargo, Trailer *trailer);
 
         void StopDelivery();
-        friend void Delivery::StopDelivery(std::vector<Delivery>& deliveries);
-        friend std::istream &operator>>(std::ifstream &is, Delivery &obj);
+        friend void Delivery::StopDelivery(std::list<Delivery>& deliveries);
 
     public:
         Lorry();
         Lorry(const std::string &make, const std::string &model, unsigned int mileage,
             const Country &country, const City &city,
             const std::string &registrationSigns, float gasolineCost,
-            const std::vector<Lorry> &lorries);
+            const std::list<Lorry> &lorries);
         Lorry(const std::string &make, const std::string &model, unsigned int mileage,
             const Country &country, const City &city,
             const std::string &registrationSigns, float gasolineCost, Driver *owner,
-            const std::vector<Lorry> &lorries);
+            const std::list<Lorry> &lorries);
 
         std::string GetMake() const;
         std::string GetModel() const;
@@ -259,6 +258,8 @@ namespace DeliverySystem
         void AddMileage(unsigned int newMileage);
 
         float CalculateGasolineCost(unsigned int distance);
+
+        void SetDelivery(Delivery* delivery);
 
         friend std::ostream &operator<<(std::ostream &os, const Lorry &obj);
         friend std::ostream &operator<<(std::ofstream &os, const Lorry &obj);
@@ -301,18 +302,15 @@ namespace DeliverySystem
         City *to;
         Delivery *currentDelivery;
 
-        void SetDelivery(Delivery *delivery);
         friend Delivery::Delivery(Driver *driver, Lorry *lorry, Cargo *cargo, Trailer *trailer);
 
         void StopDelivery();
-        friend void Delivery::StopDelivery(std::vector<Delivery>& deliveries);
-
-        friend std::istream &operator>>(std::ifstream &is, Delivery &obj);
+        friend void Delivery::StopDelivery(std::list<Delivery>& deliveries);
 
     public:
         Cargo();
         Cargo(const std::string &name, float mass, const Type &type, City *from,
-            const std::vector<Cargo> &cargos);
+            const std::list<Cargo> &cargos);
 
         std::string GetName() const;
         float GetMass() const;
@@ -322,6 +320,7 @@ namespace DeliverySystem
         unsigned int GetID() const;
         Delivery *GetCurrentDelivery() const;
         Account *GetClient() const;
+        void SetDelivery(Delivery* delivery);
 
         void RequestDelivery(Account *client, City *cityTo);
 
@@ -353,16 +352,14 @@ namespace DeliverySystem
         Delivery *currentDelivery;
         Type type;
 
-        void SetDelivery(Delivery *delivery);
         friend Delivery::Delivery(Driver *driver, Lorry *lorry, Cargo *cargo, Trailer *trailer);
 
         void StopDelivery();
-        friend void Delivery::StopDelivery(std::vector<Delivery>& deliveries);
-        friend std::istream &operator>>(std::ifstream &is, Delivery &obj);
+        friend void Delivery::StopDelivery(std::list<Delivery>& deliveries);
 
     public:
         Trailer();
-        Trailer(float length, float maxPayload, const std::vector<std::unique_ptr<Trailer>> &trailers);
+        Trailer(float length, float maxPayload, const std::list<std::unique_ptr<Trailer>> &trailers);
         virtual ~Trailer() = default;
 
         float GetLength() const;
@@ -370,6 +367,7 @@ namespace DeliverySystem
         Delivery *GetCurrentDelivery() const;
         unsigned int GetID() const;
         virtual Type GetType() const;
+        void SetDelivery(Delivery *delivery);
 
         virtual unsigned short GetSpeedLimit() const = 0;
         virtual std::vector<Cargo::Type> GetSupportedCargoTypes() const = 0;
@@ -389,7 +387,7 @@ namespace DeliverySystem
     public:
         CarTrailer();
         CarTrailer(float length, float maxPayload,
-            const std::vector<std::unique_ptr<Trailer>> &trailers);
+            const std::list<std::unique_ptr<Trailer>> &trailers);
 
         unsigned short GetSpeedLimit() const override;
 
@@ -407,7 +405,7 @@ namespace DeliverySystem
     public:
         TankTrailer();
         TankTrailer(float length, float maxPayload,
-            const std::vector<std::unique_ptr<Trailer>> &trailers);
+            const std::list<std::unique_ptr<Trailer>> &trailers);
 
         unsigned short GetSpeedLimit() const override;
 
@@ -425,7 +423,7 @@ namespace DeliverySystem
     public:
         TimberTrailer();
         TimberTrailer(float length, float maxPayload,
-            const std::vector<std::unique_ptr<Trailer>> &trailers);
+            const std::list<std::unique_ptr<Trailer>> &trailers);
 
         unsigned short GetSpeedLimit() const override;
 
@@ -443,7 +441,7 @@ namespace DeliverySystem
     public:
         LowboyTrailer();
         LowboyTrailer(float length, float maxPayload,
-            const std::vector<std::unique_ptr<Trailer>> &trailers);
+            const std::list<std::unique_ptr<Trailer>> &trailers);
 
         unsigned short GetSpeedLimit() const override;
 
@@ -461,7 +459,7 @@ namespace DeliverySystem
     public:
         TarpTrailer();
         TarpTrailer(float length, float maxPayload,
-            const std::vector<std::unique_ptr<Trailer>> &trailers);
+            const std::list<std::unique_ptr<Trailer>> &trailers);
 
         unsigned short GetSpeedLimit() const override;
 
@@ -478,7 +476,7 @@ namespace DeliverySystem
     public:
         RefrigeratedTrailer();
         RefrigeratedTrailer(float length, float maxPayload,
-            const std::vector<std::unique_ptr<Trailer>> &trailers);
+            const std::list<std::unique_ptr<Trailer>> &trailers);
 
         unsigned short GetSpeedLimit() const override;
 
@@ -513,14 +511,14 @@ namespace DeliverySystem
     class Manager // Яны не прыдумалі стацік класы, як жа я люблю с++ (не)!!!!!
     {
     public:
-        static inline std::vector<Country> countries{};
-        static inline std::vector<Account> accounts{};
-        static inline std::vector<Driver> drivers{};
-        static inline std::vector<Lorry> lorries{};
-        static inline std::vector<Cargo> cargos{};
-        static inline std::vector<Delivery> deliveries{};
-        static inline std::vector<std::unique_ptr<Trailer>> trailers{};
-        static inline std::vector<Application> applications{};
+        static inline std::list<Country> countries{};
+        static inline std::list<Account> accounts{};
+        static inline std::list<Driver> drivers{};
+        static inline std::list<Lorry> lorries{};
+        static inline std::list<Cargo> cargos{};
+        static inline std::list<Delivery> deliveries{};
+        static inline std::list<std::unique_ptr<Trailer>> trailers{};
+        static inline std::list<Application> applications{};
         static inline Account *account = nullptr;
 
         static void Initialise();

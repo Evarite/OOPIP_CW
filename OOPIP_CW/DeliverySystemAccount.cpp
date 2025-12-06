@@ -17,6 +17,12 @@ namespace DeliverySystem
 		return hash;
 	}
 
+	void Account::ReplaceCargo(Cargo* cargo)
+	{
+		cargos.pop_back();
+		AddCargo(cargo);
+	}
+
 	Account::Account()
 	{
 		memset(nickname, '\0', sizeof(nickname));
@@ -102,7 +108,7 @@ namespace DeliverySystem
 		}
 	}
 
-	Account* Account::Authorise(std::vector<Account>& accounts, const std::vector<Country>& countries)
+	Account* Account::Authorise(std::list<Account>& accounts, const std::list<Country>& countries)
 	{
 		std::cout << std::setw(40) << "\x1b[33;1m" << "Вітаем вас у мэнэджэры прамысловых перавозак!" << "\x1b[0m"
 			<< std::endl;
@@ -271,10 +277,10 @@ namespace DeliverySystem
 					while (true)
 					{
 						std::cout << std::endl;
-						for (size_t i = 0; i < countries.size(); i++)
-						{
-							std::cout << i + 1 << ". " << countries[i].GetName() << std::endl;
-						}
+						int i = 0;
+						for(const auto& country : countries)
+							std::cout << ++i << ". " << country.GetName() << std::endl;
+
 						std::cout << "0. Маёй краіны тут няма" << std::endl;
 
 						std::cout << std::endl << "Выбярыце вашу краіну: ";
@@ -306,7 +312,9 @@ namespace DeliverySystem
 						default:
 							while(true)
 							{
-								phoneCode = countries[choice - 1].GetPhoneCode();
+								auto country = countries.begin();
+								std::advance(country, choice - 1);
+								phoneCode = country->GetPhoneCode();
 
 								std::cout << std::endl << "Увядзіце ваш нумар тэлефону" << std::endl
 									<< phoneCode;
@@ -386,9 +394,9 @@ namespace DeliverySystem
 					if (name == "N")
 						goto authorisation_beginning;
 
-					for (size_t i = 0; i < accounts.size(); i++)
+					for (auto& account : accounts)
 					{
-						if (name == accounts[i].GetNickname())
+						if (name == account.GetNickname())
 						{
 							while (true)
 							{
@@ -399,12 +407,12 @@ namespace DeliverySystem
 								if (password == "N")
 									goto authorisation_beginning;
 
-								if (Hash(password) == accounts[i].password)
+								if (Hash(password) == account.password)
 								{
 									std::cout << "\x1b[2J\x1b[1;1H";
 									std::cout << std::setw(47) << "\x1b[33;1m" << "Сардэчна запрашаем, "
-										<< accounts[i].nickname << '!' << "\x1b[0m" << std::endl;
-									return &accounts[i];
+										<< account.nickname << '!' << "\x1b[0m" << std::endl;
+									return &account;
 								}
 								else
 								{

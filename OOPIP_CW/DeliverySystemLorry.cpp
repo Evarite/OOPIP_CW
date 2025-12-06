@@ -31,7 +31,7 @@ namespace DeliverySystem
 		id = 0;
 	}
 	Lorry::Lorry(const std::string& make, const std::string& model, unsigned int mileage, const Country& country,
-		const City& city, const std::string& registrationSigns, float gasolineCost, const std::vector<Lorry>& lorries)
+		const City& city, const std::string& registrationSigns, float gasolineCost, const std::list<Lorry>& lorries)
 		: mileage(mileage), gasolineCost(gasolineCost)
 	{
 		strcpy_s(this->make, make.c_str());
@@ -62,7 +62,7 @@ namespace DeliverySystem
 	}
 	Lorry::Lorry(const std::string& make, const std::string& model, unsigned int mileage, const Country& country,
 		const City& city, const std::string& registrationSigns, float gasolineCost, Driver* owner,
-		const std::vector<Lorry>& lorries) : mileage(mileage), gasolineCost(gasolineCost)
+		const std::list<Lorry>& lorries) : mileage(mileage), gasolineCost(gasolineCost)
 	{
 		strcpy_s(this->make, make.c_str());
 		strcpy_s(this->model, model.c_str());

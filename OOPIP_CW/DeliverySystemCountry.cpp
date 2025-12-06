@@ -26,7 +26,7 @@ namespace DeliverySystem
 		cities.push_back(city);
 	}
 	Country::Country(const std::string& name, const std::string& abbreviation, const std::string& phoneCode,
-		const std::vector<City>& cities)
+		const std::list<City>& cities)
 	{
 		strcpy_s(this->name, name.c_str());
 		strcpy_s(this->abbreviation, abbreviation.c_str());
@@ -47,11 +47,11 @@ namespace DeliverySystem
 	{
 		return std::string(abbreviation);
 	}
-	const std::vector<City>& Country::GetCities() const
+	const std::list<City>& Country::GetCities() const
 	{
 		return cities;
 	}
-	std::vector<City>& Country::GetCitiesL() 
+	std::list <City>& Country::GetCitiesL()
 	{
 		return cities;
 	}
@@ -65,16 +65,22 @@ namespace DeliverySystem
 		if (index >= cities.size() || index < 0)
 			return;
 
-		cities.erase(cities.begin() + index);
+		auto it = cities.begin();
+		std::advance(it, index);
+		cities.erase(it);
 	}
 	void Country::RemoveCity(City* city)
 	{
-		for(size_t i = 0; i < cities.size(); i++)
-			if (cities[i] == *city)
+		for(auto i = cities.begin(); i != cities.end();)
+		{
+			if (*i == *city)
 			{
-				cities.erase(cities.begin() + i);
+				cities.erase(i);
 				return;
 			}
+
+			std::advance(i, 1);
+		}
 	}
 	
 	bool Country::operator==(const Country& other)
@@ -90,10 +96,11 @@ namespace DeliverySystem
 		os << "Спіс гарадоў: " << std::endl << std::endl;
 		os << "*************************************************" << std::endl << std::endl;
 
-		for (size_t i = 0; i < obj.cities.size(); i++)
+		int i = 0;
+		for (const auto& city : obj.cities)
 		{
-			os << i + 1 << std::endl << std::endl;
-			os << obj.cities[i] << std::endl << std::endl;
+			os << ++i << std::endl << std::endl;
+			os << city << std::endl << std::endl;
 			os << "*************************************************" << std::endl << std::endl;
 		}
 
@@ -109,9 +116,9 @@ namespace DeliverySystem
 		size_t size = obj.cities.size();
 		os.write(reinterpret_cast<const char*>(&size), sizeof(size));
 
-		for (size_t i = 0; i < obj.cities.size(); i++)
+		for (auto& city : obj.cities)
 		{
-			os << obj.cities[i];
+			os << city;
 		}
 
 		return os;
@@ -132,9 +139,9 @@ namespace DeliverySystem
 		is.read(reinterpret_cast<char*>(&size), sizeof(size_t));
 		obj.cities.resize(size);
 
-		for (size_t i = 0; i < size; i++)
+		for (auto& city : obj.cities)
 		{
-			is >> obj.cities[i];
+			is >> city;
 		}
 
 		return is;

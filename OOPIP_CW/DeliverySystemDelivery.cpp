@@ -57,14 +57,16 @@ namespace DeliverySystem
 		return remainingDistance;
 	}
 
-	void Delivery::StopDelivery(std::vector<Delivery>& deliveries)
+	void Delivery::StopDelivery(std::list<Delivery>& deliveries)
 	{
-		for (size_t i = 0; i < deliveries.size(); i++)
+		for (auto i = deliveries.begin(); i != deliveries.end();)
 		{
-			if (deliveries[i] == *this)
+			if (*i == *this)
 			{
-				deliveries.erase(deliveries.begin() + i);
+				deliveries.erase(i);
 			}
+
+			std::advance(i, 1);
 		}
 
 		driver->StopDelivery();
@@ -72,7 +74,7 @@ namespace DeliverySystem
 		cargo->StopDelivery();
 		trailer->StopDelivery();
 	}
-	void Delivery::UpdateDistance(std::vector<Delivery>& deliveries)
+	void Delivery::UpdateDistance(std::list<Delivery>& deliveries)
 	{
 		//Skipping an hour
 		remainingDistance -= trailer->GetSpeedLimit();
@@ -137,17 +139,11 @@ namespace DeliverySystem
 		is.read(reinterpret_cast<char*>(&cargoID), sizeof(unsigned int));
 		is.read(reinterpret_cast<char*>(&trailerID), sizeof(unsigned int));
 		is.read(reinterpret_cast<char*>(&obj.remainingDistance), sizeof(unsigned int));
-
 		
 		obj.driver = Manager::FindDriver(accountName);
 		obj.lorry = static_cast<Lorry*>(Manager::FindWithID<Lorry>(lorryID));
 		obj.cargo = static_cast<Cargo*>(Manager::FindWithID<Cargo>(cargoID));
 		obj.trailer = static_cast<Trailer*>(Manager::FindWithID<Trailer>(trailerID));
-
-		obj.driver->SetDelivery(&obj);
-		obj.lorry->SetDelivery(&obj);
-		obj.cargo->SetDelivery(&obj);
-		obj.trailer->SetDelivery(&obj);
 
 		return is;
 	}

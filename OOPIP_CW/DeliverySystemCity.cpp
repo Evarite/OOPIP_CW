@@ -14,7 +14,7 @@ namespace DeliverySystem
 		id = 0;
 	}
 	City::City(const std::string& name, const std::string& abbreviation, Country& country, int x, int y,
-		const std::vector<Country>& countries) : x(x), y(y)
+		const std::list<Country>& countries) : x(x), y(y)
 	{
 		strcpy_s(this->name, name.c_str());
 		strcpy_s(this->abbreviation, abbreviation.c_str());

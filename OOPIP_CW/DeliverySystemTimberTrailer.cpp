@@ -6,7 +6,7 @@ namespace DeliverySystem
 	unsigned short TimberTrailer::speedLimit = 80;
 
 	TimberTrailer::TimberTrailer() : Trailer() {}
-	TimberTrailer::TimberTrailer(float length, float maxPayload, const std::vector<std::unique_ptr<Trailer>>& trailers) 
+	TimberTrailer::TimberTrailer(float length, float maxPayload, const std::list<std::unique_ptr<Trailer>>& trailers) 
 		: Trailer(length, maxPayload, trailers)
 	{
 		type = Trailer::Type::Timber;

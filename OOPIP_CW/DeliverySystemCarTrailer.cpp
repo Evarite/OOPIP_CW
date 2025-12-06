@@ -6,7 +6,7 @@ namespace DeliverySystem
 	unsigned short CarTrailer::speedLimit = 80;
 
 	CarTrailer::CarTrailer() : Trailer() {}
-	CarTrailer::CarTrailer(float length, float maxPayload, const std::vector<std::unique_ptr<Trailer>>& trailers)
+	CarTrailer::CarTrailer(float length, float maxPayload, const std::list<std::unique_ptr<Trailer>>& trailers)
 		: Trailer(length, maxPayload, trailers)
 	{
 		type = Trailer::Type::Car;

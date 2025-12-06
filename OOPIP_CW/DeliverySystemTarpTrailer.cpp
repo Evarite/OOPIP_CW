@@ -6,7 +6,7 @@ namespace DeliverySystem
 	unsigned short TarpTrailer::speedLimit = 80;
 
 	TarpTrailer::TarpTrailer() : Trailer() {}
-	TarpTrailer::TarpTrailer(float length, float maxPayload, const std::vector<std::unique_ptr<Trailer>>& trailers)
+	TarpTrailer::TarpTrailer(float length, float maxPayload, const std::list<std::unique_ptr<Trailer>>& trailers)
 		: Trailer(length, maxPayload, trailers)
 	{
 		type = Trailer::Type::Tarp;
