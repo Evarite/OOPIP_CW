@@ -217,7 +217,8 @@ namespace DeliverySystem
         friend std::istream &operator>>(std::ifstream &is, Driver &obj);
     };
 
-    class Lorry {
+    class Lorry
+    {
         unsigned int id;
         char make[NAME_SIZE];
         char model[NAME_SIZE];

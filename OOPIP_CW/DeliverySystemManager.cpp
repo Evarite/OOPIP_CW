@@ -1578,7 +1578,7 @@ namespace DeliverySystem
 		std::cout << "\nСпіс грузавікоў:\n";
 		int i = 0;
 		for (const auto& lorry : lorries)
-			std::cout << ++i << '\n' << lorry << '\n';
+			std::cout << ++i << ".\n" << lorry << "\n\n";
 
 		std::cout << "\nВыбярыце пункт меню:\n1. Дадаць грузавік\n2. Выдаліць грузавік\n3. Выхад\n";
 		choice = GetIntWithinRange(1, 3);
