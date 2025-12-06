@@ -635,6 +635,7 @@ namespace DeliverySystem
     int GetInt(const std::string& message = "Ваш выбар: ");
     int GetIntWithinRange(int left, int right, const std::string& message = "Ваш выбар: ");
     float GetFloat(const std::string& message = "Ваш выбар: ");
+    void EnableAnsiColors();
 
     //Operators
     std::ostream& operator<<(std::ostream& os, const Trailer::Type& type);

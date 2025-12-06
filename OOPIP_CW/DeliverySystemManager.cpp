@@ -139,6 +139,7 @@ namespace DeliverySystem
 
 	void Manager::Run()
 	{
+		EnableAnsiColors();
 		Initialise();
 		Authorise();
 		if (account == nullptr)
