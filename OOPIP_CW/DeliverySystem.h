@@ -74,7 +74,7 @@ namespace DeliverySystem
         Lorry *lorry;
         Cargo *cargo;
         Trailer *trailer;
-        unsigned int remainingDistance;
+        int remainingDistance;
 
     public:
         Delivery();
@@ -86,7 +86,7 @@ namespace DeliverySystem
         City *GetCityFrom() const;
         City *GetCityTo() const;
         Trailer *GetTrailer() const;
-        unsigned int GetRemainingDistance() const;
+        int GetRemainingDistance() const;
 
         void StopDelivery(std::list<Delivery>& deliveries);
         void UpdateDistance(std::list<Delivery>& deliveries);

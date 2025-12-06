@@ -52,27 +52,33 @@ namespace DeliverySystem
 	{
 		return trailer;
 	}
-	unsigned int Delivery::GetRemainingDistance() const
+	int Delivery::GetRemainingDistance() const
 	{
 		return remainingDistance;
 	}
 
 	void Delivery::StopDelivery(std::list<Delivery>& deliveries)
 	{
+		std::string nickname = driver->GetAccount()->GetNickname();
+		unsigned int lorryID = lorry->GetID();
+		unsigned int cargoID = cargo->GetID();
+		unsigned int trailerID = trailer->GetID();
+
 		for (auto i = deliveries.begin(); i != deliveries.end();)
 		{
 			if (*i == *this)
 			{
 				deliveries.erase(i);
+				break;
 			}
 
 			std::advance(i, 1);
 		}
 
-		driver->StopDelivery();
-		lorry->StopDelivery();
-		cargo->StopDelivery();
-		trailer->StopDelivery();
+		Manager::FindDriver(nickname)->StopDelivery();
+		static_cast<Lorry*>(Manager::FindWithID<Lorry>(lorryID))->StopDelivery();
+		static_cast<Cargo*>(Manager::FindWithID<Cargo>(cargoID))->StopDelivery();
+		static_cast<Trailer*>(Manager::FindWithID<Trailer>(trailerID))->StopDelivery();
 	}
 	void Delivery::UpdateDistance(std::list<Delivery>& deliveries)
 	{
@@ -104,7 +110,7 @@ namespace DeliverySystem
 		os << "Грузавік: " << obj.lorry->GetMake() << ' ' << obj.lorry->GetModel() << std::endl;
 		os << "Прычэп: " << obj.trailer->GetTypeString()  << std::endl;
 
-		if (remainingDistance > 0)
+		if (obj.remainingDistance > 0)
 			os << "Астатняя адлегласць: " << obj.remainingDistance;	
 		
 		return os;
@@ -117,7 +123,7 @@ namespace DeliverySystem
 		unsigned int trailerID = obj.trailer->GetID();
 
 		os.write(obj.driver->GetAccount()->GetNickname().c_str(), NAME_SIZE);
-		os.write(reinterpret_cast<const char*>(&lorryID), sizeof(unsigned int));
+		os.write(reinterpret_cast<const char*>(&lorryID), sizeof(int));
 		os.write(reinterpret_cast<const char*>(&cargoID), sizeof(unsigned int));
 		os.write(reinterpret_cast<const char*>(&trailerID), sizeof(unsigned int));
 		os.write(reinterpret_cast<const char*>(&obj.remainingDistance), sizeof(unsigned int));

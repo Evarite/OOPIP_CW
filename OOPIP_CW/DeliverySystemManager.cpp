@@ -387,8 +387,12 @@ namespace DeliverySystem
 	{
 		std::cout << "\nјднаҐл€юцца адлегласц≥ даставак...\n";
 
+		std::vector<Delivery*> deliveriesCopy;
 		for (auto& delivery : deliveries)
-			delivery.UpdateDistance(deliveries);
+			deliveriesCopy.push_back(&delivery);
+
+		for (auto& delivery : deliveriesCopy)
+			delivery->UpdateDistance(deliveries);
 
 		std::cout << "\nјднаҐленне пасп€хова скончана\n";
 	}
