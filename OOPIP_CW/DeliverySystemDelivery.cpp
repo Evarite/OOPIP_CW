@@ -94,9 +94,9 @@ namespace DeliverySystem
 	std::ostream& operator<<(std::ostream& os, const Delivery& obj)
 	{
 		os << "Груз: " << obj.cargo->GetName() << std::endl;
-		os << "З: " << obj.cargo->GetCityFrom() << ' '
+		os << "З: " << obj.cargo->GetCityFrom()->GetName() << ' '
 			<< obj.cargo->GetCityFrom()->GetCountryAbbreviation() << std::endl;
-		os << "Да: " << obj.cargo->GetCityTo() << ' '
+		os << "Да: " << obj.cargo->GetCityTo()->GetName() << ' '
 			<< obj.cargo->GetCityTo()->GetCountryAbbreviation() << std::endl;
 		os << "Заказчык: " << obj.cargo->GetClient()->GetNickname() << std::endl;
 		os << "Кіраўнік: " << obj.driver->GetAccount()->GetFirstName() << ' '
