@@ -112,15 +112,15 @@ namespace DeliverySystem
 
 	std::ostream& operator<<(std::ofstream& os, const Delivery& obj)
 	{
-		unsigned int lorryID = lorry->GetID();
-		unsigned int cargoID = cargo->GetID();
-		unsigned int trailerID = trailer->GetID();
+		unsigned int lorryID = obj.lorry->GetID();
+		unsigned int cargoID = obj.cargo->GetID();
+		unsigned int trailerID = obj.trailer->GetID();
 
-		os.write(driver->GetAccount()->GetNickname().c_str(), NAME_SIZE);
+		os.write(obj.driver->GetAccount()->GetNickname().c_str(), NAME_SIZE);
 		os.write(reinterpret_cast<const char*>(&lorryID), sizeof(unsigned int));
 		os.write(reinterpret_cast<const char*>(&cargoID), sizeof(unsigned int));
 		os.write(reinterpret_cast<const char*>(&trailerID), sizeof(unsigned int));
-		os.write(reinterpret_cast<const char*>(&remainingDistance), sizeof(unsigned int));
+		os.write(reinterpret_cast<const char*>(&obj.remainingDistance), sizeof(unsigned int));
 
 		return os;
 	}
