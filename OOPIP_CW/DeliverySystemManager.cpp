@@ -1157,6 +1157,8 @@ namespace DeliverySystem
 
 			drivers.emplace_back(application->GetAccount(), availableLorries[choice - 1]);
 
+			applications.erase(application);
+
 			break;
 		}
 		case 2:
