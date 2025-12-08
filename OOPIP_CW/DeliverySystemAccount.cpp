@@ -125,7 +125,6 @@ namespace DeliverySystem
 			std::cout << "1. Стварыць акаўнт" << std::endl;
 			std::cout << "2. Увайсці ў акаўнт" << std::endl;
 			std::cout << "3. Выхад" << std::endl;
-			std::cout << "Ваш выбар: ";
 			choice = GetIntWithinRange(1, 3);
 
 			switch (choice)
