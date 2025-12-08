@@ -1538,6 +1538,23 @@ namespace DeliverySystem
 				break;
 			}
 
+			if (*account == *Manager::account)
+			{
+				std::cout << "Вы ўпэўнены, што хаціце выдаліць уласны акаўнт?\n1. Так\t2. Не\n";
+				int choice = GetIntWithinRange(1, 2);
+
+				if (choice == 2)
+					return;
+
+				accounts.erase(account);
+				std::cout << "Акаўнт паспяхова выдалены\n";
+
+				std::cout << "\nУвядзіце любае значэнне для працягнення\n";
+				GetString("");
+
+				std::cout << "\x1b[2J\x1b[1;1H";
+			}
+
 			accounts.erase(account);
 			std::cout << "Акаўнт паспяхова выдалены!\n";
 
@@ -2902,7 +2919,7 @@ namespace DeliverySystem
 			{
 				std::cout << std::endl << std::setw(20) << "\x1b[33;1m" << "Меню:" << "\x1b[0m" << std::endl;
 				std::cout << "1. Рэдагаваць асабістыя дадзеныя" << std::endl
-					<< "2. Праглядзець усі уліковыя запісы" << std::endl
+					<< "2. Праглядзець усі ўліковыя запісы" << std::endl
 					<< "3. Кіраванне ўліковымі запісамі" << std::endl
 					<< "4. Спіс кіроўцаў" << std::endl
 					<< "5. Спіс грузаў" << std::endl
@@ -2918,7 +2935,7 @@ namespace DeliverySystem
 					<< "15. Звольніцца" << std::endl
 					<< "16. Выхад" << std::endl;
 
-				choice = GetIntWithinRange(1, 14, "Выбярыце пункт меню: ");
+				choice = GetIntWithinRange(1, 16, "Выбярыце пункт меню: ");
 
 				std::cout << std::endl;
 
@@ -2932,7 +2949,12 @@ namespace DeliverySystem
 					break;
 				case 3:
 					EditAccounts();
-					break;
+
+					if (account == nullptr)
+						if ((account = Account::Authorise(accounts, countries)) == nullptr)
+							return;
+
+					goto menu_begin;
 				case 4:
 					DriversList();
 					break;
