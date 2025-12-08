@@ -198,7 +198,7 @@ namespace DeliverySystem
 					if (firstName == "N" || firstName == "n")
 						goto authorisation_beginning;
 
-					lastName = GetString("Увядзіце ваша прозвішча", FORBIDDEN_NAME_SYMBOLS, 1, NAME_SIZE - 1,
+					lastName = GetString("Увядзіце ваша прозвішча\n", FORBIDDEN_NAME_SYMBOLS, 1, NAME_SIZE - 1,
 						{ "N", "n" });
 
 					if (lastName == "N" || lastName == "n")
@@ -286,7 +286,7 @@ namespace DeliverySystem
 				std::cout << std::endl << std::setw(55) << "\x1b[33;1m" << "Аўтарызацыя" << "\x1b[0m" << std::endl;
 				while (true)
 				{
-					std::string name = GetString("Увядзіце імя акаўнту");
+					std::string name = GetString("Увядзіце імя акаўнту\n");
 
 					if (name == "N")
 						goto authorisation_beginning;
