@@ -70,7 +70,8 @@ namespace DeliverySystem
 		}
 		else
 		{
-			os << obj.currentDelivery->GetCityFrom() << " - " << obj.currentDelivery->GetCityTo() << '\t'
+			os << obj.currentDelivery->GetCityFrom()->GetName() << " - "
+				<< obj.currentDelivery->GetCityTo()->GetName() << '\t'
 				<< obj.currentDelivery->GetCargo()->GetName();
 		}
 
