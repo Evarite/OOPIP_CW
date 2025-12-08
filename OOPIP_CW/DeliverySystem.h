@@ -647,6 +647,7 @@ namespace DeliverySystem
     void EnableAnsiColors();
     std::string GetString(const std::string& message);
     std::string GetString(const std::string& message, const std::string& forbiddenSymbols);
+    std::string GetString(const std::string& message, unsigned int minSize, unsigned int maxSize);
     std::string GetString(const std::string& message, const std::string& forbiddenSymbols, unsigned int minSize,
         unsigned int maxSize, const std::vector<std::string>& exceptions);
 

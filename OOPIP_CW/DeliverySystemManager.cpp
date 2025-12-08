@@ -2461,22 +2461,249 @@ namespace DeliverySystem
 		switch (container)
 		{
 		case Container::Account:
+		{
+			std::string nickname = GetString("Увядзіце імя акаўнту:\n");
+
+			for(const auto& account : accounts)
+				if(account.GetNickname() == nickname)
+				{
+					std::cout << "\nАкаўнт знойдзены!\n\n" << account << '\n';
+					return;
+				}
+
+			std::cout << "\nАкаўнт не знойдзены\n";
 
 			break;
+		}
 		case Container::Driver:
+		{
+			std::string nickname = GetString("Увядзіце імя акаўнту кіроўцы:\n");
+
+			for (const auto& driver : drivers)
+				if (driver.GetAccount()->GetNickname() == nickname)
+				{
+					std::cout << "\nКіроўца знойдзены!\n\n" << driver << '\n';
+					return;
+				}
+
+			std::cout << "\nКіроўца не знойдзены\n";
+
 			break;
+		}
 		case Container::Lorry:
+		{
+			int id = GetInt("Увядзіце айдзі грузавіку: ");
+
+			for(const auto& lorry : lorries)
+				if (lorry.GetID() == id)
+				{
+					std::cout << "\nГрузавік знойдзены!\n\n" << lorry << '\n';
+					return;
+				}
+
+			std::cout << "\nГрузавік не знойдзены\n";
+
 			break;
+		}
 		case Container::Cargo:
+		{
+			int id = GetInt("Увядзіце айдзі грузу: ");
+
+			for (const auto& cargo : cargos)
+				if (cargo.GetID() == id)
+				{
+					std::cout << "\nГруз знойдзены!\n\n" << cargo << '\n';
+					return;
+				}
+
+			std::cout << "\nГруз не знойдзены\n";
+
 			break;
+		}
 		case Container::Country:
+		{
+			enum class SearchField
+			{
+				Name,
+				Abbreviation,
+				PhoneCode
+			};
+
+			std::cout << "Выбярыце поле, па якому будзе адбывацца пошук:\n"
+				<< "1. Назва краіны\n"
+				<< "2. Абрэвіятура краіны\n"
+				<< "3. Тэлефонны код краіны\n";
+			SearchField field = static_cast<SearchField>(GetIntWithinRange(1, 3) - 1);
+
+			switch (field)
+			{
+			case SearchField::Name:
+			{
+				std::string name = GetString("Увядзіце назву краіны:\n");
+
+				for(const auto& country : countries)
+					if (country.GetName() == name)
+					{
+						std::cout << "\nКраіна знойдзена!\n\n" << country << '\n';
+						return;
+					}
+
+				std::cout << "Краіна не знойдзена\n";
+
+				break;
+			}
+			case SearchField::Abbreviation:
+			{
+				std::string abbreviation = GetString("Увядзіце абрэвіятуру краіны:\n", 2, 2);
+
+				for (const auto& country : countries)
+					if (country.GetAbbreviation() == abbreviation)
+					{
+						std::cout << "\nКраіна знойдзена!\n\n" << country << '\n';
+						return;
+					}
+
+				std::cout << "Краіна не знойдзена\n";
+
+				break;
+			}
+			case SearchField::PhoneCode:
+			{
+				std::string phoneCode = "+" + GetString("Увядзіце тэлефонны код краіны:\n+", 1, 3);
+
+				for(const auto& country : countries)
+					if(country.GetPhoneCode() == phoneCode)
+					{
+						std::cout << "\nКраіна знойдзена!\n\n" << country << '\n';
+						return;
+					}
+
+				std::cout << "Краіна не знойдзена\n";
+
+				break;
+			}
+			}
+
 			break;
+		}
 		case Container::City:
+		{
+			std::string name = GetString("Увядзіце назву горада:\n");
+			int i = 0;
+
+			for(const auto& country : countries)
+				for(const auto& city : country.GetCities())
+					if (city.GetName() == name)
+					{
+						if (i == 0)
+							std::cout << "\nГорад знойдзены!\n";
+
+						std::cout << '\n' << ++i << ".\n" << city << '\n';
+					}
+
+			if (i == 0)
+				std::cout << "Горад не знойдзены";
+
 			break;
-		case Container::Trailer:
+		}
+		case Container::Trailer:	
+		{
+			int id = GetInt("Увядзіце айдзі прычэпу: ");
+
+			for (const auto& trailer : trailers)
+				if (trailer->GetID() == id)
+				{
+					std::cout << "\nПрычэп знойдзены!\n\n" << *trailer << '\n';
+					return;
+				}
+
+			std::cout << "\nПрычэп не знойдзены\n";
+
 			break;
+		}
 		case Container::Delivery:
+		{
+			enum class SearchField
+			{
+				DriverName,
+				LorryID,
+				CargoID,
+				TrailerID
+			};
+
+			std::cout << "Выбярыце поле, па якому будзе адбывацца пошук:\n"
+				<< "1. Імя кіроўцы\n"
+				<< "2. Айдзі грузавіку\n"
+				<< "3. Айдзі грузу\n"
+				<< "4. Айдзі прычэпу\n";
+			SearchField field = static_cast<SearchField>(GetIntWithinRange(1, 4) - 1);
+
+			switch (field)
+			{
+			case SearchField::DriverName:
+			{
+				std::string nickname = GetString("Увядзіце імя акаўнту кіроўцы:\n");
+
+				for(const auto& delivery : deliveries)
+					if (delivery.GetDriver()->GetAccount()->GetNickname() == nickname)
+					{
+						std::cout << "\nДастаўка знойдзена!\n\n" << delivery << '\n';
+						return;
+					}
+
+				std::cout << "\nДастаўка не знойдзена\n";
+
+				break;
+			}
+			case SearchField::LorryID:
+			{
+				int id = GetInt("Увядзіце айдзі грузавіку: ");
+
+				for (const auto& delivery : deliveries)
+					if (delivery.GetLorry()->GetID() == id)
+					{
+						std::cout << "\nДастўка знойдзена!\n\n" << delivery << '\n';
+						return;
+					}
+
+				std::cout << "\nДастаўка не знойдзена\n";
+
+				break;
+			}
+			case SearchField::CargoID:
+			{
+				int id = GetInt("Увядзіце айдзі грузу: ");
+
+				for (const auto& delivery : deliveries)
+					if (delivery.GetCargo()->GetID() == id)
+					{
+						std::cout << "\nДастаўка знойдзена!\n\n" << delivery << '\n';
+						return;
+					}
+
+				std::cout << "\nДастаўка не знойдзена\n";
+
+				break;
+			}
+			case SearchField::TrailerID:
+			{
+				int id = GetInt("Увядзіце айдзі прычэпу: ");
+
+				for (const auto& delivery : deliveries)
+					if (delivery.GetTrailer()->GetID() == id)
+					{
+						std::cout << "\nДастаўка знойдзена!\n\n" << delivery << '\n';
+						return;
+					}
+
+				std::cout << "\nДастаўка не знойдзена\n";
+
+				break;
+			}
+			}
+
 			break;
+		}
 		}
 	}
 

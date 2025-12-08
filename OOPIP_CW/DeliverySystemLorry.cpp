@@ -137,6 +137,7 @@ namespace DeliverySystem
 
 	std::ostream& operator<<(std::ostream& os, const Lorry& obj)
 	{
+		os << "ID: " << obj.id << std::endl;
 		os << "Марка: " << obj.make << std::endl;
 		os << "Мадэль: " << obj.model << std::endl;
 		os << "Каштоўнасць паліва на 100км: " << obj.gasolineCost << '$' << std::endl;

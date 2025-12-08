@@ -115,6 +115,7 @@ namespace DeliverySystem
 
 	std::ostream& operator<<(std::ostream& os, const Cargo& obj)
 	{
+		os << "ID: " << obj.id << std::endl;
 		os << "Назва: " << obj.name << std::endl;
 		os << "Маса: " << obj.mass << "кг" << std::endl;
 		os << "Тып: " << obj.type << std::endl;

@@ -75,8 +75,9 @@ namespace DeliverySystem
 
 	std::ostream& operator<<(std::ostream& os, const Trailer& obj)
 	{
+		os << "ID: " << obj.id << '\n';
 		os << "Тып: " << obj.type << '\n';
-		os << "Даўжыня прычэпа: " << obj.length << 'м' << std::endl;
+		os << "Даўжыня прычэпа: " << obj.length << "м\n";
 		os << "Максімальная грузападымальнасць: " << obj.maxPayload << "кг" << std::endl;
 		os << "Бягучае заданне: ";
 		if (obj.currentDelivery == nullptr)
