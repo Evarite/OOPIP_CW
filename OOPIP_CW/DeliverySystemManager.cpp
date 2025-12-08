@@ -1572,6 +1572,8 @@ namespace DeliverySystem
 			if (driver->GetCurrentDelivery() != nullptr)
 			{
 				driver->GetCurrentDelivery()->StopDelivery(deliveries);
+				driver->GetAccount()->SetType(Account::Type::User);
+				drivers.erase(driver);
 			}
 
 			break;
