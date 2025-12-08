@@ -126,22 +126,7 @@ namespace DeliverySystem
 			std::cout << "2. Увайсці ў акаўнт" << std::endl;
 			std::cout << "3. Выхад" << std::endl;
 			std::cout << "Ваш выбар: ";
-			std::cin >> choice;
-			if (!std::cin.good())
-			{
-				std::cin.clear();
-				std::cout << "\x1b[31;1m" << "Памылка ўводу. Паспрабуйце яшчэ раз" << "\x1b[0m"
-					<< std::endl << std::endl;
-				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-				continue;
-			}
-			else if (choice > 3 || choice < 1)
-			{
-				std::cout << "\x1b[31;1m" << "Няверны выбар. Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
-				continue;
-			}
-
-			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+			choice = GetIntWithinRange(1, 3);
 
 			switch (choice)
 			{
@@ -156,35 +141,14 @@ namespace DeliverySystem
 				std::string phoneCode;
 				unsigned long long phoneNumber;
 
-				while(true)
+				while (true)
 				{
-					std::cout << std::endl << "Увядзіце імя акаўнту" << std::endl;
-					std::getline(std::cin, nickname);
-					nickname = TrimWhitespace(nickname);
+					nickname = GetString("Увядзіце імя акаўнту\n", FORBIDDEN_NICKNAME_SYMBOLS, MIN_NAME_SIZE,
+						NAME_SIZE - 1, { "N", "n" });
 
-					if (nickname == "N")
+					if (nickname == "N" || nickname == "n")
 					{
 						goto authorisation_beginning;
-					}
-					else if (nickname.size() < MIN_NAME_SIZE)
-					{
-						std::cout << "\x1b[31;1m" << "Мінімальны памер імя: " << MIN_NAME_SIZE
-							<< ". Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
-						continue;
-					}
-					else if (nickname.size() > NAME_SIZE - 1)
-					{
-						std::cout << "\x1b[31;1m" << "Максімальны памер імя: " << NAME_SIZE - 1
-							<< ". Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
-						continue;
-					}
-					else if (nickname.find_first_of(FORBIDDEN_NICKNAME_SYMBOLS) != std::string::npos)
-					{
-						std::cout << "\x1b[31;1m" << "Імя не можа мець наступныя сімвалы: "
-							<< FORBIDDEN_NICKNAME_SYMBOLS  << std::endl;
-						std::cout << "Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
-
-						continue;
 					}
 					else
 					{
@@ -228,123 +192,47 @@ namespace DeliverySystem
 						break;
 					}
 
-					while (true)
+					firstName = GetString("Увядзіце ваша імя\n", FORBIDDEN_NAME_SYMBOLS, 1,
+						NAME_SIZE - 1, { "N", "n" });
+
+					if (firstName == "N" || firstName == "n")
+						goto authorisation_beginning;
+
+					lastName = GetString("Увядзіце ваша прозвішча", FORBIDDEN_NAME_SYMBOLS, 1, NAME_SIZE - 1,
+						{ "N", "n" });
+
+					if (lastName == "N" || lastName == "n")
+						goto authorisation_beginning;
+
+					std::cout << std::endl;
+					int i = 0;
+					for (const auto& country : countries)
+						std::cout << ++i << ". " << country.GetName() << std::endl;
+
+					std::cout << "0. Маёй краіны тут няма" << std::endl;
+
+					std::cout << std::endl << "Выбярыце вашу краіну: ";
+					choice = GetIntWithinRange(0, countries.size());
+
+					switch (choice)
 					{
-						std::cout << std::endl << "Увядзіце ваша імя" << std::endl;
-						std::getline(std::cin, firstName);
-						if (firstName == "N")
-							goto authorisation_beginning;
-						if (firstName.size() > NAME_SIZE)
-						{
-							std::cout << "\x1b[31;1m" << "Максімальны памер імя: " << NAME_SIZE - 1
-								<< ". Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
-							continue;
-						}
-						else if (firstName.find_first_of(FORBIDDEN_NAME_SYMBOLS) != std::string::npos)
-						{
-							std::cout << "\x1b[31;1m" << "Некарэктны фармат імя. Паспрабуйце яшчэ раз"
-								<< "\x1b[0m" << std::endl;
-
-							continue;
-						}
-
+					case 0:
+						std::cout << std::endl
+							<< "Прыносім нашыя шкадаванні, але наш сервіс пакуль што не працуе ў вашай краіне"
+							<< std::endl;
+						goto authorisation_beginning;
 						break;
-					}
-
-					while (true)
-					{
-						std::cout << std::endl << "Увядзіце ваша прозвішча" << std::endl;
-						std::getline(std::cin, lastName);
-						if (lastName == "N")
-							goto authorisation_beginning;
-						if (lastName.size() > NAME_SIZE)
+					default:
+						while (true)
 						{
-							std::cout << "\x1b[31;1m" << "Максімальны памер прозвішча: " << NAME_SIZE - 1
-								<< ". Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
-							continue;
-						}
-						else if (lastName.find_first_of(FORBIDDEN_NAME_SYMBOLS) != std::string::npos)
-						{
-							std::cout << "\x1b[31;1m" << "Некарэктны фармат прозвишча. Паспрабуйце яшчэ раз"
-								<< "\x1b[0m" << std::endl;
+							auto country = countries.begin();
+							std::advance(country, choice - 1);
+							phoneCode = country->GetPhoneCode();
 
-							continue;
-						}
+							std::cout << std::endl << "Увядзіце ваш нумар тэлефону" << std::endl
+								<< phoneCode;
+							std::cin >> phoneNumber;
 
-						break;
-					}
-
-					while (true)
-					{
-						std::cout << std::endl;
-						int i = 0;
-						for(const auto& country : countries)
-							std::cout << ++i << ". " << country.GetName() << std::endl;
-
-						std::cout << "0. Маёй краіны тут няма" << std::endl;
-
-						std::cout << std::endl << "Выбярыце вашу краіну: ";
-						std::cin >> choice;
-
-						if (!std::cin.good())
-						{
-							std::cin.clear();
-							std::cout << "\x1b[31;1m" << "Памылка ўводу. Паспрабуйце яшчэ раз" << "\x1b[0m"
-								<< std::endl << std::endl;
-							std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-							continue;
-						}
-						else if (choice > countries.size() || choice < 0)
-						{
-							std::cout << "\x1b[31;1m" << "Няверны выбар. Паспрабуйце яшчэ раз" << "\x1b[0m" 
-								<< std::endl;
-							continue;
-						}
-
-						switch (choice)
-						{
-						case 0:
-							std::cout << std::endl 
-								<< "Прыносім нашыя шкадаванні, але наш сервіс пакуль што не працуе ў вашай краіне"
-								<< std::endl;
-							goto authorisation_beginning;
-							break;
-						default:
-							while(true)
-							{
-								auto country = countries.begin();
-								std::advance(country, choice - 1);
-								phoneCode = country->GetPhoneCode();
-
-								std::cout << std::endl << "Увядзіце ваш нумар тэлефону" << std::endl
-									<< phoneCode;
-								std::cin >> phoneNumber;
-
-								if (!std::cin.good())
-								{
-									std::cin.clear();
-									std::cout << "\x1b[31;1m" << "Памылка ўводу. Паспрабуйце яшчэ раз" << "\x1b[0m" 
-										<< std::endl << std::endl;
-									std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-									continue;
-								}
-
-								break;
-							}
-						}
-
-						std::cout << std::endl << "Праверце вашыя дадзеныя" << std::endl;
-						std::cout << "Імя акаўнту: " << nickname << std::endl
-							<< "Уласнае імя: " << firstName << std::endl
-							<< "Прозвішча: " << lastName << std::endl
-							<< "Нумар тэлефону: " << phoneCode << phoneNumber << std::endl;
-
-						while(true)
-						{
-							std::cout << std::endl << "Ці ўведзеная інфармацыя з'яўляецца сапраўднай?" << std::endl
-								<< "1. Так" << std::setw(20) << "2. Не" << std::endl;
-
-							std::cin >> choice;
 							if (!std::cin.good())
 							{
 								std::cin.clear();
@@ -354,29 +242,41 @@ namespace DeliverySystem
 								continue;
 							}
 
-							switch (choice)
-							{
-							case 1:
-							{
-								std::cout << "\x1b[2J\x1b[1;1H";
-								std::cout << std::setw(55) << "\x1b[33;1m" << "Сардэчна запрашаем, "
-									<< nickname << '!' << "\x1b[0m" << std::endl;
-								accounts.emplace_back(nickname, firstName, lastName,
-									phoneCode + std::to_string(phoneNumber), password);
-								return &accounts.back();
-							}
-							case 2:
-								goto authorisation_beginning;
-								break;
-							default:
-								std::cout << "\x1b[31;1m" << "Няверны выбар. Паспрабуйце яшчэ раз" << "\x1b[0m"
-									<< std::endl;
-								continue;
-							}
+							break;
 						}
-
-						std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 					}
+
+					std::cout << std::endl << "Праверце вашыя дадзеныя" << std::endl;
+					std::cout << "Імя акаўнту: " << nickname << std::endl
+						<< "Уласнае імя: " << firstName << std::endl
+						<< "Прозвішча: " << lastName << std::endl
+						<< "Нумар тэлефону: " << phoneCode << phoneNumber << std::endl;
+
+					while (true)
+					{
+						std::cout << std::endl << "Ці ўведзеная інфармацыя з'яўляецца сапраўднай?" << std::endl
+							<< "1. Так" << std::setw(20) << "2. Не" << std::endl;
+
+						choice = GetIntWithinRange(1, 2);
+
+						switch (choice)
+						{
+						case 1:
+						{
+							std::cout << "\x1b[2J\x1b[1;1H";
+							std::cout << std::setw(55) << "\x1b[33;1m" << "Сардэчна запрашаем, "
+								<< nickname << '!' << "\x1b[0m" << std::endl;
+							accounts.emplace_back(nickname, firstName, lastName,
+								phoneCode + std::to_string(phoneNumber), password);
+							return &accounts.back();
+						}
+						case 2:
+							goto authorisation_beginning;
+							break;
+						}
+					}
+
+					std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 				}
 
 				break;
@@ -386,10 +286,7 @@ namespace DeliverySystem
 				std::cout << std::endl << std::setw(55) << "\x1b[33;1m" << "Аўтарызацыя" << "\x1b[0m" << std::endl;
 				while (true)
 				{
-					std::string name;
-					std::cout << "Увядзіце імя акаўнту" << std::endl;
-					std::getline(std::cin, name);
-					name = TrimWhitespace(name);
+					std::string name = GetString("Увядзіце імя акаўнту");
 
 					if (name == "N")
 						goto authorisation_beginning;

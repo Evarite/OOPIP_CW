@@ -111,6 +111,89 @@ namespace DeliverySystem
 		}
 	}
 
+	std::string GetString(const std::string& message)
+	{
+		std::string result;
+
+		std::cout << message;
+		std::getline(std::cin, result);
+
+		result = TrimWhitespace(result);
+
+		return result;
+	}
+
+	std::string GetString(const std::string& message, const std::string& forbiddenSymbols)
+	{
+		std::string result;
+
+		while (true)
+		{
+			std::cout << message;
+			std::getline(std::cin, result);
+
+			result = TrimWhitespace(result);
+
+			if (result.find_first_of(forbiddenSymbols) != std::string::npos)
+			{
+				std::cout << "\x1b[31;1m" << "Вы ўвялі забароненыя сімвалы для гэтага поля.\n"
+					<< "Спіс забароненых сімвалаў для гэтага дадзенага поля: "
+					<< forbiddenSymbols << std::endl;
+				std::cout << "Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
+
+				continue;
+			}
+
+			break;
+		}
+
+		return result;
+	}
+
+	std::string GetString(const std::string& message, const std::string& forbiddenSymbols, unsigned int minSize,
+		unsigned int maxSize, const std::vector<std::string>& exceptions)
+	{
+		std::string result;
+
+		while (true)
+		{
+			std::cout << message;
+			std::getline(std::cin, result);
+		
+			result = TrimWhitespace(result);
+
+			for (const auto& str : exceptions)
+				if (str == result)
+					return result;
+
+			else if (result.size() < minSize)
+			{
+				std::cout << "\x1b[31;1m" << "Мінімальны памер: " << minSize
+					<< ". Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
+				continue;
+			}
+			else if (result.size() > maxSize)
+			{
+				std::cout << "\x1b[31;1m" << "Максімальны памер: " << maxSize
+					<< ". Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
+				continue;
+			}
+			else if (result.find_first_of(forbiddenSymbols) != std::string::npos)
+			{
+				std::cout << "\x1b[31;1m" << "Вы ўвялі забароненыя сімвалы для гэтага поля.\n"
+					<< "Спіс забароненых сімвалаў для гэтага дадзенага поля: "
+					<< forbiddenSymbols << std::endl;
+				std::cout << "Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
+
+				continue;
+			}
+
+			break;
+		}
+
+		return result;
+	}
+
 	void EnableAnsiColors()
 	{
 	#ifdef _WIN32

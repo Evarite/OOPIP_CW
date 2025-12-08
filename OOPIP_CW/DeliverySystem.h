@@ -645,7 +645,13 @@ namespace DeliverySystem
     int GetIntWithinRange(int left, int right, const std::string& message = "Ваш выбар: ");
     float GetFloat(const std::string& message = "Ваш выбар: ");
     void EnableAnsiColors();
+    std::string GetString(const std::string& message);
+    std::string GetString(const std::string& message, const std::string& forbiddenSymbols);
+    std::string GetString(const std::string& message, const std::string& forbiddenSymbols, unsigned int minSize,
+        unsigned int maxSize, const std::vector<std::string>& exceptions);
 
     //Operators
     std::ostream& operator<<(std::ostream& os, const Trailer::Type& type);
+    //std::ostream& operator<<(std::ostream& os, const Account::Type& type);
+    //std::ostream& operator<<(std::ostream& os, const Cargo::Type& type);
 } 

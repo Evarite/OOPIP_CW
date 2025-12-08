@@ -2432,6 +2432,53 @@ namespace DeliverySystem
 			break;
 		}
 	}
+	void Manager::Search()
+	{
+		enum class Container
+		{
+			Account,
+			Driver,
+			Lorry,
+			Cargo,
+			Country,
+			City,
+			Trailer,
+			Delivery
+		};
+
+		std::cout << "Выбярыце, што вы шукаеце:\n"
+			<< "1. Акаўнт\n"
+			<< "2. Кіроўца\n"
+			<< "3. Грузавік\n"
+			<< "4. Груз\n"
+			<< "5. Краіна\n"
+			<< "6. Горад\n"
+			<< "7. Прычэп\n"
+			<< "8. Дастаўка\n";
+		int choice = GetIntWithinRange(1, 8);
+		Container container = static_cast<Container>(choice - 1);
+
+		switch (container)
+		{
+		case Container::Account:
+
+			break;
+		case Container::Driver:
+			break;
+		case Container::Lorry:
+			break;
+		case Container::Cargo:
+			break;
+		case Container::Country:
+			break;
+		case Container::City:
+			break;
+		case Container::Trailer:
+			break;
+		case Container::Delivery:
+			break;
+		}
+	}
 
 	void Manager::Menu()
 	{
