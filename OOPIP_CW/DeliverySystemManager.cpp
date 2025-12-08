@@ -2911,8 +2911,10 @@ namespace DeliverySystem
 					<< "10. Разглядзець заяўкі на працу" << std::endl
 					<< "11. Аднавіць дастаўкі" << std::endl
 					<< "12. Сартаванне" << std::endl
-					<< "13. Звольніцца" << std::endl
-					<< "14. Выхад" << std::endl;
+					<< "13. Фільтр" << std::endl
+					<< "14. Пошук" << std::endl
+					<< "15. Звольніцца" << std::endl
+					<< "16. Выхад" << std::endl;
 
 				choice = GetIntWithinRange(1, 14, "Выбярыце пункт меню: ");
 
@@ -2957,9 +2959,15 @@ namespace DeliverySystem
 					AdminSort();
 					break;
 				case 13:
+					Filter();
+					break;
+				case 14:
+					Search();
+					break;
+				case 15:
 					ModAdmQuit();
 					goto menu_begin;
-				case 14:
+				case 16:
 					return;
 				}
 			}
