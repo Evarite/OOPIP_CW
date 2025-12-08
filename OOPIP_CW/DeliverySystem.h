@@ -182,7 +182,7 @@ namespace DeliverySystem
 
         static Account *Authorise(std::list<Account> &accounts, const std::list<Country> &countries);
 
-        bool operator==(const Account &obj);
+        bool operator==(const Account &obj) const;
         friend std::ostream &operator<<(std::ostream &os, const Account &obj);
         friend std::ostream &operator<<(std::ofstream &os, const Account &obj);
         friend std::istream &operator>>(std::ifstream &is, Account &obj);

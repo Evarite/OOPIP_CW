@@ -333,7 +333,7 @@ namespace DeliverySystem
 		}
 	}
 
-	bool Account::operator==(const Account& other)
+	bool Account::operator==(const Account& other) const
 	{
 		return std::string(nickname) == other.GetNickname();
 	}
