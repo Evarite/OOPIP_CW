@@ -1517,7 +1517,7 @@ namespace DeliverySystem
 			int accountChoice = GetIntWithinRange(1, accounts.size(), "Увядзіце нумар акаўнту для выдалення: ");
 
 			auto account = accounts.begin();
-			std::advance(account, accountChoice);
+			std::advance(account, accountChoice - 1);
 
 			for (const auto& driver : drivers)
 			{
