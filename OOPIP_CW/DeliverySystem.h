@@ -652,6 +652,6 @@ namespace DeliverySystem
 
     //Operators
     std::ostream& operator<<(std::ostream& os, const Trailer::Type& type);
-    //std::ostream& operator<<(std::ostream& os, const Account::Type& type);
-    //std::ostream& operator<<(std::ostream& os, const Cargo::Type& type);
+    std::ostream& operator<<(std::ostream& os, const Account::Type& type);
+    std::ostream& operator<<(std::ostream& os, const Cargo::Type& type);
 } 

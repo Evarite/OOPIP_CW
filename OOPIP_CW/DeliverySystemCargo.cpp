@@ -117,70 +117,7 @@ namespace DeliverySystem
 	{
 		os << "Назва: " << obj.name << std::endl;
 		os << "Маса: " << obj.mass << "кг" << std::endl;
-		os << "Тып: ";
-
-		switch (obj.type)
-		{
-		case Cargo::Type::Wood:
-			os << "Драўніна";
-			break;
-		case Cargo::Type::Food:
-			os << "Харчовыя прадукты";
-			break;
-		case Cargo::Type::Cars:
-			os << "Аўтамабілі";
-			break;
-		case Cargo::Type::Fuel:
-			os << "Паліва";
-			break;
-		case Cargo::Type::Chemicals:
-			os << "Хімічныя рэчыва";
-			break;
-		case Cargo::Type::Milk:
-			os << "Малако";
-			break;
-		case Cargo::Type::Gravel:
-			os << "Жвір, друз";
-			break;
-		case Cargo::Type::Grain:
-			os << "Крупы";
-			break;
-		case Cargo::Type::Sand:
-			os << "Пясок";
-			break;
-		case Cargo::Type::Concrete:
-			os << "Бетон";
-			break;
-		case Cargo::Type::Steel:
-			os << "Сталёвыя канструкцыі";
-			break;
-		case Cargo::Type::Bricks:
-			os << "Цэгла";
-			break;
-		case Cargo::Type::Machinery:
-			os << "Прамысловае абсталяванне";
-			break;
-		case Cargo::Type::Construction:
-			os << "Будаўнічая тэхніка";
-			break;
-		case Cargo::Type::Containers:
-			os << "Кантэйнеры";
-			break;
-		case Cargo::Type::Explosives:
-			os << "Выбуховыя рэчыва";
-			break;
-		case Cargo::Type::Toxic:
-			os << "Таксічныя матэрыялы";
-			break;
-		case Cargo::Type::Refrigerated:
-			os << "Замарожаныя прадукты";
-			break;
-		case Cargo::Type::Pharmaceuticals:
-			os << "Медыкаменты";
-			break;
-		}
-
-		os << std::endl;
+		os << "Тып: " << obj.type << std::endl;
 		os << "З: " << obj.from->GetName() << ' ' << obj.from->GetCountryAbbreviation() << std::endl;
 		if (obj.to != nullptr)
 		{

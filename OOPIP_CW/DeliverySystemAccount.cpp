@@ -345,22 +345,7 @@ namespace DeliverySystem
 		os << "Імя карыстальніка: " << obj.firstName << std::endl;
 		os << "Прозвішча: " << obj.lastName << std::endl;
 		os << "Нумар тэлефона: " << obj.phoneNumber << std::endl;
-		os << "Тып акаўнта: ";
-		switch (obj.type)
-		{
-		case Account::Type::User:
-			os << "Карыстальнік";
-			break;
-		case Account::Type::Driver:
-			os << "Кіраўнік";
-			break;
-		case Account::Type::Moderator:
-			os << "Мадэратар";
-			break;
-		case Account::Type::Admin:
-			os << "Адміністратар";
-			break;
-		}
+		os << "Тып акаўнта: " << obj.type << std::endl;
 		os << std::endl << "Колькасць бягучых даставак: " << obj.cargos.size();
 		
 		return os;
