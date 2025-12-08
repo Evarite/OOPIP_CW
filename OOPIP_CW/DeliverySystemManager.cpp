@@ -1553,6 +1553,8 @@ namespace DeliverySystem
 				GetString("");
 
 				std::cout << "\x1b[2J\x1b[1;1H";
+
+				return;
 			}
 
 			accounts.erase(account);
