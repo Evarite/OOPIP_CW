@@ -1553,6 +1553,7 @@ namespace DeliverySystem
 				GetString("");
 
 				std::cout << "\x1b[2J\x1b[1;1H";
+				Manager::account = nullptr;
 
 				return;
 			}
