@@ -393,7 +393,7 @@ namespace DeliverySystem
 			deliveriesCopy.push_back(&delivery);
 
 		for (auto& delivery : deliveriesCopy)
-			delivery->UpdateDistance(deliveries);
+			delivery->UpdateDistance(deliveries, cargos);
 
 		std::cout << "\nАднаўленне паспяхова скончана\n";
 	}
@@ -411,7 +411,7 @@ namespace DeliverySystem
 			{
 				if (cargo.GetCurrentDelivery() == nullptr)
 				{
-					std::cout << ++i << ". " << cargo << std::endl;
+					std::cout << ++i << ". " << cargo << "\n\n";
 					availableCargos.push_back(&cargo);
 				}
 			}
@@ -2408,10 +2408,11 @@ namespace DeliverySystem
 					std::cout << "1. Прыняць заказ" << std::endl
 						<< "2. Сартаванне грузаў" << std::endl
 						<< "3. Рэдагаваць асабістыя дадзеныя" << std::endl
-						<< "4. Звольніцца" << std::endl
-						<< "5. Выхад" << std::endl;
+						<< "4. Аднавіць дастаўкі" << std::endl
+						<< "5. Звольніцца" << std::endl
+						<< "6. Выхад" << std::endl;
 
-					choice = GetIntWithinRange(1, 5, "Выбярыце пункт меню: ");
+					choice = GetIntWithinRange(1, 6, "Выбярыце пункт меню: ");
 
 					std::cout << std::endl;
 
@@ -2427,9 +2428,12 @@ namespace DeliverySystem
 						EditAccount();
 						break;
 					case 4:
+						UpdateDistance();
+						break;
+					case 5:
 						DriverQuit(driver);
 						goto menu_begin;
-					case 5:
+					case 6:
 						return;
 					}
 				}
@@ -2479,10 +2483,12 @@ namespace DeliverySystem
 					<< "4. Спіс грузаў" << std::endl
 					<< "5. Спіс прычэпаў" << std::endl
 					<< "6. Разглядзець заяўкі на працу" << std::endl
-					<< "7. Звольніцца" << std::endl
-					<< "8. Выхад" << std::endl;
+					<< "7. Аднавіць дастаўкі" << std::endl
+					<< "8. Сартаванне" << std::endl
+					<< "9. Звольніцца" << std::endl
+					<< "10. Выхад" << std::endl;
 				
-				choice = GetIntWithinRange(1, 8, "Выбярыце пункт меню: ");
+				choice = GetIntWithinRange(1, 10, "Выбярыце пункт меню: ");
 
 				std::cout << std::endl;
 
@@ -2507,9 +2513,15 @@ namespace DeliverySystem
 					ConsiderJobApplications();
 					break;
 				case 7:
+					UpdateDistance();
+					break;
+				case 8:
+					ModSort();
+					break;
+				case 9:
 					ModAdmQuit();
 					goto menu_begin;
-				case 8:
+				case 10:
 					return;
 				}
 			}
@@ -2532,10 +2544,11 @@ namespace DeliverySystem
 					<< "9. Спіс даставак" << std::endl
 					<< "10. Разглядзець заяўкі на працу" << std::endl
 					<< "11. Аднавіць дастаўкі" << std::endl
-					<< "12. Звольніцца" << std::endl
-					<< "13. Выхад" << std::endl;
+					<< "12. Сартаванне" << std::endl
+					<< "13. Звольніцца" << std::endl
+					<< "14. Выхад" << std::endl;
 
-				choice = GetIntWithinRange(1, 13, "Выбярыце пункт меню: ");
+				choice = GetIntWithinRange(1, 14, "Выбярыце пункт меню: ");
 
 				std::cout << std::endl;
 
@@ -2575,9 +2588,12 @@ namespace DeliverySystem
 					UpdateDistance();
 					break;
 				case 12:
+					AdminSort();
+					break;
+				case 13:
 					ModAdmQuit();
 					goto menu_begin;
-				case 13:
+				case 14:
 					return;
 				}
 			}

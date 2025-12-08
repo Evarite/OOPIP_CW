@@ -88,8 +88,9 @@ namespace DeliverySystem
         Trailer *GetTrailer() const;
         int GetRemainingDistance() const;
 
+        void CompleteDelivery(std::list<Delivery>& deliveries, std::list<Cargo>& cargos);
         void StopDelivery(std::list<Delivery>& deliveries);
-        void UpdateDistance(std::list<Delivery>& deliveries);
+        void UpdateDistance(std::list<Delivery>& deliveries, std::list<Cargo>& cargos);
 
         bool operator==(const Delivery& obj) const;
 
@@ -195,6 +196,7 @@ namespace DeliverySystem
 
         void StopDelivery();
 
+        friend void Delivery::CompleteDelivery(std::list<Delivery>& deliveries, std::list<Cargo>& cargos);
         friend void Delivery::StopDelivery(std::list<Delivery>& deliveries);
         friend Delivery::Delivery(Driver *driver, Lorry *lorry, Cargo *cargo, Trailer *trailer);
 
@@ -234,6 +236,7 @@ namespace DeliverySystem
 
         void StopDelivery();
         friend void Delivery::StopDelivery(std::list<Delivery>& deliveries);
+        friend void Delivery::CompleteDelivery(std::list<Delivery>& deliveries, std::list<Cargo>& cargos);
 
     public:
         Lorry();
@@ -305,8 +308,10 @@ namespace DeliverySystem
 
         friend Delivery::Delivery(Driver *driver, Lorry *lorry, Cargo *cargo, Trailer *trailer);
 
+        void CompleteDelivery(std::list<Cargo>& cargos);
         void StopDelivery();
         friend void Delivery::StopDelivery(std::list<Delivery>& deliveries);
+        friend void Delivery::CompleteDelivery(std::list<Delivery>& deliveries, std::list<Cargo>& cargos);
 
     public:
         Cargo();
@@ -326,6 +331,7 @@ namespace DeliverySystem
         void RequestDelivery(Account *client, City *cityTo);
 
         bool operator==(Cargo *other);
+        bool operator==(const Cargo& other);
 
         friend std::ostream &operator<<(std::ostream &os, const Cargo &obj);
         friend std::ostream &operator<<(std::ofstream &os, const Cargo &obj);
@@ -357,6 +363,7 @@ namespace DeliverySystem
 
         void StopDelivery();
         friend void Delivery::StopDelivery(std::list<Delivery>& deliveries);
+        friend void Delivery::CompleteDelivery(std::list<Delivery>& deliveries, std::list<Cargo>& cargos);
 
     public:
         Trailer();

@@ -9,10 +9,25 @@ namespace DeliverySystem
 		currentDelivery = delivery;
 	}
 
+	void Cargo::CompleteDelivery(std::list<Cargo>& cargos)
+	{
+		for (auto cargo = cargos.begin(); cargo != cargos.end();)
+		{
+			if (this == *cargo)
+			{
+				cargos.erase(cargo);
+				break;
+			}
+
+			std::advance(cargo, 1);
+		}
+
+		currentDelivery = nullptr;
+		to = nullptr;
+	}
 	void Cargo::StopDelivery()
 	{
 		currentDelivery = nullptr;
-		to = nullptr;
 	}
 
 	Cargo::Cargo()
@@ -92,6 +107,10 @@ namespace DeliverySystem
 	bool Cargo::operator==(Cargo* other)
 	{
 		return id == other->id;
+	}
+	bool Cargo::operator==(const Cargo& other)
+	{
+		return id == other.id;
 	}
 
 	std::ostream& operator<<(std::ostream& os, const Cargo& obj)

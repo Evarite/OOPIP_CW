@@ -57,6 +57,29 @@ namespace DeliverySystem
 		return remainingDistance;
 	}
 
+	void Delivery::CompleteDelivery(std::list<Delivery>& deliveries, std::list<Cargo>& cargos)
+	{
+		std::string nickname = driver->GetAccount()->GetNickname();
+		unsigned int lorryID = lorry->GetID();
+		unsigned int cargoID = cargo->GetID();
+		unsigned int trailerID = trailer->GetID();
+
+		for (auto i = deliveries.begin(); i != deliveries.end();)
+		{
+			if (*i == *this)
+			{
+				deliveries.erase(i);
+				break;
+			}
+
+			std::advance(i, 1);
+		}
+
+		Manager::FindDriver(nickname)->StopDelivery();
+		static_cast<Lorry*>(Manager::FindWithID<Lorry>(lorryID))->StopDelivery();
+		static_cast<Cargo*>(Manager::FindWithID<Cargo>(cargoID))->CompleteDelivery(cargos);
+		static_cast<Trailer*>(Manager::FindWithID<Trailer>(trailerID))->StopDelivery();
+	}
 	void Delivery::StopDelivery(std::list<Delivery>& deliveries)
 	{
 		std::string nickname = driver->GetAccount()->GetNickname();
@@ -80,7 +103,7 @@ namespace DeliverySystem
 		static_cast<Cargo*>(Manager::FindWithID<Cargo>(cargoID))->StopDelivery();
 		static_cast<Trailer*>(Manager::FindWithID<Trailer>(trailerID))->StopDelivery();
 	}
-	void Delivery::UpdateDistance(std::list<Delivery>& deliveries)
+	void Delivery::UpdateDistance(std::list<Delivery>& deliveries, std::list<Cargo>& cargos)
 	{
 		//Skipping an hour
 		remainingDistance -= trailer->GetSpeedLimit();
@@ -88,7 +111,7 @@ namespace DeliverySystem
 		{
 			std::cout << "\nТолькі што была завершана наступная перавозка:\n";
 			std::cout << *this << '\n';
-			this->StopDelivery(deliveries);
+			this->CompleteDelivery(deliveries, cargos);
 		}
 	}
 
