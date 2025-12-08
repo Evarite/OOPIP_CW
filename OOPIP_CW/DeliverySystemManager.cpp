@@ -1567,7 +1567,7 @@ namespace DeliverySystem
 				return;
 
 			auto driver = drivers.begin();
-			std::advance(driver, driverChoice);
+			std::advance(driver, driverChoice - 1);
 
 			if (driver->GetCurrentDelivery() != nullptr)
 			{
