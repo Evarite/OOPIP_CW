@@ -168,7 +168,7 @@ namespace DeliverySystem
         std::string GetLastName() const;
         std::string GetPhoneNumber() const;
         Type GetType() const;
-        std::vector<Cargo *> GetCargos();
+        std::vector<Cargo *> GetCargos() const;
 
         void SetNickname(const std::string &nickname);
         void SetFirstName(const std::string &firstName);
@@ -570,6 +570,8 @@ namespace DeliverySystem
         static void AreasList();
         static void DeliveriesList();
         static void AdminSort();
+        static void Filter();
+        static void Search();
 
     public:
         template <FindType T> static void* FindWithID(unsigned int id) 

@@ -66,7 +66,7 @@ namespace DeliverySystem
 	{
 		return type;
 	}
-	std::vector<Cargo*> Account::GetCargos()
+	std::vector<Cargo*> Account::GetCargos() const
 	{
 		return cargos;
 	}

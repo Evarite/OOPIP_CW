@@ -2340,6 +2340,98 @@ namespace DeliverySystem
 		}
 		}
 	}
+	void Manager::Filter()
+	{
+		enum class Container
+		{
+			Account, //Deliveries count
+			Lorry, //Mileage
+			Cargo, //Mass
+			Trailer //MaxPayload
+		};
+		enum class Mode
+		{
+			Greater,
+			Less
+		};
+
+		std::cout << "Выбярыце, што вы хаціце адфільтраваць:\n"
+			<< "1. Акаўнты па колькасці даставак\n"
+			<< "2. Грузавікі па прабегу\n"
+			<< "3. Грузы па масе\n"
+			<< "4. Прычэпы па максімальнай грузападымальнасці\n";
+		int choice = GetIntWithinRange(1, 4);
+		Container container = static_cast<Container>(choice - 1);
+
+		std::cout << "Выбярыце рэжым фільтрацыі.\n1. Паказваць больш за значэнне\n2. Паказваць менш за значэнне\n";
+		choice = GetIntWithinRange(1, 2);
+		Mode mode = static_cast<Mode>(choice - 1);
+
+		int value, i = 0;
+
+		switch (container)
+		{
+		case Container::Account:
+			value = mode == Mode::Greater ? GetInt("Увядзіце мінімальную колькасць\n")
+				: GetInt("Увядзіце максімальную колькасць\n");
+
+			for (const auto& account : accounts)
+				if(mode == Mode::Greater)
+				{
+					if (account.GetCargos().size() >= value)
+						std::cout << ++i << ".\n" << account << "\n\n";
+				}
+				else
+					if(account.GetCargos().size() <= value)
+						std::cout << ++i << ".\n" << account << "\n\n";
+
+			break;
+		case Container::Lorry:
+			value = mode == Mode::Greater ? GetInt("Увядзіце мінімальны прабег\n")
+				: GetInt("Увядзіце максімальны прабег\n");
+
+			for (const auto& lorry : lorries)
+				if (mode == Mode::Greater)
+				{
+					if (lorry.GetMileage() >= value)
+						std::cout << ++i << ".\n" << lorry << "\n\n";
+				}
+				else
+					if (lorry.GetMileage() <= value)
+						std::cout << ++i << ".\n" << lorry << "\n\n";
+			break;
+		case Container::Cargo:
+			value = mode == Mode::Greater ? GetInt("Увядзіце мінімальную масу\n")
+				: GetInt("Увядзіце максімальную масу\n");
+
+			for (const auto& cargo : cargos)
+				if (mode == Mode::Greater)
+				{
+					if (cargo.GetMass() >= value)
+						std::cout << ++i << ".\n" << cargo << "\n\n";
+				}
+				else
+					if (cargo.GetMass() <= value)
+						std::cout << ++i << ".\n" << cargo << "\n\n";
+
+			break;
+		case Container::Trailer:
+			value = mode == Mode::Greater ? GetInt("Увядзіце мінімальную грузападымальнасць\n")
+				: GetInt("Увядзіце максімальную грузападымальнасць\n");
+
+			for (const auto& trailer : trailers)
+				if (mode == Mode::Greater)
+				{
+					if (trailer->GetMaxPayload() >= value)
+						std::cout << ++i << ".\n" << *trailer << "\n\n";
+				}
+				else
+					if (trailer->GetMaxPayload() <= value)
+						std::cout << ++i << ".\n" << *trailer << "\n\n";
+
+			break;
+		}
+	}
 
 	void Manager::Menu()
 	{
