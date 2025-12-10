@@ -1,6 +1,7 @@
 #include "DeliverySystem.h"
 #include <iostream>
 #include <fstream>
+#include <sstream>
 
 namespace DeliverySystem
 {
@@ -94,16 +95,20 @@ namespace DeliverySystem
 		os << "Абрэвіятура: " << obj.abbreviation << std::endl;
 		os << "Тэлефонны код: " << obj.phoneCode << std::endl;
 		os << "Спіс гарадоў: " << std::endl << std::endl;
-		os << "*************************************************" << std::endl << std::endl;
 
 		int i = 0;
 		for (const auto& city : obj.cities)
 		{
-			os << ++i << std::endl << std::endl;
-			os << city << std::endl << std::endl;
-			os << "*************************************************" << std::endl << std::endl;
-		}
+			os << '\t' << ++i << ".\n";
 
+			std::stringstream ss;
+			ss << city;
+
+			std::string line;
+			while (std::getline(ss, line))
+				os << '\t' << line << '\n';
+			os << '\n';
+		}
 		return os;
 	}
 

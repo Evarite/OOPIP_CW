@@ -507,6 +507,7 @@ namespace DeliverySystem
         Application(Account *account, const char *message);
 
         Account *GetAccount() const;
+        std::string GetMessage() const;
 
         friend std::ostream &operator<<(std::ofstream &os, const Application &obj);
         friend std::ostream &operator<<(std::ostream &os, const Application &obj);
@@ -572,6 +573,7 @@ namespace DeliverySystem
         static void AdminSort();
         static void Filter();
         static void Search();
+        static void Report();
 
     public:
         template <FindType T> static void* FindWithID(unsigned int id) 

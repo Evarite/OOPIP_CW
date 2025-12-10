@@ -20,6 +20,10 @@ namespace DeliverySystem
     { 
         return account; 
     }
+    std::string Application::GetMessage() const
+    {
+        return std::string(message);
+    }
 
     std::ostream& operator<<(std::ostream& os, const Application& obj) 
     {

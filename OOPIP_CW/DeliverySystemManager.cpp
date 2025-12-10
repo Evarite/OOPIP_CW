@@ -12,6 +12,7 @@ constexpr auto LORRIES = "Lorries.dat";
 constexpr auto TRAILERS = "Trailers.dat";
 constexpr auto DRIVERS = "Drivers.dat";
 constexpr auto APPLICATIONS = "Applications.dat";
+constexpr auto REPORT = "Report.txt";
 
 namespace DeliverySystem
 {
@@ -2729,6 +2730,142 @@ namespace DeliverySystem
 		}
 		}
 	}
+	void Manager::Report()
+	{
+		std::cout << "\nДаклад аб працы праграмы захоўваецца ў файл: " << REPORT << ".\n";
+
+		std::ofstream report(REPORT);
+		if (!report.is_open())
+			throw(std::exception("Памылка пры адкрыцці файла"));
+		else
+		{
+			report << "Краіны і гарады:\n";
+			int i = 0;
+			for (const auto& country : countries)
+			{
+				report << ++i << ".\t" << country.GetName() << '\t' << country.GetAbbreviation() << '\t'
+					<< country.GetPhoneCode();
+				report << "\nСпіс гарадоў:\n";
+
+				int j = 0;
+				for (const auto& city : country.GetCities())
+					report << '\t' << ++j << ".\t" << city.GetName() << '\t' << city.GetAbbreviation() << '\n';
+
+				report << "\n\n";
+			}
+
+			report << "*****************************************\n\n";
+
+			report << "Акаўнты:\n";
+			i = 0;
+			for (const auto& account : accounts)
+			{
+				report << ++i << ".\t" << account.GetNickname() << '\n'
+					<< account.GetFirstName() << ' ' << account.GetLastName() << '\t' << account.GetPhoneNumber()
+					<< '\n' << account.GetType() << '\n';
+				report << "Спіс грузаў:\n";
+				int j = 0;
+				for (const auto& cargo : account.GetCargos())
+				{
+					report << '\t' << ++j << ".\t" << cargo->GetName() << '\t' << cargo->GetID() << "\n\t"
+						<< "З: " << cargo->GetCityFrom()->GetName() << '\t' 
+						<< cargo->GetCityFrom()->GetCountryAbbreviation() << "\n\t";
+					if (cargo->GetCityTo() != nullptr)
+						report << "Да: " << cargo->GetCityTo()->GetName() << '\t'
+						<< cargo->GetCityTo()->GetCountryAbbreviation();
+					report << "\n\t" << cargo->GetMass() << " кг"
+						<< "\n\t" << cargo->GetType() << "\n\n";
+				}
+				if (j == 0)
+					report << "Няма\n\n";
+			}
+
+			report << "*****************************************\n\n";
+
+			report << "Кіроўцы:\n";
+			i = 0;
+			for (const auto& driver : drivers)
+			{
+				report << ++i << ".\t" << driver.GetAccount()->GetNickname() << '\t'
+					<< driver.GetAccount()->GetFirstName() << ' ' << driver.GetAccount()->GetLastName() << '\n';
+				report << "Грузавік кіроўцы: " << driver.GetLorry()->GetMake() << ' ' << driver.GetLorry()->GetModel()
+					<< '\n';
+				driver.GetCurrentDelivery() == nullptr ? report << "\nНяма задання\n\n" :
+					report << "Заданне: " << driver.GetCurrentDelivery()->GetCargo()->GetName() << '\t'
+					<< driver.GetCurrentDelivery()->GetCityFrom()->GetName() << " - "
+					<< driver.GetCurrentDelivery()->GetCityTo()->GetName() << "\n\n";
+			}
+
+			report << "*****************************************\n\n";
+
+			report << "Грузавікі:\n";
+			i = 0;
+			for (const auto& lorry : lorries)
+			{
+				report << ++i << ".\t" << lorry.GetMake() << ' ' << lorry.GetModel() << '\t'
+					<< lorry.GetID() << '\n';
+				lorry.GetCurrentDelivery() == nullptr ? report << "\nНяма задання\n\n" :
+					report << "Заданне: " << lorry.GetCurrentDelivery()->GetCargo()->GetName() << '\t'
+					<< lorry.GetCurrentDelivery()->GetCityFrom()->GetName() << " - "
+					<< lorry.GetCurrentDelivery()->GetCityTo()->GetName() << "\n\n";
+			}
+
+			report << "*****************************************\n\n";
+
+			report << "Прычэпы:\n";
+			i = 0;
+			for (const auto& trailer : trailers)
+			{
+				report << ++i << ".\t" << trailer->GetTypeString() << '\t' << trailer->GetID()
+					<< "\nДаўжыня: " << trailer->GetLength()
+					<< "\nМаксімальная грузападымальнасць: " << trailer->GetMaxPayload();
+				trailer->GetCurrentDelivery() == nullptr ? report << "\nНяма задання\n\n" :
+					report << "Заданне: " << trailer->GetCurrentDelivery()->GetCargo()->GetName() << '\t'
+					<< trailer->GetCurrentDelivery()->GetCityFrom()->GetName() << " - "
+					<< trailer->GetCurrentDelivery()->GetCityTo()->GetName() << "\n\n";
+			}
+
+			report << "*****************************************\n\n";
+
+			report << "Грузы:\n";
+			i = 0;
+			for (const auto& cargo : cargos)
+			{
+				report << ++i << ".\t" << cargo.GetName() << '\t' << cargo.GetID() << '\t'
+					<< cargo.GetMass() << " кг" << '\n';
+				report << "З: " << cargo.GetCityFrom()->GetName();
+				if (cargo.GetCityTo() != nullptr)
+				{
+					report << "Да: " << cargo.GetCityTo()->GetName() << '\n'
+						<< "Заказчык: " << cargo.GetClient()->GetNickname() << '\n';
+
+					if (cargo.GetCurrentDelivery() != nullptr)
+					{
+						report << "Дастаўляецца\n\n";
+					}
+					else
+						report << "Не дастаўляецца\n\n";
+				}
+				else
+					report << "Не заказаны\n\n";
+			}
+
+			report << "*****************************************\n\n";
+
+			report << "Заяўкі на працу:\n";
+			i = 0;
+			for (const auto& application : applications)
+			{
+				report << ++i << ".\t" << application.GetAccount()->GetNickname() << '\n'
+					<< application.GetAccount()->GetFirstName() << ' ' << application.GetAccount()->GetLastName()
+					<< '\n' << application.GetMessage() << "\n\n";
+			}
+		}
+
+		report.close();
+
+		std::cout << "Даклад паспяхова сфарміраваны\n";
+	}
 
 	void Manager::Menu()
 	{
@@ -2937,9 +3074,10 @@ namespace DeliverySystem
 					<< "13. Фільтр" << std::endl
 					<< "14. Пошук" << std::endl
 					<< "15. Звольніцца" << std::endl
-					<< "16. Выхад" << std::endl;
+					<< "16. Даклад у файл" << std::endl
+					<< "17. Выхад" << std::endl;
 
-				choice = GetIntWithinRange(1, 16, "Выбярыце пункт меню: ");
+				choice = GetIntWithinRange(1, 17, "Выбярыце пункт меню: ");
 
 				std::cout << std::endl;
 
@@ -2996,6 +3134,9 @@ namespace DeliverySystem
 					ModAdmQuit();
 					goto menu_begin;
 				case 16:
+					Report();
+					break;
+				case 17:
 					return;
 				}
 			}
