@@ -7,7 +7,7 @@
 
 namespace DeliverySystem
 {
-	unsigned long Account::Hash(const std::string& password)
+	unsigned long Account::Hash(const std::string& password) //djb2
 	{
 		unsigned long hash = 5381;
 		for (auto c : password)
@@ -15,12 +15,6 @@ namespace DeliverySystem
 			hash = (hash << 5) + hash + c;
 		}
 		return hash;
-	}
-
-	void Account::ReplaceCargo(Cargo* cargo)
-	{
-		cargos.pop_back();
-		AddCargo(cargo);
 	}
 
 	Account::Account()

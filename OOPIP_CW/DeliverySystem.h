@@ -27,7 +27,6 @@ namespace DeliverySystem
     inline constexpr auto FORBIDDEN_NICKNAME_SYMBOLS = "\\\'\",/";
     inline constexpr auto FORBIDDEN_NAME_SYMBOLS = "1234567890!=+_/*\\\'\"?.,|~@#№$;%^&:";
     inline constexpr auto MIN_PASSWORD_SIZE = 6;
-    inline constexpr auto VEC_RESERVE = 100;
 
     // Forward declaring for the relations
     class Account;
@@ -178,7 +177,6 @@ namespace DeliverySystem
         void SetPassword(const std::string &password);
         void AddCargo(Cargo *cargo);
         void RemoveCargo(Cargo *cargo);
-        void ReplaceCargo(Cargo* cargo);
 
         static Account *Authorise(std::list<Account> &accounts, const std::list<Country> &countries);
 
