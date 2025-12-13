@@ -185,13 +185,13 @@ namespace DeliverySystem
 						break;
 					}
 
-					firstName = GetString("Óגÿהח³צו גארא ³לÿ\n", FORBIDDEN_NAME_SYMBOLS, 1,
+					firstName = GetString("\nÓגÿהח³צו גארא ³לÿ\n", FORBIDDEN_NAME_SYMBOLS, 1,
 						NAME_SIZE - 1, { "N", "n" });
 
 					if (firstName == "N" || firstName == "n")
 						goto authorisation_beginning;
 
-					lastName = GetString("Óגÿהח³צו גארא ןנמחג³רקא\n", FORBIDDEN_NAME_SYMBOLS, 1, NAME_SIZE - 1,
+					lastName = GetString("\nÓגÿהח³צו גארא ןנמחג³רקא\n", FORBIDDEN_NAME_SYMBOLS, 1, NAME_SIZE - 1,
 						{ "N", "n" });
 
 					if (lastName == "N" || lastName == "n")

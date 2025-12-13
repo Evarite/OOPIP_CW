@@ -139,7 +139,7 @@ namespace DeliverySystem
 				std::cout << "\x1b[31;1m" << "Вы ўвялі забароненыя сімвалы для гэтага поля.\n"
 					<< "Спіс забароненых сімвалаў для гэтага дадзенага поля: "
 					<< forbiddenSymbols << std::endl;
-				std::cout << "Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
+				std::cout << "Паспрабуйце яшчэ раз\n" << "\x1b[0m" << std::endl;
 
 				continue;
 			}
@@ -164,13 +164,13 @@ namespace DeliverySystem
 			if (result.size() < minSize)
 			{
 				std::cout << "\x1b[31;1m" << "Мінімальны памер: " << minSize
-					<< ". Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
+					<< ". Паспрабуйце яшчэ раз\n" << "\x1b[0m" << std::endl;
 				continue;
 			}
 			else if (result.size() > maxSize)
 			{
 				std::cout << "\x1b[31;1m" << "Максімальны памер: " << maxSize
-					<< ". Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
+					<< ". Паспрабуйце яшчэ раз\n" << "\x1b[0m" << std::endl;
 				continue;
 			}
 
@@ -193,19 +193,21 @@ namespace DeliverySystem
 			result = TrimWhitespace(result);
 
 			for (const auto& str : exceptions)
+			{
 				if (str == result)
 					return result;
+			}
 
-			else if (result.size() < minSize)
+			if (result.size() < minSize)
 			{
 				std::cout << "\x1b[31;1m" << "Мінімальны памер: " << minSize
-					<< ". Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
+					<< ". Паспрабуйце яшчэ раз\n" << "\x1b[0m" << std::endl;
 				continue;
 			}
 			else if (result.size() > maxSize)
 			{
 				std::cout << "\x1b[31;1m" << "Максімальны памер: " << maxSize
-					<< ". Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
+					<< ". Паспрабуйце яшчэ раз\n" << "\x1b[0m" << std::endl;
 				continue;
 			}
 			else if (result.find_first_of(forbiddenSymbols) != std::string::npos)
@@ -213,7 +215,7 @@ namespace DeliverySystem
 				std::cout << "\x1b[31;1m" << "Вы ўвялі забароненыя сімвалы для гэтага поля.\n"
 					<< "Спіс забароненых сімвалаў для гэтага дадзенага поля: "
 					<< forbiddenSymbols << std::endl;
-				std::cout << "Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
+				std::cout << "Паспрабуйце яшчэ раз\n" << "\x1b[0m" << std::endl;
 
 				continue;
 			}

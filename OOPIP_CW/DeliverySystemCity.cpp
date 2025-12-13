@@ -72,8 +72,8 @@ namespace DeliverySystem
 
 	std::ostream& operator<<(std::ostream& os, const City& obj)
 	{		
-		os << "Назва горада: " << obj.name << std::endl;
-		os << "Краіна: " << obj.countryAbbreviation << std::endl;
+		os << "Назва горада: " << obj.name << '\n';
+		os << "Краіна: " << obj.countryAbbreviation << '\n';
 		os << "Абрэвіятура: " << obj.abbreviation;	
 
 		return os;

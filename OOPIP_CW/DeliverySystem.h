@@ -516,9 +516,8 @@ namespace DeliverySystem
     concept FindType = std::is_same_v<T, Cargo> || std::is_same_v<T, Lorry> || 
         std::is_same_v<T, Trailer> || std::is_same_v<T, City>;
 
-    class Manager // Яны не прыдумалі стацік класы, як жа я люблю с++ (не)!!!!!
+    class Manager // Яны не прыдумалі статык класы, як жа я люблю с++ (не)!!!!!
     {
-    public:
         static inline std::list<Country> countries{};
         static inline std::list<Account> accounts{};
         static inline std::list<Driver> drivers{};
@@ -529,6 +528,7 @@ namespace DeliverySystem
         static inline std::list<Application> applications{};
         static inline Account *account = nullptr;
 
+    public:
         static void Initialise();
         static void UpdateFiles();
         static void Authorise();

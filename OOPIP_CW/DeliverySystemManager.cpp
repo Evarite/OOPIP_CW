@@ -253,6 +253,8 @@ namespace DeliverySystem
 					if (isOccupied)
 						continue;
 				}
+
+				break;
 			}
 
 			account->SetNickname(nickname);
@@ -818,7 +820,10 @@ namespace DeliverySystem
 			for (auto i = drivers.begin(); i != drivers.end();)
 			{
 				if (*driver == *i)
+				{
 					drivers.erase(i);
+					break;
+				}
 
 				std::advance(i, 1);
 			}
@@ -2880,7 +2885,7 @@ namespace DeliverySystem
 			while(true)
 			{
 				std::cout << std::endl << std::setw(20) << "\x1b[33;1m" << "Меню:" << "\x1b[0m" << std::endl;
-				std::cout << "1. Заказаць дастаўку" << std::endl
+				std::cout << "1. Замовіць дастаўку" << std::endl
 					<< "2. Праглядзець актыўныя заказы" << std::endl
 					<< "3. Рэдагаваць асабістыя дадзеныя" << std::endl
 					<< "4. Праглядзець даступныя гарады і краіны" << std::endl
@@ -2931,7 +2936,7 @@ namespace DeliverySystem
 				if (driver->GetCurrentDelivery() == nullptr)
 				{
 					std::cout << std::endl << std::setw(20) << "\x1b[33;1m" << "Меню:" << "\x1b[0m" << std::endl;
-					std::cout << "1. Прыняць заказ" << std::endl
+					std::cout << "1. Прыняць замову" << std::endl
 						<< "2. Сартаванне грузаў" << std::endl
 						<< "3. Рэдагаваць асабістыя дадзеныя" << std::endl
 						<< "4. Аднавіць дастаўкі" << std::endl
@@ -2966,9 +2971,9 @@ namespace DeliverySystem
 				else
 				{
 					std::cout << std::endl << std::setw(20) << "\x1b[33;1m" << "Меню:" << "\x1b[0m" << std::endl;
-					std::cout << "1. Праглядзець бягучы заказ" << std::endl
+					std::cout << "1. Праглядзець бягучую замову" << std::endl
 						<< "2. Аднавіць дастаўкі" << std::endl
-						<< "3. Адмовіцца ад заказу" << std::endl
+						<< "3. Адмовіцца ад замовы" << std::endl
 						<< "4. Рэдагаваць асабістыя дадзеныя" << std::endl
 						<< "5. Выхад" << std::endl;
 
