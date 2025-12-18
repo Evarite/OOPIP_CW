@@ -1,4 +1,4 @@
-#include "DeliverySystem.h"
+ï»¿#include "DeliverySystem.h"
 #include <iostream>
 #include <conio.h>
 #include <cwctype>
@@ -58,7 +58,7 @@ namespace DeliverySystem
 			if (!std::cin.good())
 			{
 				std::cin.clear();
-				std::cout << "\x1b[31;1m" << "Ïàìûëêà ¢âîäó. Ïàñïðàáóéöå ÿø÷ý ðàç" << "\x1b[0m"
+				std::cout << "\x1b[31;1m" << "ÐŸÐ°Ð¼Ñ‹Ð»ÐºÐ° ÑžÐ²Ð¾Ð´Ñƒ. ÐŸÐ°ÑÐ¿Ñ€Ð°Ð±ÑƒÐ¹Ñ†Ðµ ÑÑˆÑ‡Ñ Ñ€Ð°Ð·" << "\x1b[0m"
 					<< std::endl << std::endl;
 				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 				continue;
@@ -80,7 +80,7 @@ namespace DeliverySystem
 
 			if (result < left || result > right)
 			{
-				std::cout << "\x1b[31;1m" << "Íÿâåðíû âûáàð. Ïàñïðàáóéöå ÿø÷ý ðàç" << "\x1b[0m"
+				std::cout << "\x1b[31;1m" << "ÐÑÐ²ÐµÑ€Ð½Ñ‹ Ð²Ñ‹Ð±Ð°Ñ€. ÐŸÐ°ÑÐ¿Ñ€Ð°Ð±ÑƒÐ¹Ñ†Ðµ ÑÑˆÑ‡Ñ Ñ€Ð°Ð·" << "\x1b[0m"
 					<< std::endl << std::endl;
 				continue;
 			}
@@ -101,7 +101,7 @@ namespace DeliverySystem
 			if (!std::cin.good())
 			{
 				std::cin.clear();
-				std::cout << "\x1b[31;1m" << "Ïàìûëêà ¢âîäó. Ïàñïðàáóéöå ÿø÷ý ðàç" << "\x1b[0m"
+				std::cout << "\x1b[31;1m" << "ÐŸÐ°Ð¼Ñ‹Ð»ÐºÐ° ÑžÐ²Ð¾Ð´Ñƒ. ÐŸÐ°ÑÐ¿Ñ€Ð°Ð±ÑƒÐ¹Ñ†Ðµ ÑÑˆÑ‡Ñ Ñ€Ð°Ð·" << "\x1b[0m"
 					<< std::endl << std::endl;
 				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 				continue;
@@ -137,10 +137,10 @@ namespace DeliverySystem
 
 			if (result.find_first_of(forbiddenSymbols) != std::string::npos)
 			{
-				std::cout << "\x1b[31;1m" << "Âû ¢âÿë³ çàáàðîíåíûÿ ñ³ìâàëû äëÿ ãýòàãà ïîëÿ.\n"
-					<< "Ñï³ñ çàáàðîíåíûõ ñ³ìâàëà¢ äëÿ ãýòàãà äàäçåíàãà ïîëÿ: "
+				std::cout << "\x1b[31;1m" << "Ð’Ñ‹ ÑžÐ²ÑÐ»Ñ– Ð·Ð°Ð±Ð°Ñ€Ð¾Ð½ÐµÐ½Ñ‹Ñ ÑÑ–Ð¼Ð²Ð°Ð»Ñ‹ Ð´Ð»Ñ Ð³ÑÑ‚Ð°Ð³Ð° Ð¿Ð¾Ð»Ñ.\n"
+					<< "Ð¡Ð¿Ñ–Ñ Ð·Ð°Ð±Ð°Ñ€Ð¾Ð½ÐµÐ½Ñ‹Ñ… ÑÑ–Ð¼Ð²Ð°Ð»Ð°Ñž Ð´Ð»Ñ Ð³ÑÑ‚Ð°Ð³Ð° Ð´Ð°Ð´Ð·ÐµÐ½Ð°Ð³Ð° Ð¿Ð¾Ð»Ñ: "
 					<< forbiddenSymbols << std::endl;
-				std::cout << "Ïàñïðàáóéöå ÿø÷ý ðàç\n" << "\x1b[0m" << std::endl;
+				std::cout << "ÐŸÐ°ÑÐ¿Ñ€Ð°Ð±ÑƒÐ¹Ñ†Ðµ ÑÑˆÑ‡Ñ Ñ€Ð°Ð·\n" << "\x1b[0m" << std::endl;
 
 				continue;
 			}
@@ -164,14 +164,14 @@ namespace DeliverySystem
 
 			if (result.size() < minSize)
 			{
-				std::cout << "\x1b[31;1m" << "Ì³í³ìàëüíû ïàìåð: " << minSize
-					<< ". Ïàñïðàáóéöå ÿø÷ý ðàç\n" << "\x1b[0m" << std::endl;
+				std::cout << "\x1b[31;1m" << "ÐœÑ–Ð½Ñ–Ð¼Ð°Ð»ÑŒÐ½Ñ‹ Ð¿Ð°Ð¼ÐµÑ€: " << minSize
+					<< ". ÐŸÐ°ÑÐ¿Ñ€Ð°Ð±ÑƒÐ¹Ñ†Ðµ ÑÑˆÑ‡Ñ Ñ€Ð°Ð·\n" << "\x1b[0m" << std::endl;
 				continue;
 			}
 			else if (result.size() > maxSize)
 			{
-				std::cout << "\x1b[31;1m" << "Ìàêñ³ìàëüíû ïàìåð: " << maxSize
-					<< ". Ïàñïðàáóéöå ÿø÷ý ðàç\n" << "\x1b[0m" << std::endl;
+				std::cout << "\x1b[31;1m" << "ÐœÐ°ÐºÑÑ–Ð¼Ð°Ð»ÑŒÐ½Ñ‹ Ð¿Ð°Ð¼ÐµÑ€: " << maxSize
+					<< ". ÐŸÐ°ÑÐ¿Ñ€Ð°Ð±ÑƒÐ¹Ñ†Ðµ ÑÑˆÑ‡Ñ Ñ€Ð°Ð·\n" << "\x1b[0m" << std::endl;
 				continue;
 			}
 
@@ -201,22 +201,22 @@ namespace DeliverySystem
 
 			if (result.size() < minSize)
 			{
-				std::cout << "\x1b[31;1m" << "Ì³í³ìàëüíû ïàìåð: " << minSize
-					<< ". Ïàñïðàáóéöå ÿø÷ý ðàç\n" << "\x1b[0m" << std::endl;
+				std::cout << "\x1b[31;1m" << "ÐœÑ–Ð½Ñ–Ð¼Ð°Ð»ÑŒÐ½Ñ‹ Ð¿Ð°Ð¼ÐµÑ€: " << minSize
+					<< ". ÐŸÐ°ÑÐ¿Ñ€Ð°Ð±ÑƒÐ¹Ñ†Ðµ ÑÑˆÑ‡Ñ Ñ€Ð°Ð·\n" << "\x1b[0m" << std::endl;
 				continue;
 			}
 			else if (result.size() > maxSize)
 			{
-				std::cout << "\x1b[31;1m" << "Ìàêñ³ìàëüíû ïàìåð: " << maxSize
-					<< ". Ïàñïðàáóéöå ÿø÷ý ðàç\n" << "\x1b[0m" << std::endl;
+				std::cout << "\x1b[31;1m" << "ÐœÐ°ÐºÑÑ–Ð¼Ð°Ð»ÑŒÐ½Ñ‹ Ð¿Ð°Ð¼ÐµÑ€: " << maxSize
+					<< ". ÐŸÐ°ÑÐ¿Ñ€Ð°Ð±ÑƒÐ¹Ñ†Ðµ ÑÑˆÑ‡Ñ Ñ€Ð°Ð·\n" << "\x1b[0m" << std::endl;
 				continue;
 			}
 			else if (result.find_first_of(forbiddenSymbols) != std::string::npos)
 			{
-				std::cout << "\x1b[31;1m" << "Âû ¢âÿë³ çàáàðîíåíûÿ ñ³ìâàëû äëÿ ãýòàãà ïîëÿ.\n"
-					<< "Ñï³ñ çàáàðîíåíûõ ñ³ìâàëà¢ äëÿ ãýòàãà äàäçåíàãà ïîëÿ: "
+				std::cout << "\x1b[31;1m" << "Ð’Ñ‹ ÑžÐ²ÑÐ»Ñ– Ð·Ð°Ð±Ð°Ñ€Ð¾Ð½ÐµÐ½Ñ‹Ñ ÑÑ–Ð¼Ð²Ð°Ð»Ñ‹ Ð´Ð»Ñ Ð³ÑÑ‚Ð°Ð³Ð° Ð¿Ð¾Ð»Ñ.\n"
+					<< "Ð¡Ð¿Ñ–Ñ Ð·Ð°Ð±Ð°Ñ€Ð¾Ð½ÐµÐ½Ñ‹Ñ… ÑÑ–Ð¼Ð²Ð°Ð»Ð°Ñž Ð´Ð»Ñ Ð³ÑÑ‚Ð°Ð³Ð° Ð´Ð°Ð´Ð·ÐµÐ½Ð°Ð³Ð° Ð¿Ð¾Ð»Ñ: "
 					<< forbiddenSymbols << std::endl;
-				std::cout << "Ïàñïðàáóéöå ÿø÷ý ðàç\n" << "\x1b[0m" << std::endl;
+				std::cout << "ÐŸÐ°ÑÐ¿Ñ€Ð°Ð±ÑƒÐ¹Ñ†Ðµ ÑÑˆÑ‡Ñ Ñ€Ð°Ð·\n" << "\x1b[0m" << std::endl;
 
 				continue;
 			}
@@ -230,15 +230,15 @@ namespace DeliverySystem
 	void EnableAnsiColors()
 	{
 	#ifdef _WIN32
-		// Ïîëó÷àåì õýíäë êîíñîëè
+		// ÐŸÐ¾Ð»ÑƒÑ‡Ð°ÐµÐ¼ Ñ…ÑÐ½Ð´Ð» ÐºÐ¾Ð½ÑÐ¾Ð»Ð¸
 		HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
 		if (hOut == INVALID_HANDLE_VALUE) return;
 
-		// Ïîëó÷àåì òåêóùèé ðåæèì
+		// ÐŸÐ¾Ð»ÑƒÑ‡Ð°ÐµÐ¼ Ñ‚ÐµÐºÑƒÑ‰Ð¸Ð¹ Ñ€ÐµÐ¶Ð¸Ð¼
 		DWORD dwMode = 0;
 		if (!GetConsoleMode(hOut, &dwMode)) return;
 
-		// Âêëþ÷àåì ïîääåðæêó âèðòóàëüíîãî òåðìèíàëà
+		// Ð’ÐºÐ»ÑŽÑ‡Ð°ÐµÐ¼ Ð¿Ð¾Ð´Ð´ÐµÑ€Ð¶ÐºÑƒ Ð²Ð¸Ñ€Ñ‚ÑƒÐ°Ð»ÑŒÐ½Ð¾Ð³Ð¾ Ñ‚ÐµÑ€Ð¼Ð¸Ð½Ð°Ð»Ð°
 		dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
 		SetConsoleMode(hOut, dwMode);
 	#endif
@@ -278,8 +278,6 @@ namespace DeliverySystem
 
 		while (!chosen)
 		{
-			system("cls");
-
 			std::cout << std::endl << std::setw(20) << "\x1b[33;1m" << title << "\x1b[0m" << std::endl;
 
 			for (int i = 0; i < menuItems.size(); i++)
@@ -288,7 +286,11 @@ namespace DeliverySystem
 				else
 					std::cout << "  " << menuItems[i] << std::endl;
 
+			std::cout << "\nÐ£Ð¶Ñ‹Ð²Ð°Ð¹Ñ†Ðµ ÑÑ‚Ñ€ÑÐ»ÐºÑ– /\\, \\/ Ð´Ð»Ñ Ð½Ð°Ð²Ñ–Ð³Ð°Ñ†Ñ‹Ñ–, Enter Ð´Ð»Ñ Ð²Ñ‹Ð±Ð°Ñ€Ð°" << std::endl;
+
 			key = _getch();
+
+			system("cls");
 
 			if (key == 224)
 			{

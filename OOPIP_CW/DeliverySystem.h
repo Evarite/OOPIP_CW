@@ -728,7 +728,7 @@ namespace DeliverySystem
     std::string GetString(const std::string& message, unsigned int minSize, unsigned int maxSize);
     std::string GetString(const std::string& message, const std::string& forbiddenSymbols, unsigned int minSize,
         unsigned int maxSize, const std::vector<std::string>& exceptions);
-    void GotoXY(int x, int y);
+    void GoToXY(int x, int y);
     void HideCursor();
     void ShowCursor();
     int ShowMenuWithNavigation(const std::vector<std::string>& menuItems, const std::string& title = "Меню:");

@@ -204,16 +204,19 @@ namespace DeliverySystem
 	//All
 	void Manager::EditAccount()
 	{
-		int choice;
-		std::cout << "Што хаціце адрэдагаваць?\n"
-			<< "1. Імя акаўнту\n2. Пароль\n3. Уласнае імя\n4. Прозвішча\n5. Нумар тэлефону\n0. Выхад\n"
-			<< "Ваш выбар: ";
-		choice = GetIntWithinRange(0, 5);
+		int choice = ShowMenuWithNavigation({
+			"Імя акаўнту",
+			"Пароль",
+			"Уласнае імя",
+			"Прозвішча",
+			"Нумар тэлефону",
+			"Выхад"
+			}, "Што хаціце адрэдагаваць?");
+
+		if (choice == 6) return;
 
 		switch (choice)
 		{
-		case 0:
-			return;
 		case 1:
 		{
 			std::string nickname;
@@ -364,12 +367,12 @@ namespace DeliverySystem
 				std::cout << ++i << ". " << country.GetName() << std::endl;
 			}
 
-			choice = GetIntWithinRange(1, countries.size(), "Выбярыце вашу краіну: ");
+			int countryChoice = GetIntWithinRange(1, countries.size(), "Выбярыце вашу краіну: ");
 
 			while (true)
 			{
 				auto country = countries.begin();
-				std::advance(country, choice);
+				std::advance(country, countryChoice);
 				phoneCode = country->GetPhoneCode();
 
 				std::cout << std::endl << "Увядзіце ваш нумар тэлефону" << std::endl
@@ -534,7 +537,7 @@ namespace DeliverySystem
 			"Выбярыце, што вы жадаеце адсартаваць");
 
 		container = static_cast<SortContainer>(choice - 1);
-		
+
 		switch (container)
 		{
 		case SortContainer::Countries:
@@ -626,7 +629,7 @@ namespace DeliverySystem
 
 			SortAttribute attribute;
 			choice = ShowMenuWithNavigation({ "Назва груза", "Маса груза", "Горад адпраўлення", "Горад прыбыцця",
-				"Тып груза"}, "Выбярыце атрыбут сартавання");
+				"Тып груза" }, "Выбярыце атрыбут сартавання");
 			attribute = static_cast<SortAttribute>(choice - 1);
 
 			SortOrder order;
@@ -676,14 +679,6 @@ namespace DeliverySystem
 			};
 
 			SortAttribute attribute;
-			std::cout << "Выбярыце атрыбут сартавання:\n"
-				<< "1. Імя кіроўцы\n"
-				<< "2. Назва груза\n"
-				<< "3. Маса груза\n"
-				<< "4. Горад адпраўлення\n"
-				<< "5. Горад прыбыцця\n"
-				<< "6. Тып груза\n";
-
 			choice = ShowMenuWithNavigation({ "Імя кіроўцы", "Назва груза", "Маса груза", "Горад адпраўлення",
 				"Горад прыбыцця", "Тып груза" }, "Выбярыце атрыбут сартавання");
 			attribute = static_cast<SortAttribute>(choice - 1);
@@ -728,7 +723,7 @@ namespace DeliverySystem
 		}
 		}
 	}
-	
+
 	//Driver
 	void Manager::AcceptDelivery(Driver* driver)
 	{
@@ -779,12 +774,11 @@ namespace DeliverySystem
 
 		deliveries.emplace_back(driver, driver->GetLorry(), availableCargos[choiceCargo - 1],
 			availableTrailers[choiceTrailer - 1]);
-		
+
 	}
 	void Manager::DriverQuit(Driver* driver)
 	{
-		std::cout << "Гэта дзеянне нельга будзе адмовіць.\nВы ўпэўнены?\n";
-		int choice = ShowMenuWithNavigation({ "Так", "Не" }, "");
+		int choice = ShowMenuWithNavigation({ "Так", "Не" }, "Гэта дзеянне нельга будзе адмовіць. Вы ўпэўнены?");
 
 		switch (choice)
 		{
@@ -814,8 +808,8 @@ namespace DeliverySystem
 	}
 	void Manager::DropDelivery(Driver* driver)
 	{
-		std::cout << "Гэта дзеянне нельга будзе адмовіць. За няўстойкі вы будзеце аштрафаваны\nВы ўпэўнены?\n";
-		int choice = ShowMenuWithNavigation({ "Так", "Не" }, "");
+		int choice = ShowMenuWithNavigation({ "Так", "Не" },
+			"Гэта дзеянне нельга будзе адмовіць. За няўстойкі вы будзеце аштрафаваны\nВы ўпэўнены?");
 
 		switch (choice)
 		{
@@ -827,7 +821,7 @@ namespace DeliverySystem
 		}
 	}
 	void Manager::DriverSort()
-	///Sorts cargo only
+		///Sorts cargo only
 	{
 		enum class SortOrder
 		{
@@ -903,7 +897,7 @@ namespace DeliverySystem
 		TablePrinter cargosT(cargos);
 		std::cout << cargosT << '\n';
 
-		int choice = ShowMenuWithNavigation({"Дадаць груз", "Выдаліць груз", "Выхад"}, "Выбярыце пункт меню");
+		int choice = ShowMenuWithNavigation({ "Дадаць груз", "Выдаліць груз", "Выхад" }, "Выбярыце пункт меню");
 
 		switch (choice)
 		{
@@ -959,7 +953,7 @@ namespace DeliverySystem
 			int cargoChoice;
 			std::cout << "Увядзіце нумар груза для выдалення: ";
 			cargoChoice = GetIntWithinRange(1, cargos.size());
-		
+
 			auto cargo = cargos.begin();
 			std::advance(cargo, cargoChoice - 1);
 
@@ -990,7 +984,7 @@ namespace DeliverySystem
 			length = GetFloat("Увядзіце даўжыню прычэпа: ");
 			maxPayload = GetFloat("Увядзіце максімальную нагрузку: ");
 
-			typeChoice = ShowMenuWithNavigation({ "Аўтавоз", "Цыстэрна", "Лесавоз", "Трал", "Тэнтавы", "Рэфрыжэратар"},
+			typeChoice = ShowMenuWithNavigation({ "Аўтавоз", "Цыстэрна", "Лесавоз", "Трал", "Тэнтавы", "Рэфрыжэратар" },
 				"Меню");
 
 			std::unique_ptr<Trailer> newTrailer;
@@ -1081,7 +1075,7 @@ namespace DeliverySystem
 
 			if (availableLorries.empty())
 			{
-				std::cout << "\x1b[31;1m" 
+				std::cout << "\x1b[31;1m"
 					<< "Немагчыма падцвердзіць заяўку, бо адсутнічаюць свабодныя грузавікі\n"
 					<< "\x1b[0m";
 				break;
@@ -1121,8 +1115,7 @@ namespace DeliverySystem
 	}
 	void Manager::ModAdmQuit()
 	{
-		std::cout << "Гэта дзеянне нельга будзе адмовіць.\n";
-		int choice = ShowMenuWithNavigation({ "Так", "Не" }, "Вы ўпэўнены?");
+		int choice = ShowMenuWithNavigation({ "Так", "Не" }, "Гэта дзеянне нельга будзе адмовіць. Вы ўпэўнены?");
 
 		switch (choice)
 		{
@@ -1169,17 +1162,10 @@ namespace DeliverySystem
 			};
 			SortAttribute attribute;
 
-			std::cout << "Выбярыце атрыбут сартавання:\n"
-				<< "1. Імя акаўнту\n"
-				<< "2. Уласнае імя\n"
-				<< "3. Прозвішча\n";
-			choice = GetIntWithinRange(1, 3);
+			choice = ShowMenuWithNavigation({ "Імя акаўнту", "Уласнае імя", "Прозвішча" }, "Выбярыце атрыбут сартавання");
 			attribute = static_cast<SortAttribute>(choice - 1);
 
-			std::cout << "Выбярыце парадак сартавання:\n"
-				<< "1. Па ўзрастанні\n"
-				<< "2. Па змяншэнні\n";
-			choice = GetIntWithinRange(1, 2);
+			choice = ShowMenuWithNavigation({ "Па ўзрастанні", "Па змяншэнні" }, "Выбярыце парадак сартавання");
 			order = static_cast<SortOrder>(choice - 1);
 
 			accounts.sort([attribute, order](const Account& a, const Account& b)
@@ -1215,19 +1201,11 @@ namespace DeliverySystem
 			};
 			SortAttribute attribute;
 
-			std::cout << "Выбярыце атрыбут сартавання:\n"
-				<< "1. Імя акаўнту\n"
-				<< "2. Уласнае імя\n"
-				<< "3. Прозвішча\n"
-				<< "4. Горад адпраўлення\n"
-				<< "5. Горад прыбыцця\n";
-			choice = GetIntWithinRange(1, 5);
+			choice = ShowMenuWithNavigation({ "Імя акаўнту", "Уласнае імя", "Прозвішча", "Горад адпраўлення",
+				"Горад прыбыцця" }, "Выбярыце атрыбут сартавання");
 			attribute = static_cast<SortAttribute>(choice - 1);
 
-			std::cout << "Выбярыце парадак сартавання:\n"
-				<< "1. Па ўзрастанні\n"
-				<< "2. Па змяншэнні\n";
-			choice = GetIntWithinRange(1, 2);
+			choice = ShowMenuWithNavigation({ "Па ўзрастанні", "Па змяншэнні" }, "Выбярыце парадак сартавання");
 			order = static_cast<SortOrder>(choice - 1);
 
 			drivers.sort([attribute, order](const Driver& a, const Driver& b)
@@ -1248,7 +1226,7 @@ namespace DeliverySystem
 								else if (b.GetCurrentDelivery() == nullptr)
 									return false;
 								else
-									return a.GetCurrentDelivery()->GetCityFrom()->GetName() < 
+									return a.GetCurrentDelivery()->GetCityFrom()->GetName() <
 									b.GetCurrentDelivery()->GetCityFrom()->GetName();
 							case SortAttribute::DeliveryCityTo:
 								if (a.GetCurrentDelivery() == nullptr)
@@ -1279,21 +1257,11 @@ namespace DeliverySystem
 			};
 			SortAttribute attribute;
 
-			std::cout << "Выбярыце атрыбут сартавання:\n"
-				<< "1. Назва груза\n"
-				<< "2. Маса груза\n"
-				<< "3. Горад адпраўлення\n"
-				<< "4. Горад прыбыцця\n"
-				<< "5. Тып груза\n";
-
-			int choice = GetIntWithinRange(1, 5);
+			choice = ShowMenuWithNavigation({ "Назва груза", "Маса груза", "Горад адпраўлення", "Горад прыбыцця",
+				"Тып груза" }, "Выбярыце атрыбут сартавання");
 			attribute = static_cast<SortAttribute>(choice - 1);
 
-			std::cout << "Выбярыце парадак сартавання:\n"
-				<< "1. Па ўзрастанні\n"
-				<< "2. Па змяншэнні\n";
-
-			choice = GetIntWithinRange(1, 2);
+			choice = ShowMenuWithNavigation({ "Па ўзрастанні", "Па змяншэнні" }, "Выбярыце парадак сартавання");
 			order = static_cast<SortOrder>(choice - 1);
 
 			cargos.sort([attribute, order](const Cargo& a, const Cargo& b)
@@ -1338,19 +1306,11 @@ namespace DeliverySystem
 			};
 			SortAttribute attribute;
 
-			std::cout << "Выбярыце атрыбут сартавання:\n"
-				<< "1. Даўжыня\n"
-				<< "2. Максімальная загрузка\n"
-				<< "3. Горад адпраўлення\n"
-				<< "4. Горад прыбыцця\n"
-				<< "5. Тып прычепу\n";
-			choice = GetIntWithinRange(1, 5);
+			choice = ShowMenuWithNavigation({ "Даўжыня", "Максімальная загрузка", "Горад адпраўлення", "Горад прыбыцця",
+				"Тып прычепу" }, "Выбярыце атрыбут сартавання");
 			attribute = static_cast<SortAttribute>(choice - 1);
 
-			std::cout << "Выбярыце парадак сартавання:\n"
-				<< "1. Па ўзрастанні\n"
-				<< "2. Па змяншэнні\n";
-			choice = GetIntWithinRange(1, 2);
+			choice = ShowMenuWithNavigation({ "Па ўзрастанні", "Па змяншэнні" }, "Выбярыце парадак сартавання");
 			order = static_cast<SortOrder>(choice - 1);
 
 			trailers.sort([attribute, order](const std::unique_ptr<Trailer>& a, const std::unique_ptr<Trailer>& b)
@@ -1405,8 +1365,7 @@ namespace DeliverySystem
 		TablePrinter table(accounts);
 		std::cout << table << '\n';
 
-		std::cout << "\nВыбярыце пункт меню:\n1. Змяніць тып акаўнту\n2. Выдаліць акаўнт\n3. Выхад\n";
-		int choice = GetIntWithinRange(1, 3);
+		int choice = ShowMenuWithNavigation({ "Змяніць тып акаўнту", "Выдаліць акаўнт", "Выхад" }, "Выбярыце пункт меню");
 
 		switch (choice)
 		{
@@ -1418,9 +1377,8 @@ namespace DeliverySystem
 			auto account = accounts.begin();
 			std::advance(account, accountChoice - 1);
 
-			std::cout << "Выбярыце новы тып акаўнту:\n";
-			std::cout << "1. Карыстальнік\n2. Мадэратар\n3. Адміністратар\n";
-			typeChoice = GetIntWithinRange(1, 3);
+			typeChoice = ShowMenuWithNavigation({ "Карыстальнік", "Мадэратар", "Адміністратар" },
+				"Выбярыце новы тып акаўнту");
 
 			Account::Type newType;
 			switch (typeChoice)
@@ -1469,8 +1427,7 @@ namespace DeliverySystem
 
 			if (*account == *Manager::account)
 			{
-				std::cout << "Вы ўпэўнены, што хаціце выдаліць уласны акаўнт?\n1. Так\t2. Не\n";
-				int choice = GetIntWithinRange(1, 2);
+				int choice = ShowMenuWithNavigation({ "Так", "Не" }, "Вы ўпэўнены, што хаціце выдаліць уласны акаўнт?");
 
 				if (choice == 2)
 					return;
@@ -1502,14 +1459,13 @@ namespace DeliverySystem
 		TablePrinter table(drivers);
 		std::cout << table << '\n';
 
-		std::cout << "Выбярыце пункт меню:\n1. Зволніць кіроўцу\n2. Выхад\n";
-		int choice = GetIntWithinRange(1, 2);
+		int choice = ShowMenuWithNavigation({ "Зволніць кіроўцу", "Выхад" }, "Выбярыце пункт меню");
 
 		switch (choice)
 		{
 		case 1:
 		{
-			int driverChoice = GetIntWithinRange(0, drivers.size(), 
+			int driverChoice = GetIntWithinRange(0, drivers.size(),
 				"Выбярыце кіроўцу да звальнення (0 для адмовы): ");
 			if (driverChoice == 0)
 				return;
@@ -1539,8 +1495,7 @@ namespace DeliverySystem
 		TablePrinter table(lorries);
 		std::cout << table << '\n';
 
-		std::cout << "\nВыбярыце пункт меню:\n1. Дадаць грузавік\n2. Выдаліць грузавік\n3. Выхад\n";
-		choice = GetIntWithinRange(1, 3);
+		choice = ShowMenuWithNavigation({ "Дадаць грузавік", "Выдаліць грузавік", "Выхад" }, "Выбярыце пункт меню");
 
 		switch (choice)
 		{
@@ -1598,7 +1553,7 @@ namespace DeliverySystem
 			int lorryChoice = GetIntWithinRange(1, lorries.size(), "Увядзіце нумар грузавіка для выдалення: ");
 
 			auto lorry = lorries.begin();
-			std::advance(lorry, lorryChoice- 1);
+			std::advance(lorry, lorryChoice - 1);
 
 			if (lorry->GetOwner() != nullptr)
 			{
@@ -1622,9 +1577,8 @@ namespace DeliverySystem
 		TablePrinter table(countries);
 		std::cout << table << '\n';
 
-		std::cout << "\nВыбярыце пункт меню:\n1. Дадаць краіну\n2. Дадаць горад\n"
-			<< "3. Выдаліць краіну\n4. Выдаліць горад\n5. Выхад\n";
-		int choice = GetIntWithinRange(1, 5);
+		int choice = ShowMenuWithNavigation({ "Дадаць краіну", "Дадаць горад", "Выдаліць краіну",
+			"Выдаліць горад", "Выхад" }, "Выбярыце пункт меню");
 
 		switch (choice)
 		{
@@ -1709,7 +1663,7 @@ namespace DeliverySystem
 				return;
 
 			int j = 0;
-			for(const auto& country : countries)
+			for (const auto& country : countries)
 			{
 				j++;
 				if (country == *availableCountries[countryChoice - 1])
@@ -1781,7 +1735,7 @@ namespace DeliverySystem
 
 			country->RemoveCity(availableCities[cityChoice - 1]);
 			std::cout << "Горад паспяхова выдалены!\n";
-			
+
 			break;
 		}
 		case 5:
@@ -1794,8 +1748,7 @@ namespace DeliverySystem
 		TablePrinter table(deliveries);
 		std::cout << table << '\n';
 
-		std::cout << "\nВыбярыце пункт меню:\n1. Выдаліць дастаўку\n2. Выхад\n";
-		int choice = GetIntWithinRange(1, 2);
+		int choice = ShowMenuWithNavigation({ "Выдаліць дастаўку", "Выхад" }, "Выбярыце пункт меню");
 
 		switch (choice)
 		{
@@ -1810,7 +1763,7 @@ namespace DeliverySystem
 
 			deliveries.erase(delivery);
 			std::cout << "Дастаўка паспяхова выдалена!\n";
-		
+
 			break;
 		}
 		case 2:
@@ -1839,16 +1792,9 @@ namespace DeliverySystem
 		SortContainer container;
 		SortOrder order;
 
-		std::cout << "Выбярыце, што вы жадаеце адсартаваць\n"
-			<< "1. Спіс краін\n"
-			<< "2. Спіс гарадоў\n"
-			<< "3. Спіс акаўнтаў\n"
-			<< "4. Спіс кіроўцаў\n"
-			<< "5. Спіс грузавікоў\n"
-			<< "6. Спіс грузаў\n"
-			<< "7. Спіс даставак\n"
-			<< "8. Спіс прычэпаў\n";
-		int choice = GetIntWithinRange(1, 8);
+		int choice = ShowMenuWithNavigation({ "Спіс краін", "Спіс гарадоў", "Спіс акаўнтаў", "Спіс кіроўцаў",
+			"Спіс грузавікоў", "Спіс грузаў", "Спіс даставак", "Спіс прычэпаў" },
+			"Выбярыце, што вы жадаеце адсартаваць");
 
 		container = static_cast<SortContainer>(choice - 1);
 
@@ -1862,18 +1808,11 @@ namespace DeliverySystem
 				Code
 			};
 			SortAttribute attribute;
-			std::cout << "Выбярыце атрыбут сартавання:\n"
-				<< "1. Назва краіны\n"
-				<< "2. Тэлефонны код краіны\n";
-
-			choice = GetIntWithinRange(1, 2);
+			choice = ShowMenuWithNavigation({ "Назва краіны", "Тэлефонны код краіны" },
+				"Выбярыце атрыбут сартавання");
 			attribute = static_cast<SortAttribute>(choice - 1);
 
-			std::cout << "Выбярыце парадак сартавання:\n"
-				<< "1. Па ўзрастанні\n"
-				<< "2. Па змяншэнні\n";
-
-			choice = GetIntWithinRange(1, 2);
+			choice = ShowMenuWithNavigation({ "Па ўзрастанні", "Па змяншэнні" }, "Выбярыце парадак сартавання");
 			order = static_cast<SortOrder>(choice - 1);
 
 			countries.sort([attribute, order](const Country& a, const Country& b)
@@ -1904,18 +1843,11 @@ namespace DeliverySystem
 			};
 
 			SortAttribute attribute;
-			std::cout << "Выбярыце атрыбут сартавання:\n"
-				<< "1. Назва горада\n"
-				<< "2. Абрэвіатура краіны\n";
-
-			choice = GetIntWithinRange(1, 2);
+			choice = ShowMenuWithNavigation({ "Назва горада", "Абрэвіатура краіны" },
+				"Выбярыце атрыбут сартавання");
 			attribute = static_cast<SortAttribute>(choice - 1);
 
-			std::cout << "Выбярыце парадак сартавання:\n"
-				<< "1. Па ўзрастанні\n"
-				<< "2. Па змяншэнні\n";
-
-			choice = GetIntWithinRange(1, 2);
+			choice = ShowMenuWithNavigation({ "Па ўзрастанні", "Па змяншэнні" }, "Выбярыце парадак сартавання");
 			order = static_cast<SortOrder>(choice - 1);
 
 			for (auto& country : countries)
@@ -1950,17 +1882,11 @@ namespace DeliverySystem
 			};
 			SortAttribute attribute;
 
-			std::cout << "Выбярыце атрыбут сартавання:\n"
-				<< "1. Імя акаўнту\n"
-				<< "2. Уласнае імя\n"
-				<< "3. Прозвішча\n";
-			choice = GetIntWithinRange(1, 3);
+			choice = ShowMenuWithNavigation({ "Імя акаўнту", "Уласнае імя", "Прозвішча" },
+				"Выбярыце атрыбут сартавання");
 			attribute = static_cast<SortAttribute>(choice - 1);
 
-			std::cout << "Выбярыце парадак сартавання:\n"
-				<< "1. Па ўзрастанні\n"
-				<< "2. Па змяншэнні\n";
-			choice = GetIntWithinRange(1, 2);
+			choice = ShowMenuWithNavigation({ "Па ўзрастанні", "Па змяншэнні" }, "Выбярыце парадак сартавання");
 			order = static_cast<SortOrder>(choice - 1);
 
 			accounts.sort([attribute, order](const Account& a, const Account& b)
@@ -1996,19 +1922,11 @@ namespace DeliverySystem
 			};
 			SortAttribute attribute;
 
-			std::cout << "Выбярыце атрыбут сартавання:\n"
-				<< "1. Імя акаўнту\n"
-				<< "2. Уласнае імя\n"
-				<< "3. Прозвішча\n"
-				<< "4. Горад адпраўлення\n"
-				<< "5. Горад прыбыцця\n";
-			choice = GetIntWithinRange(1, 5);
+			choice = ShowMenuWithNavigation({ "Імя акаўнту", "Уласнае імя", "Прозвішча", "Горад адпраўлення",
+				"Горад прыбыцця" }, "Выбярыце атрыбут сартавання");
 			attribute = static_cast<SortAttribute>(choice - 1);
 
-			std::cout << "Выбярыце парадак сартавання:\n"
-				<< "1. Па ўзрастанні\n"
-				<< "2. Па змяншэнні\n";
-			choice = GetIntWithinRange(1, 2);
+			choice = ShowMenuWithNavigation({ "Па ўзрастанні", "Па змяншэнні" }, "Выбярыце парадак сартавання");
 			order = static_cast<SortOrder>(choice - 1);
 
 			drivers.sort([attribute, order](const Driver& a, const Driver& b)
@@ -2056,18 +1974,11 @@ namespace DeliverySystem
 				Mileage
 			};
 
-			std::cout << "Выбярыце атрыбут сартавання\n"
-				<< "1. Марка\n"
-				<< "2. Прабег\n";
-			choice = GetIntWithinRange(1, 2);
+			choice = ShowMenuWithNavigation({ "Марка", "Прабег" }, "Выбярыце атрыбут сартавання");
 
 			SortAttribute attribute = static_cast<SortAttribute>(choice - 1);
-			
-			std::cout << "Выбярыце парадак сартавання:\n"
-				<< "1. Па ўзрастанні\n"
-				<< "2. Па змяншэнні\n";
 
-			choice = GetIntWithinRange(1, 2);
+			choice = ShowMenuWithNavigation({ "Па ўзрастанні", "Па змяншэнні" }, "Выбярыце парадак сартавання");
 			order = static_cast<SortOrder>(choice - 1);
 
 			lorries.sort([attribute, order](const Lorry& a, const Lorry& b)
@@ -2101,21 +2012,11 @@ namespace DeliverySystem
 			};
 
 			SortAttribute attribute;
-			std::cout << "Выбярыце атрыбут сартавання:\n"
-				<< "1. Назва груза\n"
-				<< "2. Маса груза\n"
-				<< "3. Горад адпраўлення\n"
-				<< "4. Горад прыбыцця\n"
-				<< "5. Тып груза\n";
-
-			choice = GetIntWithinRange(1, 5);
+			choice = ShowMenuWithNavigation({ "Назва груза", "Маса груза", "Горад адпраўлення", "Горад прыбыцця",
+				"Тып груза" }, "Выбярыце атрыбут сартавання");
 			attribute = static_cast<SortAttribute>(choice - 1);
 
-			std::cout << "Выбярыце парадак сартавання:\n"
-				<< "1. Па ўзрастанні\n"
-				<< "2. Па змяншэнні\n";
-
-			choice = GetIntWithinRange(1, 2);
+			choice = ShowMenuWithNavigation({ "Па ўзрастанні", "Па змяншэнні" }, "Выбярыце парадак сартавання");
 			order = static_cast<SortOrder>(choice - 1);
 
 			cargos.sort([attribute, order](const Cargo& a, const Cargo& b)
@@ -2161,22 +2062,11 @@ namespace DeliverySystem
 			};
 
 			SortAttribute attribute;
-			std::cout << "Выбярыце атрыбут сартавання:\n"
-				<< "1. Імя кіроўцы\n"
-				<< "2. Назва груза\n"
-				<< "3. Маса груза\n"
-				<< "4. Горад адпраўлення\n"
-				<< "5. Горад прыбыцця\n"
-				<< "6. Тып груза\n";
-
-			choice = GetIntWithinRange(1, 6);
+			choice = ShowMenuWithNavigation({ "Імя кіроўцы", "Назва груза", "Маса груза", "Горад адпраўлення",
+				"Горад прыбыцця", "Тып груза" }, "Выбярыце атрыбут сартавання");
 			attribute = static_cast<SortAttribute>(choice - 1);
 
-			std::cout << "Выбярыце парадак сартавання:\n"
-				<< "1. Па ўзрастанні\n"
-				<< "2. Па змяншэнні\n";
-
-			choice = GetIntWithinRange(1, 2);
+			choice = ShowMenuWithNavigation({ "Па ўзрастанні", "Па змяншэнні" }, "Выбярыце парадак сартавання");
 			order = static_cast<SortOrder>(choice - 1);
 
 			deliveries.sort([attribute, order](const Delivery& a, const Delivery& b)
@@ -2225,19 +2115,11 @@ namespace DeliverySystem
 			};
 			SortAttribute attribute;
 
-			std::cout << "Выбярыце атрыбут сартавання:\n"
-				<< "1. Даўжыня\n"
-				<< "2. Максімальная загрузка\n"
-				<< "3. Горад адпраўлення\n"
-				<< "4. Горад прыбыцця\n"
-				<< "5. Тып прычепу\n";
-			choice = GetIntWithinRange(1, 5);
+			choice = ShowMenuWithNavigation({ "Даўжыня", "Максімальная загрузка", "Горад адпраўлення",
+				"Горад прыбыцця", "Тып прычепу" }, "Выбярыце атрыбут сартавання");
 			attribute = static_cast<SortAttribute>(choice - 1);
 
-			std::cout << "Выбярыце парадак сартавання:\n"
-				<< "1. Па ўзрастанні\n"
-				<< "2. Па змяншэнні\n";
-			choice = GetIntWithinRange(1, 2);
+			choice = ShowMenuWithNavigation({ "Па ўзрастанні", "Па змяншэнні" }, "Выбярыце парадак сартавання");
 			order = static_cast<SortOrder>(choice - 1);
 
 			trailers.sort([attribute, order](const std::unique_ptr<Trailer>& a, const std::unique_ptr<Trailer>& b)
@@ -2294,16 +2176,13 @@ namespace DeliverySystem
 			Less
 		};
 
-		std::cout << "Выбярыце, што вы хаціце адфільтраваць:\n"
-			<< "1. Акаўнты па колькасці даставак\n"
-			<< "2. Грузавікі па прабегу\n"
-			<< "3. Грузы па масе\n"
-			<< "4. Прычэпы па максімальнай грузападымальнасці\n";
-		int choice = GetIntWithinRange(1, 4);
+		int choice = ShowMenuWithNavigation({ "Акаўнты па колькасці даставак", "Грузавікі па прабегу",
+			"Грузы па масе", "Прычэпы па максімальнай грузападымальнасці" },
+			"Выбярыце, што вы хаціце адфільтраваць");
 		Container container = static_cast<Container>(choice - 1);
 
-		std::cout << "Выбярыце рэжым фільтрацыі.\n1. Паказваць больш за значэнне\n2. Паказваць менш за значэнне\n";
-		choice = GetIntWithinRange(1, 2);
+		choice = ShowMenuWithNavigation({ "Паказваць больш за значэнне", "Паказваць менш за значэнне" },
+			"Выбярыце рэжым фільтрацыі");
 		Mode mode = static_cast<Mode>(choice - 1);
 
 		int value, i = 0;
@@ -2315,13 +2194,13 @@ namespace DeliverySystem
 				: GetInt("Увядзіце максімальную колькасць\n");
 
 			for (const auto& account : accounts)
-				if(mode == Mode::Greater)
+				if (mode == Mode::Greater)
 				{
 					if (account.GetCargos().size() >= value)
 						std::cout << ++i << ".\n" << account << "\n\n";
 				}
 				else
-					if(account.GetCargos().size() <= value)
+					if (account.GetCargos().size() <= value)
 						std::cout << ++i << ".\n" << account << "\n\n";
 
 			break;
@@ -2385,16 +2264,8 @@ namespace DeliverySystem
 			Delivery
 		};
 
-		std::cout << "Выбярыце, што вы шукаеце:\n"
-			<< "1. Акаўнт\n"
-			<< "2. Кіроўца\n"
-			<< "3. Грузавік\n"
-			<< "4. Груз\n"
-			<< "5. Краіна\n"
-			<< "6. Горад\n"
-			<< "7. Прычэп\n"
-			<< "8. Дастаўка\n";
-		int choice = GetIntWithinRange(1, 8);
+		int choice = ShowMenuWithNavigation({ "Акаўнт", "Кіроўца", "Грузавік", "Груз", "Краіна", "Горад",
+			"Прычэп", "Дастаўка" }, "Выбярыце, што вы шукаеце");
 		Container container = static_cast<Container>(choice - 1);
 
 		switch (container)
@@ -2403,8 +2274,8 @@ namespace DeliverySystem
 		{
 			std::string nickname = GetString("Увядзіце імя акаўнту:\n");
 
-			for(const auto& account : accounts)
-				if(account.GetNickname() == nickname)
+			for (const auto& account : accounts)
+				if (account.GetNickname() == nickname)
 				{
 					std::cout << "\nАкаўнт знойдзены!\n\n" << account << '\n';
 					return;
@@ -2433,7 +2304,7 @@ namespace DeliverySystem
 		{
 			int id = GetInt("Увядзіце айдзі грузавіку: ");
 
-			for(const auto& lorry : lorries)
+			for (const auto& lorry : lorries)
 				if (lorry.GetID() == id)
 				{
 					std::cout << "\nГрузавік знойдзены!\n\n" << lorry << '\n';
@@ -2468,11 +2339,9 @@ namespace DeliverySystem
 				PhoneCode
 			};
 
-			std::cout << "Выбярыце поле, па якому будзе адбывацца пошук:\n"
-				<< "1. Назва краіны\n"
-				<< "2. Абрэвіятура краіны\n"
-				<< "3. Тэлефонны код краіны\n";
-			SearchField field = static_cast<SearchField>(GetIntWithinRange(1, 3) - 1);
+			choice = ShowMenuWithNavigation({ "Назва краіны", "Абрэвіятура краіны", "Тэлефонны код краіны" },
+				"Выбярыце поле, па якому будзе адбывацца пошук");
+			SearchField field = static_cast<SearchField>(choice - 1);
 
 			switch (field)
 			{
@@ -2480,7 +2349,7 @@ namespace DeliverySystem
 			{
 				std::string name = GetString("Увядзіце назву краіны:\n");
 
-				for(const auto& country : countries)
+				for (const auto& country : countries)
 					if (country.GetName() == name)
 					{
 						std::cout << "\nКраіна знойдзена!\n\n" << country << '\n';
@@ -2510,8 +2379,8 @@ namespace DeliverySystem
 			{
 				std::string phoneCode = "+" + GetString("Увядзіце тэлефонны код краіны:\n+", 1, 3);
 
-				for(const auto& country : countries)
-					if(country.GetPhoneCode() == phoneCode)
+				for (const auto& country : countries)
+					if (country.GetPhoneCode() == phoneCode)
 					{
 						std::cout << "\nКраіна знойдзена!\n\n" << country << '\n';
 						return;
@@ -2530,8 +2399,8 @@ namespace DeliverySystem
 			std::string name = GetString("Увядзіце назву горада:\n");
 			int i = 0;
 
-			for(const auto& country : countries)
-				for(const auto& city : country.GetCities())
+			for (const auto& country : countries)
+				for (const auto& city : country.GetCities())
 					if (city.GetName() == name)
 					{
 						if (i == 0)
@@ -2545,7 +2414,7 @@ namespace DeliverySystem
 
 			break;
 		}
-		case Container::Trailer:	
+		case Container::Trailer:
 		{
 			int id = GetInt("Увядзіце айдзі прычэпу: ");
 
@@ -2570,12 +2439,9 @@ namespace DeliverySystem
 				TrailerID
 			};
 
-			std::cout << "Выбярыце поле, па якому будзе адбывацца пошук:\n"
-				<< "1. Імя кіроўцы\n"
-				<< "2. Айдзі грузавіку\n"
-				<< "3. Айдзі грузу\n"
-				<< "4. Айдзі прычэпу\n";
-			SearchField field = static_cast<SearchField>(GetIntWithinRange(1, 4) - 1);
+			choice = ShowMenuWithNavigation({ "Імя кіроўцы", "Айдзі грузавіку", "Айдзі грузу", "Айдзі прычэпу" },
+				"Выбярыце поле, па якому будзе адбывацца пошук");
+			SearchField field = static_cast<SearchField>(choice - 1);
 
 			switch (field)
 			{
@@ -2583,7 +2449,7 @@ namespace DeliverySystem
 			{
 				std::string nickname = GetString("Увядзіце імя акаўнту кіроўцы:\n");
 
-				for(const auto& delivery : deliveries)
+				for (const auto& delivery : deliveries)
 					if (delivery.GetDriver()->GetAccount()->GetNickname() == nickname)
 					{
 						std::cout << "\nДастаўка знойдзена!\n\n" << delivery << '\n';
@@ -2683,7 +2549,7 @@ namespace DeliverySystem
 				for (const auto& cargo : account.GetCargos())
 				{
 					report << '\t' << ++j << ".\t" << cargo->GetName() << '\t' << cargo->GetID() << "\n\t"
-						<< "З: " << cargo->GetCityFrom()->GetName() << '\t' 
+						<< "З: " << cargo->GetCityFrom()->GetName() << '\t'
 						<< cargo->GetCityFrom()->GetCountryAbbreviation() << "\n\t";
 					if (cargo->GetCityTo() != nullptr)
 						report << "Да: " << cargo->GetCityTo()->GetName() << '\t'
@@ -2781,17 +2647,17 @@ namespace DeliverySystem
 
 		std::cout << "Даклад паспяхова сфарміраваны\n";
 	}
-	
-	void Manager::Menu() 
+
+	void Manager::Menu()
 	{
 	menu_begin:
 		int choice;
 
-		switch (account->GetType()) 
+		switch (account->GetType())
 		{
-		case Account::Type::User: 
+		case Account::Type::User:
 		{
-			std::vector<std::string> menuItems = 
+			std::vector<std::string> menuItems =
 			{
 				"Замовіць дастаўку",
 				"Праглядзець актыўныя заказы",
@@ -2803,12 +2669,12 @@ namespace DeliverySystem
 				"Выхад"
 			};
 
-			while (true) 
+			while (true)
 			{
 				choice = ShowMenuWithNavigation(menuItems, "Меню:");
 				std::cout << std::endl;
 
-				switch (choice) 
+				switch (choice)
 				{
 				case 1:
 					UserRequestDelivery();
@@ -2837,15 +2703,15 @@ namespace DeliverySystem
 			}
 			break;
 		}
-		case Account::Type::Driver: 
+		case Account::Type::Driver:
 		{
 			Driver* driver = FindDriver(account->GetNickname());
 
 			while (true) {
-				if (driver->GetCurrentDelivery() == nullptr) 
+				if (driver->GetCurrentDelivery() == nullptr)
 				{
 					// Меню водителя без текущей доставки
-					std::vector<std::string> menuItems = 
+					std::vector<std::string> menuItems =
 					{
 						"Прыняць замову",
 						"Сартаванне грузаў",
@@ -2858,7 +2724,7 @@ namespace DeliverySystem
 					choice = ShowMenuWithNavigation(menuItems, "Меню:");
 					std::cout << std::endl;
 
-					switch (choice) 
+					switch (choice)
 					{
 					case 1:
 						AcceptDelivery(driver);
@@ -2879,9 +2745,9 @@ namespace DeliverySystem
 						return;
 					}
 				}
-				else 
+				else
 				{
-					std::vector<std::string> menuItems = 
+					std::vector<std::string> menuItems =
 					{
 						"Праглядзець бягучую замову",
 						"Аднавіць дастаўкі",
@@ -2913,9 +2779,9 @@ namespace DeliverySystem
 			}
 			break;
 		}
-		case Account::Type::Moderator: 
+		case Account::Type::Moderator:
 		{
-			std::vector<std::string> menuItems = 
+			std::vector<std::string> menuItems =
 			{
 				"Рэдагаваць асабістыя дадзеныя",
 				"Праглядзець усіх карыстальнікаў",
@@ -2929,12 +2795,12 @@ namespace DeliverySystem
 				"Выхад"
 			};
 
-			while (true) 
+			while (true)
 			{
 				choice = ShowMenuWithNavigation(menuItems, "Меню:");
 				std::cout << std::endl;
 
-				switch (choice) 
+				switch (choice)
 				{
 				case 1:
 					EditAccount();
@@ -2969,9 +2835,9 @@ namespace DeliverySystem
 			}
 			break;
 		}
-		case Account::Type::Admin: 
+		case Account::Type::Admin:
 		{
-			std::vector<std::string> menuItems = 
+			std::vector<std::string> menuItems =
 			{
 				"Рэдагаваць асабістыя дадзеныя",
 				"Праглядзець усі ўліковыя запісы",
