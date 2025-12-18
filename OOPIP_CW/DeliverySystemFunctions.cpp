@@ -241,7 +241,7 @@ namespace DeliverySystem
 	#endif
 	}
 
-	void GotoXY(int x, int y)
+	void GoToXY(int x, int y)
 	{
 		COORD coord;
 		coord.X = x;

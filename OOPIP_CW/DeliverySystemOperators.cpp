@@ -8,22 +8,22 @@ namespace DeliverySystem
 		switch (type)
 		{
 		case Trailer::Type::Car:
-			std::cout << "Аўтавоз";
+			os << "Аўтавоз";
 			break;
 		case Trailer::Type::Lowboy:
-			std::cout << "Трал";
+			os << "Трал";
 			break;
 		case Trailer::Type::Refrigerated:
-			std::cout << "Рэфрыжэратар";
+			os << "Рэфрыжэратар";
 			break;
 		case Trailer::Type::Tank:
-			std::cout << "Цыстэрна";
+			os << "Цыстэрна";
 			break;
 		case Trailer::Type::Tarp:
-			std::cout << "Тэнтавы";
+			os << "Тэнтавы";
 			break;
 		case Trailer::Type::Timber:
-			std::cout << "Лесавоз";
+			os << "Лесавоз";
 			break;
 		}
 

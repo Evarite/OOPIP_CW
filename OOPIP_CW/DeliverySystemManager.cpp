@@ -417,7 +417,6 @@ namespace DeliverySystem
 
 		while (true)
 		{
-			int i = 0;
 			TablePrinter table(Cargo::GetHeaders());
 			for (auto& cargo : cargos)
 			{
@@ -429,38 +428,35 @@ namespace DeliverySystem
 			}
 			std::cout << table << '\n';
 
-			if (i == 0)
+			if (availableCargos.empty())
 			{
 				std::cout << "\x1b[31;1m" << "Няма даступных грузаў" << "\x1b[0m" << std::endl;
 				break;
 			}
 			else
 			{
-				int choiceCargo = GetIntWithinRange(1, i, "Выбярыце груз: ");
+				int choiceCargo = GetIntWithinRange(1, availableCargos.size(), "Выбярыце груз: ");
 
 				while (true)
 				{
-					int j = 0;
-
-					TablePrinter cityTable(City::GetHeaders());
+					int i = 0;
 					std::cout << std::endl << std::endl;
 					for (auto& country : countries)
 					{
 						for (auto& city : country.GetCitiesL())
 						{
-							cityTable.AddRow(city);
+							std::cout << ++i << ". " << city.GetName() << '\t' << city.GetCountryAbbreviation() << '\n';
 							availableCities.push_back(&city);
 						}
 					}
-					std::cout << cityTable << '\n';
-					if (j == 0)
+					if (availableCities.empty())
 					{
 						std::cout << "\x1b[31;1m" << "Няма даступных гарадоў" << "\x1b[0m" << std::endl;
 						break;
 					}
 					else
 					{
-						int choiceCity = GetIntWithinRange(1, j, "Выбярыце горад: ");
+						int choiceCity = GetIntWithinRange(1, availableCities.size(), "Выбярыце горад: ");
 
 						availableCargos[choiceCargo - 1]->RequestDelivery(account, availableCities[choiceCity - 1]);
 
@@ -731,13 +727,14 @@ namespace DeliverySystem
 		std::vector<Cargo*> availableCargos;
 
 		std::cout << "Даступныя грузы:\n";
-		int i = 0;
+		TablePrinter cargosTable(Cargo::GetHeaders());
 		for (auto& cargo : cargos)
 			if (cargo.GetClient() != nullptr && cargo.GetCurrentDelivery() == nullptr)
 			{
-				std::cout << ++i << ".\n" << cargo << "\n\n";
+				cargosTable.AddRow(cargo);
 				availableCargos.push_back(&cargo);
 			}
+		std::cout << cargosTable << '\n';
 
 		if (availableCargos.empty())
 		{
@@ -751,16 +748,17 @@ namespace DeliverySystem
 			return;
 
 		std::cout << "Даступныя прычэпы для гэтага тыпу грузу:\n" << std::endl;
-		int j = 0;
+		TablePrinter trailersTable(Trailer::GetHeaders());
 		for (auto& trailer : trailers)
 		{
 			if (trailer->GetCurrentDelivery() == nullptr && trailer->IsCargoSupported(availableCargos[choiceCargo - 1])
 				&& trailer->GetMaxPayload() >= availableCargos[choiceCargo - 1]->GetMass())
 			{
 				availableTrailers.push_back(trailer.get());
-				std::cout << ++j << ".\n" << *trailer << "\n\n";
+				trailersTable.AddRow(*trailer);
 			}
 		}
+		std::cout << trailersTable << '\n';
 		if (availableTrailers.empty())
 		{
 			std::cout << "Няма даступных прычэпаў. Звярніцеся да мадэратараў\n";
@@ -2521,126 +2519,32 @@ namespace DeliverySystem
 		else
 		{
 			report << "Краіны і гарады:\n";
-			int i = 0;
-			for (const auto& country : countries)
-			{
-				report << ++i << ".\t" << country.GetName() << '\t' << country.GetAbbreviation() << '\t'
-					<< country.GetPhoneCode();
-				report << "\nСпіс гарадоў:\n";
-
-				int j = 0;
-				for (const auto& city : country.GetCities())
-					report << '\t' << ++j << ".\t" << city.GetName() << '\t' << city.GetAbbreviation() << '\n';
-
-				report << "\n\n";
-			}
-
-			report << "*****************************************\n\n";
+			TablePrinter area(countries);
+			report << area << "\n\n";
 
 			report << "Акаўнты:\n";
-			i = 0;
-			for (const auto& account : accounts)
-			{
-				report << ++i << ".\t" << account.GetNickname() << '\n'
-					<< account.GetFirstName() << ' ' << account.GetLastName() << '\t' << account.GetPhoneNumber()
-					<< '\n' << account.GetType() << '\n';
-				report << "Спіс грузаў:\n";
-				int j = 0;
-				for (const auto& cargo : account.GetCargos())
-				{
-					report << '\t' << ++j << ".\t" << cargo->GetName() << '\t' << cargo->GetID() << "\n\t"
-						<< "З: " << cargo->GetCityFrom()->GetName() << '\t'
-						<< cargo->GetCityFrom()->GetCountryAbbreviation() << "\n\t";
-					if (cargo->GetCityTo() != nullptr)
-						report << "Да: " << cargo->GetCityTo()->GetName() << '\t'
-						<< cargo->GetCityTo()->GetCountryAbbreviation();
-					report << "\n\t" << cargo->GetMass() << " кг"
-						<< "\n\t" << cargo->GetType() << "\n\n";
-				}
-				if (j == 0)
-					report << "Няма\n\n";
-			}
-
-			report << "*****************************************\n\n";
+			TablePrinter accountsT(accounts);
+			report << accountsT << "\n\n";
 
 			report << "Кіроўцы:\n";
-			i = 0;
-			for (const auto& driver : drivers)
-			{
-				report << ++i << ".\t" << driver.GetAccount()->GetNickname() << '\t'
-					<< driver.GetAccount()->GetFirstName() << ' ' << driver.GetAccount()->GetLastName() << '\n';
-				report << "Грузавік кіроўцы: " << driver.GetLorry()->GetMake() << ' ' << driver.GetLorry()->GetModel()
-					<< '\n';
-				driver.GetCurrentDelivery() == nullptr ? report << "\nНяма задання\n\n" :
-					report << "Заданне: " << driver.GetCurrentDelivery()->GetCargo()->GetName() << '\t'
-					<< driver.GetCurrentDelivery()->GetCityFrom()->GetName() << " - "
-					<< driver.GetCurrentDelivery()->GetCityTo()->GetName() << "\n\n";
-			}
-
-			report << "*****************************************\n\n";
+			TablePrinter driversT(drivers);
+			report << driversT << "\n\n";
 
 			report << "Грузавікі:\n";
-			i = 0;
-			for (const auto& lorry : lorries)
-			{
-				report << ++i << ".\t" << lorry.GetMake() << ' ' << lorry.GetModel() << '\t'
-					<< lorry.GetID() << '\n';
-				lorry.GetCurrentDelivery() == nullptr ? report << "\nНяма задання\n\n" :
-					report << "Заданне: " << lorry.GetCurrentDelivery()->GetCargo()->GetName() << '\t'
-					<< lorry.GetCurrentDelivery()->GetCityFrom()->GetName() << " - "
-					<< lorry.GetCurrentDelivery()->GetCityTo()->GetName() << "\n\n";
-			}
-
-			report << "*****************************************\n\n";
+			TablePrinter lorriesT(lorries);
+			report << lorriesT << "\n\n";
 
 			report << "Прычэпы:\n";
-			i = 0;
-			for (const auto& trailer : trailers)
-			{
-				report << ++i << ".\t" << trailer->GetTypeString() << '\t' << trailer->GetID()
-					<< "\nДаўжыня: " << trailer->GetLength()
-					<< "\nМаксімальная грузападымальнасць: " << trailer->GetMaxPayload();
-				trailer->GetCurrentDelivery() == nullptr ? report << "\nНяма задання\n\n" :
-					report << "Заданне: " << trailer->GetCurrentDelivery()->GetCargo()->GetName() << '\t'
-					<< trailer->GetCurrentDelivery()->GetCityFrom()->GetName() << " - "
-					<< trailer->GetCurrentDelivery()->GetCityTo()->GetName() << "\n\n";
-			}
-
-			report << "*****************************************\n\n";
+			TablePrinter trailersT(trailers);
+			report << trailersT << "\n\n";
 
 			report << "Грузы:\n";
-			i = 0;
-			for (const auto& cargo : cargos)
-			{
-				report << ++i << ".\t" << cargo.GetName() << '\t' << cargo.GetID() << '\t'
-					<< cargo.GetMass() << " кг" << '\n';
-				report << "З: " << cargo.GetCityFrom()->GetName();
-				if (cargo.GetCityTo() != nullptr)
-				{
-					report << "Да: " << cargo.GetCityTo()->GetName() << '\n'
-						<< "Заказчык: " << cargo.GetClient()->GetNickname() << '\n';
-
-					if (cargo.GetCurrentDelivery() != nullptr)
-					{
-						report << "Дастаўляецца\n\n";
-					}
-					else
-						report << "Не дастаўляецца\n\n";
-				}
-				else
-					report << "Не заказаны\n\n";
-			}
-
-			report << "*****************************************\n\n";
+			TablePrinter cargosT(cargos);
+			report << cargosT << "\n\n";
 
 			report << "Заяўкі на працу:\n";
-			i = 0;
-			for (const auto& application : applications)
-			{
-				report << ++i << ".\t" << application.GetAccount()->GetNickname() << '\n'
-					<< application.GetAccount()->GetFirstName() << ' ' << application.GetAccount()->GetLastName()
-					<< '\n' << application.GetAppMessage() << "\n\n";
-			}
+			TablePrinter applicationsT(applications);
+			report << applicationsT << "\n\n";
 		}
 
 		report.close();
