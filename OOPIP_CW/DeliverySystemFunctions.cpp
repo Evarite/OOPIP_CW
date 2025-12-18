@@ -230,15 +230,12 @@ namespace DeliverySystem
 	void EnableAnsiColors()
 	{
 	#ifdef _WIN32
-		// Получаем хэндл консоли
 		HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
 		if (hOut == INVALID_HANDLE_VALUE) return;
 
-		// Получаем текущий режим
 		DWORD dwMode = 0;
 		if (!GetConsoleMode(hOut, &dwMode)) return;
 
-		// Включаем поддержку виртуального терминала
 		dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
 		SetConsoleMode(hOut, dwMode);
 	#endif

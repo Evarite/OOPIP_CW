@@ -2710,7 +2710,6 @@ namespace DeliverySystem
 			while (true) {
 				if (driver->GetCurrentDelivery() == nullptr)
 				{
-					// Меню водителя без текущей доставки
 					std::vector<std::string> menuItems =
 					{
 						"Прыняць замову",
