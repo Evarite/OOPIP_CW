@@ -144,6 +144,7 @@
     <ClCompile Include="DeliverySystemManager.cpp" />
     <ClCompile Include="DeliverySystemOperators.cpp" />
     <ClCompile Include="DeliverySystemRefrigeratedTrailer.cpp" />
+    <ClCompile Include="DeliverySystemTablePrinter.cpp" />
     <ClCompile Include="DeliverySystemTankTrailer.cpp" />
     <ClCompile Include="DeliverySystemTarpTrailer.cpp" />
     <ClCompile Include="DeliverySystemTimberTrailer.cpp" />

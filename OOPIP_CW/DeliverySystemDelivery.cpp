@@ -115,6 +115,20 @@ namespace DeliverySystem
 		}
 	}
 
+	std::vector<std::string> Delivery::ToTableRow() const
+	{
+		return { cargo->GetName(), 
+			cargo->GetCityFrom()->GetName() + ' ' + cargo->GetCityFrom()->GetCountryAbbreviation(),
+			cargo->GetCityTo()->GetName() + ' ' + cargo->GetCityTo()->GetCountryAbbreviation(),
+			cargo->GetClient()->GetNickname(),
+			driver->GetAccount()->GetFirstName() + ' ' + driver->GetAccount()->GetLastName(),
+			lorry->GetMake() + ' ' + lorry->GetModel(), trailer->GetTypeString(), std::to_string(remainingDistance) };
+	}
+	std::vector<std::string> Delivery::GetHeaders()
+	{
+		return { "Груз", "З", "Да", "Заказчык", "Кіроўца", "Грузавік", "Прычэп", "Астатняя адлегласць"};
+	}
+
 	bool Delivery::operator==(const Delivery& obj) const
 	{
 		return driver->GetAccount()->GetNickname() == obj.GetDriver()->GetAccount()->GetNickname();
@@ -128,13 +142,11 @@ namespace DeliverySystem
 		os << "Да: " << obj.cargo->GetCityTo()->GetName() << ' '
 			<< obj.cargo->GetCityTo()->GetCountryAbbreviation() << std::endl;
 		os << "Заказчык: " << obj.cargo->GetClient()->GetNickname() << std::endl;
-		os << "Кіраўнік: " << obj.driver->GetAccount()->GetFirstName() << ' '
+		os << "Кіроўца: " << obj.driver->GetAccount()->GetFirstName() << ' '
 			<< obj.driver->GetAccount()->GetLastName() << std::endl;
 		os << "Грузавік: " << obj.lorry->GetMake() << ' ' << obj.lorry->GetModel() << std::endl;
 		os << "Прычэп: " << obj.trailer->GetTypeString()  << std::endl;
-
-		if (obj.remainingDistance > 0)
-			os << "Астатняя адлегласць: " << obj.remainingDistance;	
+		os << "Астатняя адлегласць: " << obj.remainingDistance;	
 		
 		return os;
 	}

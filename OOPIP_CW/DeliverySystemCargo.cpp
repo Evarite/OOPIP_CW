@@ -1,6 +1,8 @@
 #include "DeliverySystem.h"
 #include <iostream>
 #include <fstream>
+#include <sstream>
+#include <codecvt>
 
 namespace DeliverySystem
 {
@@ -102,6 +104,22 @@ namespace DeliverySystem
 		this->client = client;
 		this->client->AddCargo(this);
 		this->to = cityTo;
+	}
+
+	std::vector<std::string> Cargo::ToTableRow() const
+	{
+		std::stringstream sstype;
+		sstype << type;
+
+		return { std::to_string(id), std::string(name), std::to_string(mass), sstype.str(),
+			from->GetName() + ' ' + from->GetCountryAbbreviation(),
+			to != nullptr ? to->GetName() + ' ' + to->GetCountryAbbreviation() : "-",
+			to != nullptr ? client->GetNickname() : "-",
+			currentDelivery != nullptr ? "У пуці" : "Не дастаўляецца" };
+	}
+	std::vector<std::string> Cargo::GetHeaders()
+	{
+		return { "ID", "Назва", "Маса (кг)", "Тып", "З", "Да", "Заказчык", "Стан" };
 	}
 
 	bool Cargo::operator==(Cargo* other)

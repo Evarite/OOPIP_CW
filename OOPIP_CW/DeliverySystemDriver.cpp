@@ -53,6 +53,19 @@ namespace DeliverySystem
 		account->SetType(Account::Type::User);
 	}
 
+	std::vector<std::string> Driver::ToTableRow() const
+	{
+		return { account->GetNickname(), account->GetFirstName(), account->GetLastName(), account->GetPhoneNumber(),
+			lorry->GetMake(), currentDelivery != nullptr ? currentDelivery->GetCargo()->GetName() + ": " + 
+			currentDelivery->GetCityFrom()->GetName() + ' ' + currentDelivery->GetCityFrom()->GetCountryAbbreviation() +
+			" - " + currentDelivery->GetCityTo()->GetName() + ' ' + currentDelivery->GetCityTo()->GetCountryAbbreviation()
+			: "-"};
+	}
+	std::vector<std::string> Driver::GetHeaders()
+	{
+		return { "Імя акаўнта", "Імя кіроўцы", "Прозвішча", "Нумар тэлефона", "Грузавік", "Бягучае заданне"};
+	}
+
 	bool Driver::operator==(Driver& obj)
 	{
 		return account->GetNickname() == obj.GetAccount()->GetNickname();

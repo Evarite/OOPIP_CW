@@ -65,6 +65,15 @@ namespace DeliverySystem
 		return unsigned int(sqrt(x * x + y * y));
 	}
 
+	std::vector<std::string> City::ToTableRow() const
+	{
+		return { name, countryAbbreviation, abbreviation };
+	}
+	std::vector<std::string> City::GetHeaders()
+	{
+		return { "Назва", "Краіна", "Абрэвіятура" };
+	}
+
 	bool City::operator==(const City& obj) const
 	{
 		return GetName() == obj.GetName() && GetCountryAbbreviation() == obj.GetCountryAbbreviation();
@@ -74,7 +83,7 @@ namespace DeliverySystem
 	{		
 		os << "Назва горада: " << obj.name << '\n';
 		os << "Краіна: " << obj.countryAbbreviation << '\n';
-		os << "Абрэвіятура: " << obj.abbreviation;	
+		os << "Абрэвіятура: " << obj.abbreviation;
 
 		return os;
 	}

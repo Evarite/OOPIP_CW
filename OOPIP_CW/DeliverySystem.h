@@ -59,6 +59,9 @@ namespace DeliverySystem
         unsigned int GetID() const;
         
         static unsigned int CalculateDistance(const City &city1, const City &city2);
+
+        std::vector<std::string> ToTableRow() const;
+        static std::vector<std::string> GetHeaders();
         
         bool operator==(const City& obj) const;
 
@@ -90,6 +93,9 @@ namespace DeliverySystem
         void CompleteDelivery(std::list<Delivery>& deliveries, std::list<Cargo>& cargos);
         void StopDelivery(std::list<Delivery>& deliveries);
         void UpdateDistance(std::list<Delivery>& deliveries, std::list<Cargo>& cargos);
+
+        std::vector<std::string> ToTableRow() const;
+        static std::vector<std::string> GetHeaders();
 
         bool operator==(const Delivery& obj) const;
 
@@ -124,6 +130,9 @@ namespace DeliverySystem
         void AddCity(const City &city);
         void RemoveCity(unsigned int index);
         void RemoveCity(City* city);
+
+        std::vector<std::string> ToTableRow() const;
+        static std::vector<std::string> GetHeaders();
 
         bool operator==(const Country& obj);
 
@@ -180,6 +189,9 @@ namespace DeliverySystem
 
         static Account *Authorise(std::list<Account> &accounts, const std::list<Country> &countries);
 
+        std::vector<std::string> ToTableRow() const;
+        static std::vector<std::string> GetHeaders();
+
         bool operator==(const Account &obj) const;
         friend std::ostream &operator<<(std::ostream &os, const Account &obj);
         friend std::ostream &operator<<(std::ofstream &os, const Account &obj);
@@ -209,6 +221,9 @@ namespace DeliverySystem
         void CancelDelivery(std::list<Delivery>& deliveries);
         void Fire(std::list<Delivery>& deliveries);
         void SetDelivery(Delivery* delivery);
+
+        std::vector<std::string> ToTableRow() const;
+        static std::vector<std::string> GetHeaders();
 
         bool operator==(Driver &obj);
 
@@ -262,6 +277,9 @@ namespace DeliverySystem
         float CalculateGasolineCost(unsigned int distance);
 
         void SetDelivery(Delivery* delivery);
+
+        std::vector<std::string> ToTableRow() const;
+        static std::vector<std::string> GetHeaders();
 
         friend std::ostream &operator<<(std::ostream &os, const Lorry &obj);
         friend std::ostream &operator<<(std::ofstream &os, const Lorry &obj);
@@ -328,6 +346,9 @@ namespace DeliverySystem
 
         void RequestDelivery(Account *client, City *cityTo);
 
+        std::vector<std::string> ToTableRow() const;
+        static std::vector<std::string> GetHeaders();
+
         bool operator==(Cargo *other);
         bool operator==(const Cargo& other);
 
@@ -375,6 +396,9 @@ namespace DeliverySystem
         virtual Type GetType() const;
         void SetDelivery(Delivery *delivery);
         void InitialiseType(const Type& type);
+
+        std::vector<std::string> ToTableRow() const;
+        static std::vector<std::string> GetHeaders();
 
         virtual unsigned short GetSpeedLimit() const = 0;
         virtual std::vector<Cargo::Type> GetSupportedCargoTypes() const = 0;
@@ -505,7 +529,10 @@ namespace DeliverySystem
         Application(Account *account, const char *message);
 
         Account *GetAccount() const;
-        std::string GetMessage() const;
+        std::string GetAppMessage() const;
+
+        std::vector<std::string> ToTableRow() const;
+        static std::vector<std::string> GetHeaders();
 
         friend std::ostream &operator<<(std::ofstream &os, const Application &obj);
         friend std::ostream &operator<<(std::ostream &os, const Application &obj);
@@ -638,6 +665,57 @@ namespace DeliverySystem
         static unsigned int Generate();
     };
 
+    template <typename T>
+    concept RowConvertible = requires(T t)
+    {
+        { t.ToTableRow() } -> std::convertible_to<std::vector<std::string>>;
+        { T::GetHeaders() } -> std::convertible_to<std::vector<std::string>>;
+    };
+
+    class TablePrinter
+    {
+        std::vector<std::string> headers;
+        std::vector<std::vector<std::string>> rows;
+
+    public:
+        TablePrinter(const std::vector<std::string>& headers);
+
+        template<RowConvertible T>
+        TablePrinter(const std::list<T>& vec) : headers(T::GetHeaders())
+        {
+            for (const auto& item : vec)    
+                AddRow(item);
+        }
+        template<RowConvertible T>
+        TablePrinter(const std::vector<T>& vec) : headers(T::GetHeaders())
+        {
+            for (const auto& item : vec)
+                AddRow(item);
+        }
+        template<RowConvertible T>
+        TablePrinter(const std::list<std::unique_ptr<T>>& vec) : headers(T::GetHeaders())
+        {
+            for (const auto& item : vec)
+                AddRow(*item);
+        }
+        template<RowConvertible T>
+        TablePrinter(const std::vector<T*>& vec) : headers(T::GetHeaders())
+        {
+            for (const auto& item : vec)
+                AddRow(*item);
+        }
+
+        void AddRow(const std::vector<std::string>& row);
+
+        template<RowConvertible T>
+        void AddRow(const T& obj)
+        {
+            rows.push_back(obj.ToTableRow());
+        }
+
+        friend std::ostream& operator<<(std::ostream& os, const TablePrinter& obj);
+    };
+
     // Functions
     std::string TrimWhitespace(const std::string &str);
     std::string GetPasswordWithAsterisks();
@@ -650,6 +728,10 @@ namespace DeliverySystem
     std::string GetString(const std::string& message, unsigned int minSize, unsigned int maxSize);
     std::string GetString(const std::string& message, const std::string& forbiddenSymbols, unsigned int minSize,
         unsigned int maxSize, const std::vector<std::string>& exceptions);
+    void GotoXY(int x, int y);
+    void HideCursor();
+    void ShowCursor();
+    int ShowMenuWithNavigation(const std::vector<std::string>& menuItems, const std::string& title = "Меню:");
 
     //Operators
     std::ostream& operator<<(std::ostream& os, const Trailer::Type& type);

@@ -1,8 +1,13 @@
-#include "DeliverySystem.h"
+п»ї#include "DeliverySystem.h"
 #include <iostream>
 #include <fstream>
 #include <iomanip>
 #include <algorithm>
+#define NOMINMAX
+#include <Windows.h>
+#include <conio.h>
+#include <sstream>
+//#include <magic_enum.hpp>
 
 constexpr auto COUNTRIES = "Countries.dat";
 constexpr auto ACCOUNTS = "Accounts.dat";
@@ -24,7 +29,7 @@ namespace DeliverySystem
 				return &account;
 		}
 
-		throw std::runtime_error("Акаўнт з імём " + nickname + " не зноёдзены");
+		throw std::runtime_error("РђРєР°СћРЅС‚ Р· С–РјС‘Рј " + nickname + " РЅРµ Р·РЅРѕС‘РґР·РµРЅС‹");
 	}
 
 	Driver* Manager::FindDriver(const std::string& nickname)
@@ -35,7 +40,7 @@ namespace DeliverySystem
 				return &driver;
 		}
 
-		throw std::runtime_error("Кіроўца з імём " + nickname + " не зноёдзены");
+		throw std::runtime_error("РљС–СЂРѕСћС†Р° Р· С–РјС‘Рј " + nickname + " РЅРµ Р·РЅРѕС‘РґР·РµРЅС‹");
 	}
 
 	void Manager::Initialise()
@@ -105,7 +110,7 @@ namespace DeliverySystem
 				trailer = std::make_unique<RefrigeratedTrailer>();
 				break;
 			default:
-				throw std::runtime_error("Невядомы тып трэйлера");
+				throw std::runtime_error("РќРµРІСЏРґРѕРјС‹ С‚С‹Рї С‚СЂСЌР№Р»РµСЂР°");
 			}
 			trailer->InitialiseType(type);
 			trailersFile >> *trailer;
@@ -200,9 +205,9 @@ namespace DeliverySystem
 	void Manager::EditAccount()
 	{
 		int choice;
-		std::cout << "Што хаціце адрэдагаваць?\n"
-			<< "1. Імя акаўнту\n2. Пароль\n3. Уласнае імя\n4. Прозвішча\n5. Нумар тэлефону\n0. Выхад\n"
-			<< "Ваш выбар: ";
+		std::cout << "РЁС‚Рѕ С…Р°С†С–С†Рµ Р°РґСЂСЌРґР°РіР°РІР°С†СЊ?\n"
+			<< "1. Р†РјСЏ Р°РєР°СћРЅС‚Сѓ\n2. РџР°СЂРѕР»СЊ\n3. РЈР»Р°СЃРЅР°Рµ С–РјСЏ\n4. РџСЂРѕР·РІС–С€С‡Р°\n5. РќСѓРјР°СЂ С‚СЌР»РµС„РѕРЅСѓ\n0. Р’С‹С…Р°Рґ\n"
+			<< "Р’Р°С€ РІС‹Р±Р°СЂ: ";
 		choice = GetIntWithinRange(0, 5);
 
 		switch (choice)
@@ -215,27 +220,27 @@ namespace DeliverySystem
 
 			while (true)
 			{
-				std::cout << "Увядзіце новае імя акаўнту\n";
+				std::cout << "РЈРІСЏРґР·С–С†Рµ РЅРѕРІР°Рµ С–РјСЏ Р°РєР°СћРЅС‚Сѓ\n";
 				std::getline(std::cin, nickname);
 				nickname = TrimWhitespace(nickname);
 
 				if (nickname.size() < MIN_NAME_SIZE)
 				{
-					std::cout << "\x1b[31;1m" << "Мінімальны памер імя: " << MIN_NAME_SIZE
-						<< ". Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
+					std::cout << "\x1b[31;1m" << "РњС–РЅС–РјР°Р»СЊРЅС‹ РїР°РјРµСЂ С–РјСЏ: " << MIN_NAME_SIZE
+						<< ". РџР°СЃРїСЂР°Р±СѓР№С†Рµ СЏС€С‡СЌ СЂР°Р·" << "\x1b[0m" << std::endl;
 					continue;
 				}
 				else if (nickname.size() > NAME_SIZE - 1)
 				{
-					std::cout << "\x1b[31;1m" << "Максімальны памер імя: " << NAME_SIZE - 1
-						<< ". Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
+					std::cout << "\x1b[31;1m" << "РњР°РєСЃС–РјР°Р»СЊРЅС‹ РїР°РјРµСЂ С–РјСЏ: " << NAME_SIZE - 1
+						<< ". РџР°СЃРїСЂР°Р±СѓР№С†Рµ СЏС€С‡СЌ СЂР°Р·" << "\x1b[0m" << std::endl;
 					continue;
 				}
 				else if (nickname.find_first_of(FORBIDDEN_NICKNAME_SYMBOLS) != std::string::npos)
 				{
-					std::cout << "\x1b[31;1m" << "Імя не можа мець наступныя сімвалы: "
+					std::cout << "\x1b[31;1m" << "Р†РјСЏ РЅРµ РјРѕР¶Р° РјРµС†СЊ РЅР°СЃС‚СѓРїРЅС‹СЏ СЃС–РјРІР°Р»С‹: "
 						<< FORBIDDEN_NICKNAME_SYMBOLS << std::endl;
-					std::cout << "Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
+					std::cout << "РџР°СЃРїСЂР°Р±СѓР№С†Рµ СЏС€С‡СЌ СЂР°Р·" << "\x1b[0m" << std::endl;
 
 					continue;
 				}
@@ -245,7 +250,7 @@ namespace DeliverySystem
 					for (const auto& account : accounts)
 						if (account.GetNickname() == nickname)
 						{
-							std::cout << "\x1b[31;1m" << "Імя ўжо занята. Паспрабуйце яшчэ раз"
+							std::cout << "\x1b[31;1m" << "Р†РјСЏ СћР¶Рѕ Р·Р°РЅСЏС‚Р°. РџР°СЃРїСЂР°Р±СѓР№С†Рµ СЏС€С‡СЌ СЂР°Р·"
 								<< "\x1b[0m" << std::endl;
 							isOccupied = true;
 							break;
@@ -266,21 +271,21 @@ namespace DeliverySystem
 			std::string password;
 			while (true)
 			{
-				std::cout << std::endl << "Увядзіце новы пароль" << std::endl;
+				std::cout << std::endl << "РЈРІСЏРґР·С–С†Рµ РЅРѕРІС‹ РїР°СЂРѕР»СЊ" << std::endl;
 				password = GetPasswordWithAsterisks();
 
 				if (password.size() < MIN_PASSWORD_SIZE)
 				{
-					std::cout << "\x1b[31;1m" << "Мінімальны памер пароля: " << MIN_PASSWORD_SIZE
-						<< ". Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
+					std::cout << "\x1b[31;1m" << "РњС–РЅС–РјР°Р»СЊРЅС‹ РїР°РјРµСЂ РїР°СЂРѕР»СЏ: " << MIN_PASSWORD_SIZE
+						<< ". РџР°СЃРїСЂР°Р±СѓР№С†Рµ СЏС€С‡СЌ СЂР°Р·" << "\x1b[0m" << std::endl;
 					continue;
 				}
 
-				std::cout << std::endl << "Паўтарыце пароль" << std::endl;
+				std::cout << std::endl << "РџР°СћС‚Р°СЂС‹С†Рµ РїР°СЂРѕР»СЊ" << std::endl;
 
 				if (password != GetPasswordWithAsterisks())
 				{
-					std::cout << "\x1b[31;1m" << "Паролі не супадаюць. Паспрабуйце яшчэ раз"
+					std::cout << "\x1b[31;1m" << "РџР°СЂРѕР»С– РЅРµ СЃСѓРїР°РґР°СЋС†СЊ. РџР°СЃРїСЂР°Р±СѓР№С†Рµ СЏС€С‡СЌ СЂР°Р·"
 						<< "\x1b[0m" << std::endl;
 					continue;
 				}
@@ -296,18 +301,18 @@ namespace DeliverySystem
 			std::string firstName;
 			while (true)
 			{
-				std::cout << std::endl << "Увядзіце ваша новае імя" << std::endl;
+				std::cout << std::endl << "РЈРІСЏРґР·С–С†Рµ РІР°С€Р° РЅРѕРІР°Рµ С–РјСЏ" << std::endl;
 				std::getline(std::cin, firstName);
 
 				if (firstName.size() > NAME_SIZE)
 				{
-					std::cout << "\x1b[31;1m" << "Максімальны памер імя: " << NAME_SIZE - 1
-						<< ". Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
+					std::cout << "\x1b[31;1m" << "РњР°РєСЃС–РјР°Р»СЊРЅС‹ РїР°РјРµСЂ С–РјСЏ: " << NAME_SIZE - 1
+						<< ". РџР°СЃРїСЂР°Р±СѓР№С†Рµ СЏС€С‡СЌ СЂР°Р·" << "\x1b[0m" << std::endl;
 					continue;
 				}
 				else if (firstName.find_first_of(FORBIDDEN_NAME_SYMBOLS) != std::string::npos)
 				{
-					std::cout << "\x1b[31;1m" << "Некарэктны фармат імя. Паспрабуйце яшчэ раз"
+					std::cout << "\x1b[31;1m" << "РќРµРєР°СЂСЌРєС‚РЅС‹ С„Р°СЂРјР°С‚ С–РјСЏ. РџР°СЃРїСЂР°Р±СѓР№С†Рµ СЏС€С‡СЌ СЂР°Р·"
 						<< "\x1b[0m" << std::endl;
 
 					continue;
@@ -324,18 +329,18 @@ namespace DeliverySystem
 			std::string lastName;
 			while (true)
 			{
-				std::cout << std::endl << "Увядзіце ваша прозвішча" << std::endl;
+				std::cout << std::endl << "РЈРІСЏРґР·С–С†Рµ РІР°С€Р° РїСЂРѕР·РІС–С€С‡Р°" << std::endl;
 				std::getline(std::cin, lastName);
 
 				if (lastName.size() > NAME_SIZE)
 				{
-					std::cout << "\x1b[31;1m" << "Максімальны памер прозвішча: " << NAME_SIZE - 1
-						<< ". Паспрабуйце яшчэ раз" << "\x1b[0m" << std::endl;
+					std::cout << "\x1b[31;1m" << "РњР°РєСЃС–РјР°Р»СЊРЅС‹ РїР°РјРµСЂ РїСЂРѕР·РІС–С€С‡Р°: " << NAME_SIZE - 1
+						<< ". РџР°СЃРїСЂР°Р±СѓР№С†Рµ СЏС€С‡СЌ СЂР°Р·" << "\x1b[0m" << std::endl;
 					continue;
 				}
 				else if (lastName.find_first_of(FORBIDDEN_NAME_SYMBOLS) != std::string::npos)
 				{
-					std::cout << "\x1b[31;1m" << "Некарэктны фармат прозвишча. Паспрабуйце яшчэ раз"
+					std::cout << "\x1b[31;1m" << "РќРµРєР°СЂСЌРєС‚РЅС‹ С„Р°СЂРјР°С‚ РїСЂРѕР·РІРёС€С‡Р°. РџР°СЃРїСЂР°Р±СѓР№С†Рµ СЏС€С‡СЌ СЂР°Р·"
 						<< "\x1b[0m" << std::endl;
 
 					continue;
@@ -359,7 +364,7 @@ namespace DeliverySystem
 				std::cout << ++i << ". " << country.GetName() << std::endl;
 			}
 
-			choice = GetIntWithinRange(1, countries.size(), "Выбярыце вашу краіну: ");
+			choice = GetIntWithinRange(1, countries.size(), "Р’С‹Р±СЏСЂС‹С†Рµ РІР°С€Сѓ РєСЂР°С–РЅСѓ: ");
 
 			while (true)
 			{
@@ -367,14 +372,14 @@ namespace DeliverySystem
 				std::advance(country, choice);
 				phoneCode = country->GetPhoneCode();
 
-				std::cout << std::endl << "Увядзіце ваш нумар тэлефону" << std::endl
+				std::cout << std::endl << "РЈРІСЏРґР·С–С†Рµ РІР°С€ РЅСѓРјР°СЂ С‚СЌР»РµС„РѕРЅСѓ" << std::endl
 					<< phoneCode;
 				std::cin >> phoneNumber;
 
 				if (!std::cin.good())
 				{
 					std::cin.clear();
-					std::cout << "\x1b[31;1m" << "Памылка ўводу. Паспрабуйце яшчэ раз"
+					std::cout << "\x1b[31;1m" << "РџР°РјС‹Р»РєР° СћРІРѕРґСѓ. РџР°СЃРїСЂР°Р±СѓР№С†Рµ СЏС€С‡СЌ СЂР°Р·"
 						<< "\x1b[0m" << std::endl << std::endl;
 					std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 					continue;
@@ -389,7 +394,7 @@ namespace DeliverySystem
 	}
 	void Manager::UpdateDistance()
 	{
-		std::cout << "\nАднаўляюцца адлегласці даставак...\n";
+		std::cout << "\nРђРґРЅР°СћР»СЏСЋС†С†Р° Р°РґР»РµРіР»Р°СЃС†С– РґР°СЃС‚Р°РІР°Рє...\n";
 
 		std::vector<Delivery*> deliveriesCopy;
 		for (auto& delivery : deliveries)
@@ -398,7 +403,7 @@ namespace DeliverySystem
 		for (auto& delivery : deliveriesCopy)
 			delivery->UpdateDistance(deliveries, cargos);
 
-		std::cout << "\nАднаўленне паспяхова скончана\n";
+		std::cout << "\nРђРґРЅР°СћР»РµРЅРЅРµ РїР°СЃРїСЏС…РѕРІР° СЃРєРѕРЅС‡Р°РЅР°\n";
 	}
 
 	//User
@@ -410,48 +415,53 @@ namespace DeliverySystem
 		while (true)
 		{
 			int i = 0;
+			TablePrinter table(Cargo::GetHeaders());
 			for (auto& cargo : cargos)
 			{
 				if (cargo.GetCurrentDelivery() == nullptr)
 				{
-					std::cout << ++i << ". " << cargo << "\n\n";
+					table.AddRow(cargo);
 					availableCargos.push_back(&cargo);
 				}
 			}
+			std::cout << table << '\n';
+
 			if (i == 0)
 			{
-				std::cout << "\x1b[31;1m" << "Няма даступных грузаў" << "\x1b[0m" << std::endl;
+				std::cout << "\x1b[31;1m" << "РќСЏРјР° РґР°СЃС‚СѓРїРЅС‹С… РіСЂСѓР·Р°Сћ" << "\x1b[0m" << std::endl;
 				break;
 			}
 			else
 			{
-				int choiceCargo = GetIntWithinRange(1, i, "Выбярыце груз: ");
+				int choiceCargo = GetIntWithinRange(1, i, "Р’С‹Р±СЏСЂС‹С†Рµ РіСЂСѓР·: ");
 
 				while (true)
 				{
 					int j = 0;
 
+					TablePrinter cityTable(City::GetHeaders());
 					std::cout << std::endl << std::endl;
 					for (auto& country : countries)
 					{
 						for (auto& city : country.GetCitiesL())
 						{
-							std::cout << ++j << ". " << city << std::endl;
+							cityTable.AddRow(city);
 							availableCities.push_back(&city);
 						}
 					}
+					std::cout << cityTable << '\n';
 					if (j == 0)
 					{
-						std::cout << "\x1b[31;1m" << "Няма даступных гарадоў" << "\x1b[0m" << std::endl;
+						std::cout << "\x1b[31;1m" << "РќСЏРјР° РґР°СЃС‚СѓРїРЅС‹С… РіР°СЂР°РґРѕСћ" << "\x1b[0m" << std::endl;
 						break;
 					}
 					else
 					{
-						int choiceCity = GetIntWithinRange(1, j, "Выбярыце горад: ");
+						int choiceCity = GetIntWithinRange(1, j, "Р’С‹Р±СЏСЂС‹С†Рµ РіРѕСЂР°Рґ: ");
 
 						availableCargos[choiceCargo - 1]->RequestDelivery(account, availableCities[choiceCity - 1]);
 
-						std::cout << "Заказ сфарміраваны. Дастаўка пачнецца ў бліжайшы час." << std::endl;
+						std::cout << "Р—Р°РєР°Р· СЃС„Р°СЂРјС–СЂР°РІР°РЅС‹. Р”Р°СЃС‚Р°СћРєР° РїР°С‡РЅРµС†С†Р° Сћ Р±Р»С–Р¶Р°Р№С€С‹ С‡Р°СЃ." << std::endl;
 
 						return;
 					}
@@ -465,36 +475,30 @@ namespace DeliverySystem
 	{
 		if (cargos.empty())
 		{
-			std::cout << "Няма актыўных заказаў" << std::endl;
+			std::cout << "РќСЏРјР° Р°РєС‚С‹СћРЅС‹С… Р·Р°РєР°Р·Р°Сћ" << std::endl;
 			return;
 		}
 		int i = 0;
-		for (auto& cargo : account->GetCargos())
-			std::cout << ++i << ". " << *cargo << std::endl << std::endl;
+
+		TablePrinter table(account->GetCargos());
+		std::cout << table << '\n';
 	}
 	void Manager::ShowSupportedArea()
 	{
-		int i = 0;
-		for (const auto& country : countries)
-		{
-			std::cout << ++i << '.' << std::endl << country << std::endl << std::endl;
-		}
+		TablePrinter table(countries);
+		std::cout << table << '\n';
 	}
 	void Manager::BecomeADriver()
 	{
 		if (!applications.empty() && applications.back().GetAccount() == account)
 		{
-			int choice;
-			std::cout << "Вы ўжо адправілі заяўку. Жадаеце выдаліць яе?\n"
-				<< "1. Так\t2. Не\n";
-
-			choice = GetIntWithinRange(1, 2);
+			int choice = ShowMenuWithNavigation({ "РўР°Рє", "РќРµ" }, "Р’С‹ СћР¶Рѕ Р°РґРїСЂР°РІС–Р»С– Р·Р°СЏСћРєСѓ. Р–Р°РґР°РµС†Рµ РІС‹РґР°Р»С–С†СЊ СЏРµ?");
 
 			switch (choice)
 			{
 			case 1:
 				applications.pop_back();
-				std::cout << "\nЗаяўка паспяхова выдалена\n";
+				std::cout << "\nР—Р°СЏСћРєР° РїР°СЃРїСЏС…РѕРІР° РІС‹РґР°Р»РµРЅР°\n";
 				return;
 			case 2:
 				std::cout << '\n';
@@ -503,12 +507,12 @@ namespace DeliverySystem
 		}
 
 		char message[MESSAGE_SIZE];
-		std::cout << "Дадайце паведамленне да вашай заўцы\n";
+		std::cout << "Р”Р°РґР°Р№С†Рµ РїР°РІРµРґР°РјР»РµРЅРЅРµ РґР° РІР°С€Р°Р№ Р·Р°СћС†С‹\n";
 		std::cin.getline(message, MESSAGE_SIZE);
 
 		applications.emplace_back(account, message);
 
-		std::cout << "\nВаша заяўка паспяхова сфарміравана\n";
+		std::cout << "\nР’Р°С€Р° Р·Р°СЏСћРєР° РїР°СЃРїСЏС…РѕРІР° СЃС„Р°СЂРјС–СЂР°РІР°РЅР°\n";
 	}
 	void Manager::UserSort()
 	{
@@ -526,14 +530,8 @@ namespace DeliverySystem
 		};
 
 		SortContainer container;
-		int choice;
-		std::cout << "Выбярыце, што вы жадаеце адсартаваць\n"
-			<< "1. Спіс краін\n"
-			<< "2. Спіс гарадоў\n"
-			<< "3. Спіс грузаў\n"
-			<< "4. Спіс даставак\n";
-
-		choice = GetIntWithinRange(1, 4);
+		int choice = ShowMenuWithNavigation({ "РЎРїС–СЃ РєСЂР°С–РЅ", "РЎРїС–СЃ РіР°СЂР°РґРѕСћ", "РЎРїС–СЃ РіСЂСѓР·Р°Сћ", "РЎРїС–СЃ РґР°СЃС‚Р°РІР°Рє" },
+			"Р’С‹Р±СЏСЂС‹С†Рµ, С€С‚Рѕ РІС‹ Р¶Р°РґР°РµС†Рµ Р°РґСЃР°СЂС‚Р°РІР°С†СЊ");
 
 		container = static_cast<SortContainer>(choice - 1);
 		
@@ -547,19 +545,15 @@ namespace DeliverySystem
 				Code
 			};
 			SortAttribute attribute;
-			std::cout << "Выбярыце атрыбут сартавання:\n"
-				<< "1. Назва краіны\n"
-				<< "2. Тэлефонны код краіны\n";
 
-			choice = GetIntWithinRange(1, 2);
+			choice = ShowMenuWithNavigation({ "РќР°Р·РІР° РєСЂР°С–РЅС‹", "РўСЌР»РµС„РѕРЅРЅС‹ РєРѕРґ РєСЂР°С–РЅС‹" }, "Р’С‹Р±СЏСЂС‹С†Рµ Р°С‚СЂС‹Р±СѓС‚ СЃР°СЂС‚Р°РІР°РЅРЅСЏ");
+
 			attribute = static_cast<SortAttribute>(choice - 1);
 
 			SortOrder order;
-			std::cout << "Выбярыце парадак сартавання:\n"
-				<< "1. Па ўзрастанні\n"
-				<< "2. Па змяншэнні\n";
 
-			choice = GetIntWithinRange(1, 2);
+			choice = ShowMenuWithNavigation({ "РџР° СћР·СЂР°СЃС‚Р°РЅРЅС–", "РџР° Р·РјСЏРЅС€СЌРЅРЅС–" }, "Р’С‹Р±СЏСЂС‹С†Рµ РїР°СЂР°РґР°Рє СЃР°СЂС‚Р°РІР°РЅРЅСЏ");
+
 			order = static_cast<SortOrder>(choice - 1);
 
 			countries.sort([attribute, order](const Country& a, const Country& b)
@@ -590,19 +584,11 @@ namespace DeliverySystem
 			};
 
 			SortAttribute attribute;
-			std::cout << "Выбярыце атрыбут сартавання:\n"
-				<< "1. Назва горада\n"
-				<< "2. Абрэвіатура краіны\n";
-
-			choice = GetIntWithinRange(1, 2);
+			choice = ShowMenuWithNavigation({ "РќР°Р·РІР° РіРѕСЂР°РґР°", "РђР±СЂСЌРІС–Р°С‚СѓСЂР° РєСЂР°С–РЅС‹" }, "Р’С‹Р±СЏСЂС‹С†Рµ Р°С‚СЂС‹Р±СѓС‚ СЃР°СЂС‚Р°РІР°РЅРЅСЏ");
 			attribute = static_cast<SortAttribute>(choice - 1);
 
 			SortOrder order;
-			std::cout << "Выбярыце парадак сартавання:\n"
-				<< "1. Па ўзрастанні\n"
-				<< "2. Па змяншэнні\n";
-
-			choice = GetIntWithinRange(1, 2);
+			choice = ShowMenuWithNavigation({ "РџР° СћР·СЂР°СЃС‚Р°РЅРЅС–", "РџР° Р·РјСЏРЅС€СЌРЅРЅС–" }, "Р’С‹Р±СЏСЂС‹С†Рµ РїР°СЂР°РґР°Рє СЃР°СЂС‚Р°РІР°РЅРЅСЏ");
 			order = static_cast<SortOrder>(choice - 1);
 
 			for (auto& country : countries)
@@ -639,22 +625,12 @@ namespace DeliverySystem
 			};
 
 			SortAttribute attribute;
-			std::cout << "Выбярыце атрыбут сартавання:\n"
-				<< "1. Назва груза\n"
-				<< "2. Маса груза\n"
-				<< "3. Горад адпраўлення\n"
-				<< "4. Горад прыбыцця\n"
-				<< "5. Тып груза\n";
-
-			choice = GetIntWithinRange(1, 5);
+			choice = ShowMenuWithNavigation({ "РќР°Р·РІР° РіСЂСѓР·Р°", "РњР°СЃР° РіСЂСѓР·Р°", "Р“РѕСЂР°Рґ Р°РґРїСЂР°СћР»РµРЅРЅСЏ", "Р“РѕСЂР°Рґ РїСЂС‹Р±С‹С†С†СЏ",
+				"РўС‹Рї РіСЂСѓР·Р°"}, "Р’С‹Р±СЏСЂС‹С†Рµ Р°С‚СЂС‹Р±СѓС‚ СЃР°СЂС‚Р°РІР°РЅРЅСЏ");
 			attribute = static_cast<SortAttribute>(choice - 1);
 
 			SortOrder order;
-			std::cout << "Выбярыце парадак сартавання:\n"
-				<< "1. Па ўзрастанні\n"
-				<< "2. Па змяншэнні\n";
-
-			choice = GetIntWithinRange(1, 2);
+			choice = ShowMenuWithNavigation({ "РџР° СћР·СЂР°СЃС‚Р°РЅРЅС–", "РџР° Р·РјСЏРЅС€СЌРЅРЅС–" }, "Р’С‹Р±СЏСЂС‹С†Рµ РїР°СЂР°РґР°Рє СЃР°СЂС‚Р°РІР°РЅРЅСЏ");
 			order = static_cast<SortOrder>(choice - 1);
 
 			cargos.sort([attribute, order](const Cargo& a, const Cargo& b)
@@ -700,23 +676,20 @@ namespace DeliverySystem
 			};
 
 			SortAttribute attribute;
-			std::cout << "Выбярыце атрыбут сартавання:\n"
-				<< "1. Імя кіроўцы\n"
-				<< "2. Назва груза\n"
-				<< "3. Маса груза\n"
-				<< "4. Горад адпраўлення\n"
-				<< "5. Горад прыбыцця\n"
-				<< "6. Тып груза\n";
+			std::cout << "Р’С‹Р±СЏСЂС‹С†Рµ Р°С‚СЂС‹Р±СѓС‚ СЃР°СЂС‚Р°РІР°РЅРЅСЏ:\n"
+				<< "1. Р†РјСЏ РєС–СЂРѕСћС†С‹\n"
+				<< "2. РќР°Р·РІР° РіСЂСѓР·Р°\n"
+				<< "3. РњР°СЃР° РіСЂСѓР·Р°\n"
+				<< "4. Р“РѕСЂР°Рґ Р°РґРїСЂР°СћР»РµРЅРЅСЏ\n"
+				<< "5. Р“РѕСЂР°Рґ РїСЂС‹Р±С‹С†С†СЏ\n"
+				<< "6. РўС‹Рї РіСЂСѓР·Р°\n";
 
-			choice = GetIntWithinRange(1, 6);
+			choice = ShowMenuWithNavigation({ "Р†РјСЏ РєС–СЂРѕСћС†С‹", "РќР°Р·РІР° РіСЂСѓР·Р°", "РњР°СЃР° РіСЂСѓР·Р°", "Р“РѕСЂР°Рґ Р°РґРїСЂР°СћР»РµРЅРЅСЏ",
+				"Р“РѕСЂР°Рґ РїСЂС‹Р±С‹С†С†СЏ", "РўС‹Рї РіСЂСѓР·Р°" }, "Р’С‹Р±СЏСЂС‹С†Рµ Р°С‚СЂС‹Р±СѓС‚ СЃР°СЂС‚Р°РІР°РЅРЅСЏ");
 			attribute = static_cast<SortAttribute>(choice - 1);
 
 			SortOrder order;
-			std::cout << "Выбярыце парадак сартавання:\n"
-				<< "1. Па ўзрастанні\n"
-				<< "2. Па змяншэнні\n";
-
-			choice = GetIntWithinRange(1, 2);
+			choice = ShowMenuWithNavigation({ "РџР° СћР·СЂР°СЃС‚Р°РЅРЅС–", "РџР° Р·РјСЏРЅС€СЌРЅРЅС–" }, "Р’С‹Р±СЏСЂС‹С†Рµ РїР°СЂР°РґР°Рє СЃР°СЂС‚Р°РІР°РЅРЅСЏ");
 			order = static_cast<SortOrder>(choice - 1);
 
 			deliveries.sort([attribute, order](const Delivery& a, const Delivery& b)
@@ -762,7 +735,7 @@ namespace DeliverySystem
 		std::vector<Trailer*> availableTrailers;
 		std::vector<Cargo*> availableCargos;
 
-		std::cout << "Даступныя грузы:\n";
+		std::cout << "Р”Р°СЃС‚СѓРїРЅС‹СЏ РіСЂСѓР·С‹:\n";
 		int i = 0;
 		for (auto& cargo : cargos)
 			if (cargo.GetClient() != nullptr && cargo.GetCurrentDelivery() == nullptr)
@@ -773,16 +746,16 @@ namespace DeliverySystem
 
 		if (availableCargos.empty())
 		{
-			std::cout << "Няма даступных грузаў. Звярніцеся да мадэратараў\n";
+			std::cout << "РќСЏРјР° РґР°СЃС‚СѓРїРЅС‹С… РіСЂСѓР·Р°Сћ. Р—РІСЏСЂРЅС–С†РµСЃСЏ РґР° РјР°РґСЌСЂР°С‚Р°СЂР°Сћ\n";
 			return;
 		}
 
-		int choiceCargo = GetIntWithinRange(0, availableCargos.size(), "Выбярыце груз (0 для адмовы): ");
+		int choiceCargo = GetIntWithinRange(0, availableCargos.size(), "Р’С‹Р±СЏСЂС‹С†Рµ РіСЂСѓР· (0 РґР»СЏ Р°РґРјРѕРІС‹): ");
 
 		if (choiceCargo == 0)
 			return;
 
-		std::cout << "Даступныя прычэпы для гэтага тыпу грузу:\n" << std::endl;
+		std::cout << "Р”Р°СЃС‚СѓРїРЅС‹СЏ РїСЂС‹С‡СЌРїС‹ РґР»СЏ РіСЌС‚Р°РіР° С‚С‹РїСѓ РіСЂСѓР·Сѓ:\n" << std::endl;
 		int j = 0;
 		for (auto& trailer : trailers)
 		{
@@ -795,11 +768,11 @@ namespace DeliverySystem
 		}
 		if (availableTrailers.empty())
 		{
-			std::cout << "Няма даступных прычэпаў. Звярніцеся да мадэратараў\n";
+			std::cout << "РќСЏРјР° РґР°СЃС‚СѓРїРЅС‹С… РїСЂС‹С‡СЌРїР°Сћ. Р—РІСЏСЂРЅС–С†РµСЃСЏ РґР° РјР°РґСЌСЂР°С‚Р°СЂР°Сћ\n";
 			return;
 		}
 
-		int choiceTrailer = GetIntWithinRange(0, availableTrailers.size(), "Выбярыце прычэп (0 для адмовы): ");
+		int choiceTrailer = GetIntWithinRange(0, availableTrailers.size(), "Р’С‹Р±СЏСЂС‹С†Рµ РїСЂС‹С‡СЌРї (0 РґР»СЏ Р°РґРјРѕРІС‹): ");
 
 		if (choiceTrailer == 0)
 			return;
@@ -810,8 +783,8 @@ namespace DeliverySystem
 	}
 	void Manager::DriverQuit(Driver* driver)
 	{
-		std::cout << "Гэта дзеянне нельга будзе адмовіць.\nВы ўпэўнены?\n1. Так\t2. Не" << std::endl;
-		int choice = GetIntWithinRange(1, 2);
+		std::cout << "Р“СЌС‚Р° РґР·РµСЏРЅРЅРµ РЅРµР»СЊРіР° Р±СѓРґР·Рµ Р°РґРјРѕРІС–С†СЊ.\nР’С‹ СћРїСЌСћРЅРµРЅС‹?\n";
+		int choice = ShowMenuWithNavigation({ "РўР°Рє", "РќРµ" }, "");
 
 		switch (choice)
 		{
@@ -829,7 +802,7 @@ namespace DeliverySystem
 			}
 
 			account->SetType(Account::Type::User);
-			std::cout << "Вы звольнены." << std::endl;
+			std::cout << "Р’С‹ Р·РІРѕР»СЊРЅРµРЅС‹." << std::endl;
 			return;
 		case 2:
 			return;
@@ -841,9 +814,8 @@ namespace DeliverySystem
 	}
 	void Manager::DropDelivery(Driver* driver)
 	{
-		std::cout << "Гэта дзеянне нельга будзе адмовіць. За няўстойкі вы будзеце аштрафаваны\n"
-			<< "Вы ўпэўнены? \n1.Так\t2.Не" << std::endl;
-		int choice = GetIntWithinRange(1, 2);
+		std::cout << "Р“СЌС‚Р° РґР·РµСЏРЅРЅРµ РЅРµР»СЊРіР° Р±СѓРґР·Рµ Р°РґРјРѕРІС–С†СЊ. Р—Р° РЅСЏСћСЃС‚РѕР№РєС– РІС‹ Р±СѓРґР·РµС†Рµ Р°С€С‚СЂР°С„Р°РІР°РЅС‹\nР’С‹ СћРїСЌСћРЅРµРЅС‹?\n";
+		int choice = ShowMenuWithNavigation({ "РўР°Рє", "РќРµ" }, "");
 
 		switch (choice)
 		{
@@ -873,22 +845,11 @@ namespace DeliverySystem
 
 		SortAttribute attribute;
 		SortOrder order;
-
-		std::cout << "Выбярыце атрыбут сартавання:\n"
-			<< "1. Назва груза\n"
-			<< "2. Маса груза\n"
-			<< "3. Горад адпраўлення\n"
-			<< "4. Горад прыбыцця\n"
-			<< "5. Тып груза\n";
-
-		int choice = GetIntWithinRange(1, 5);
+		int choice = ShowMenuWithNavigation({ "РќР°Р·РІР° РіСЂСѓР·Р°", "РњР°СЃР° РіСЂСѓР·Р°", "Р“РѕСЂР°Рґ Р°РґРїСЂР°СћР»РµРЅРЅСЏ", "Р“РѕСЂР°Рґ РїСЂС‹Р±С‹С†С†СЏ",
+			"РўС‹Рї РіСЂСѓР·Р°" }, "Р’С‹Р±СЏСЂС‹С†Рµ Р°С‚СЂС‹Р±СѓС‚ СЃР°СЂС‚Р°РІР°РЅРЅСЏ");
 		attribute = static_cast<SortAttribute>(choice - 1);
 
-		std::cout << "Выбярыце парадак сартавання:\n"
-			<< "1. Па ўзрастанні\n"
-			<< "2. Па змяншэнні\n";
-
-		choice = GetIntWithinRange(1, 2);
+		choice = ShowMenuWithNavigation({ "РџР° СћР·СЂР°СЃС‚Р°РЅРЅС–", "РџР° Р·РјСЏРЅС€СЌРЅРЅС–" }, "Р’С‹Р±СЏСЂС‹С†Рµ РїР°СЂР°РґР°Рє СЃР°СЂС‚Р°РІР°РЅРЅСЏ");
 		order = static_cast<SortOrder>(choice - 1);
 
 		cargos.sort([attribute, order](const Cargo& a, const Cargo& b)
@@ -923,34 +884,26 @@ namespace DeliverySystem
 	//Moderator
 	void Manager::ShowAllUsers()
 	{
-		int i = 0;
+		TablePrinter table(Account::GetHeaders());
 		for (const auto& account : accounts)
 			if (account.GetType() == Account::Type::User)
-				std::cout << ++i << ".\n" << account << std::endl << std::endl;
-
-		if (i == 0)
-			std::cout << "Няма карыстальнікаў да праглядзення" << std::endl;
+				table.AddRow(account);
 	}
 	void Manager::ShowAllDrivers()
 	{
-		int i = 0;
+		TablePrinter table(Account::GetHeaders());
 		for (const auto& account : accounts)
 			if (account.GetType() == Account::Type::Driver)
-				std::cout << ++i << ".\n" << account << std::endl << std::endl;
-
-		if (i == 0)
-			std::cout << "Няма карыстальнікаў да праглядзення" << std::endl;
+				table.AddRow(account);
 	}
 	void Manager::CargosList()
 	{
-		std::cout << "\nСпіс грузаў:\n";
+		std::cout << "\nРЎРїС–СЃ РіСЂСѓР·Р°Сћ:\n";
 
-		int i = 0;
-		for (const auto& cargo : cargos)
-			std::cout << ++i << '\n' << cargo << "\n\n";
+		TablePrinter cargosT(cargos);
+		std::cout << cargosT << '\n';
 
-		std::cout << "\nВыбярыце пункт меню:\n1. Дадаць груз\n2. Выдаліць груз\n3. Выхад\n";
-		int choice = GetIntWithinRange(1, 3);
+		int choice = ShowMenuWithNavigation({"Р”Р°РґР°С†СЊ РіСЂСѓР·", "Р’С‹РґР°Р»С–С†СЊ РіСЂСѓР·", "Р’С‹С…Р°Рґ"}, "Р’С‹Р±СЏСЂС‹С†Рµ РїСѓРЅРєС‚ РјРµРЅСЋ");
 
 		switch (choice)
 		{
@@ -961,35 +914,17 @@ namespace DeliverySystem
 			int typeChoice;
 			City* from = nullptr;
 
-			std::cout << "Увядзіце назву грузу: ";
+			std::cout << "РЈРІСЏРґР·С–С†Рµ РЅР°Р·РІСѓ РіСЂСѓР·Сѓ: ";
 			std::getline(std::cin, name);
 
-			mass = GetFloat("Увядзіце масу грузу: ");
+			mass = GetFloat("РЈРІСЏРґР·С–С†Рµ РјР°СЃСѓ РіСЂСѓР·Сѓ: ");
 
-			std::cout << "Выбярыце тып грузу:\n";
-			std::cout << "1. Драўніна" << std::endl
-				<< "2. Ежа" << std::endl
-				<< "3. Аўтамабілі" << std::endl
-				<< "4. Паліва" << std::endl
-				<< "5. Хімічныя рэчыва" << std::endl
-				<< "6. Малако" << std::endl
-				<< "7. Жвір, друз" << std::endl
-				<< "8. Крупы" << std::endl
-				<< "9. Пясок" << std::endl
-				<< "10. Бетон" << std::endl
-				<< "11. Сталёвыя канструкцыі" << std::endl
-				<< "12. Цэгла" << std::endl
-				<< "13. Прамысловае абсталяванне" << std::endl
-				<< "14. Будаўнічая тэхніка" << std::endl
-				<< "15. Кантэйнеры" << std::endl
-				<< "16. Выбуховыя рэчы" << std::endl
-				<< "17. Таксічныя матэрыялы" << std::endl
-				<< "18. Замарожаныя прадукты" << std::endl
-				<< "19. Медыкаменты" << std::endl;
+			typeChoice = ShowMenuWithNavigation({ "Р”СЂР°СћРЅС–РЅР°", "Р•Р¶Р°", "РђСћС‚Р°РјР°Р±С–Р»С–", "РџР°Р»С–РІР°", "РҐС–РјС–С‡РЅС‹СЏ СЂСЌС‡С‹РІР°",
+				"РњР°Р»Р°РєРѕ", "Р–РІС–СЂ, РґСЂСѓР·", "РљСЂСѓРїС‹", "РџСЏСЃРѕРє", "Р‘РµС‚РѕРЅ", "РЎС‚Р°Р»С‘РІС‹СЏ РєР°РЅСЃС‚СЂСѓРєС†С‹С–", "Р¦СЌРіР»Р°",
+				"РџСЂР°РјС‹СЃР»РѕРІР°Рµ Р°Р±СЃС‚Р°Р»СЏРІР°РЅРЅРµ", "Р‘СѓРґР°СћРЅС–С‡Р°СЏ С‚СЌС…РЅС–РєР°", "РљР°РЅС‚СЌР№РЅРµСЂС‹", "Р’С‹Р±СѓС…РѕРІС‹СЏ СЂСЌС‡С‹",
+				"РўР°РєСЃС–С‡РЅС‹СЏ РјР°С‚СЌСЂС‹СЏР»С‹", "Р—Р°РјР°СЂРѕР¶Р°РЅС‹СЏ РїСЂР°РґСѓРєС‚С‹", "РњРµРґС‹РєР°РјРµРЅС‚С‹" }, "Р’С‹Р±СЏСЂС‹С†Рµ С‚С‹Рї РіСЂСѓР·Сѓ");
 
-			typeChoice = GetIntWithinRange(1, 19);
-
-			std::cout << "\nДаступныя гарады:\n";
+			std::cout << "\nР”Р°СЃС‚СѓРїРЅС‹СЏ РіР°СЂР°РґС‹:\n";
 			int j = 0;
 			std::vector<City*> availableCities;
 			for (auto& country : countries)
@@ -1003,11 +938,11 @@ namespace DeliverySystem
 
 			if (availableCities.empty())
 			{
-				std::cout << "\x1b[31;1m" << "Няма даступных гарадоў" << "\x1b[0m" << "\n";
+				std::cout << "\x1b[31;1m" << "РќСЏРјР° РґР°СЃС‚СѓРїРЅС‹С… РіР°СЂР°РґРѕСћ" << "\x1b[0m" << "\n";
 				return;
 			}
 
-			std::cout << "Выбярыце горад адпраўлення (0 для адмовы): ";
+			std::cout << "Р’С‹Р±СЏСЂС‹С†Рµ РіРѕСЂР°Рґ Р°РґРїСЂР°СћР»РµРЅРЅСЏ (0 РґР»СЏ Р°РґРјРѕРІС‹): ";
 			int cityChoice = GetIntWithinRange(0, availableCities.size());
 			if (cityChoice == 0)
 				return;
@@ -1016,20 +951,20 @@ namespace DeliverySystem
 
 			Cargo::Type selectedType = static_cast<Cargo::Type>(typeChoice - 1);
 			cargos.emplace_back(name, mass, selectedType, from, cargos);
-			std::cout << "Груз паспяхова дададзены!\n";
+			std::cout << "Р“СЂСѓР· РїР°СЃРїСЏС…РѕРІР° РґР°РґР°РґР·РµРЅС‹!\n";
 			break;
 		}
 		case 2:
 		{
 			int cargoChoice;
-			std::cout << "Увядзіце нумар груза для выдалення: ";
+			std::cout << "РЈРІСЏРґР·С–С†Рµ РЅСѓРјР°СЂ РіСЂСѓР·Р° РґР»СЏ РІС‹РґР°Р»РµРЅРЅСЏ: ";
 			cargoChoice = GetIntWithinRange(1, cargos.size());
 		
 			auto cargo = cargos.begin();
 			std::advance(cargo, cargoChoice - 1);
 
 			cargos.erase(cargo);
-			std::cout << "Груз паспяхова выдалены!\n";
+			std::cout << "Р“СЂСѓР· РїР°СЃРїСЏС…РѕРІР° РІС‹РґР°Р»РµРЅС‹!\n";
 
 			break;
 		}
@@ -1039,13 +974,11 @@ namespace DeliverySystem
 	}
 	void Manager::TrailersList()
 	{
-		std::cout << "\nСпіс прычэпаў:\n";
-		int i = 0;
-		for (const auto& trailer : trailers)
-			std::cout << ++i << '\n' << *trailer << '\n';
+		std::cout << "\nРЎРїС–СЃ РїСЂС‹С‡СЌРїР°Сћ:\n";
+		TablePrinter table(trailers);
+		std::cout << table << '\n';
 
-		std::cout << "\nВыбярыце пункт меню:\n1. Дадаць прычэп\n2. Выдаліць прычэп\n3. Выхад\n";
-		int choice = GetIntWithinRange(1, 3);
+		int choice = ShowMenuWithNavigation({ "Р”Р°РґР°С†СЊ РїСЂС‹С‡СЌРї", "Р’С‹РґР°Р»С–С†СЊ РїСЂС‹С‡СЌРї", "Р’С‹С…Р°Рґ" }, "РњРµРЅСЋ");
 
 		switch (choice)
 		{
@@ -1054,12 +987,11 @@ namespace DeliverySystem
 			float length, maxPayload;
 			int typeChoice;
 
-			length = GetFloat("Увядзіце даўжыню прычэпа: ");
-			maxPayload = GetFloat("Увядзіце максімальную нагрузку: ");
+			length = GetFloat("РЈРІСЏРґР·С–С†Рµ РґР°СћР¶С‹РЅСЋ РїСЂС‹С‡СЌРїР°: ");
+			maxPayload = GetFloat("РЈРІСЏРґР·С–С†Рµ РјР°РєСЃС–РјР°Р»СЊРЅСѓСЋ РЅР°РіСЂСѓР·РєСѓ: ");
 
-			std::cout << "Выбярыце тып прычэпа:\n";
-			std::cout << "1. Аўтавоз\n2. Цыстэрна\n3. Лесавоз\n4. Трал\n5. Тэнтавы\n6. Рэфрыжэратар\n";
-			typeChoice = GetIntWithinRange(1, 6);
+			typeChoice = ShowMenuWithNavigation({ "РђСћС‚Р°РІРѕР·", "Р¦С‹СЃС‚СЌСЂРЅР°", "Р›РµСЃР°РІРѕР·", "РўСЂР°Р»", "РўСЌРЅС‚Р°РІС‹", "Р СЌС„СЂС‹Р¶СЌСЂР°С‚Р°СЂ"},
+				"РњРµРЅСЋ");
 
 			std::unique_ptr<Trailer> newTrailer;
 			switch (typeChoice)
@@ -1085,18 +1017,18 @@ namespace DeliverySystem
 			}
 
 			trailers.push_back(std::move(newTrailer));
-			std::cout << "Прычэп паспяхова дададзены!\n";
+			std::cout << "РџСЂС‹С‡СЌРї РїР°СЃРїСЏС…РѕРІР° РґР°РґР°РґР·РµРЅС‹!\n";
 			break;
 		}
 		case 2:
 		{
-			int trailerChoice = GetIntWithinRange(1, trailers.size(), "Увядзіце нумар прычэпа для выдалення: ");
+			int trailerChoice = GetIntWithinRange(1, trailers.size(), "РЈРІСЏРґР·С–С†Рµ РЅСѓРјР°СЂ РїСЂС‹С‡СЌРїР° РґР»СЏ РІС‹РґР°Р»РµРЅРЅСЏ: ");
 
 			auto trailer = trailers.begin();
 			std::advance(trailer, trailerChoice - 1);
 
 			trailers.erase(trailer);
-			std::cout << "Прычэп паспяхова выдалены!\n";
+			std::cout << "РџСЂС‹С‡СЌРї РїР°СЃРїСЏС…РѕРІР° РІС‹РґР°Р»РµРЅС‹!\n";
 
 			break;
 		}
@@ -1108,21 +1040,19 @@ namespace DeliverySystem
 	{
 		if (applications.empty())
 		{
-			std::cout << "Няма заявак да разгляду\n";
+			std::cout << "РќСЏРјР° Р·Р°СЏРІР°Рє РґР° СЂР°Р·РіР»СЏРґСѓ\n";
 			return;
 		}
 
 		int choiceApp;
 		int choice;
 
-		int i = 0;
-		for (const auto& application : applications)
-			std::cout << ++i << ". " << application << '\n';
+		TablePrinter table(applications);
+		std::cout << table << '\n';
 
-		choiceApp = GetIntWithinRange(1, i, "\nВыбярыце заяўку да разгляду: ");
+		choiceApp = GetIntWithinRange(1, applications.size(), "\nР’С‹Р±СЏСЂС‹С†Рµ Р·Р°СЏСћРєСѓ РґР° СЂР°Р·РіР»СЏРґСѓ: ");
 
-		std::cout << "Падцвердзіць заяўку?\n1. Так\t2. Не\n";
-		choice = GetIntWithinRange(1, 2);
+		choice = ShowMenuWithNavigation({ "РўР°Рє", "РќРµ" }, "РџР°РґС†РІРµСЂРґР·С–С†СЊ Р·Р°СЏСћРєСѓ?");
 
 		switch (choice)
 		{
@@ -1131,32 +1061,33 @@ namespace DeliverySystem
 			if (lorries.empty())
 			{
 				std::cout << "\x1b[31;1m"
-					<< "Немагчыма падцвердзіць заяўку, бо адсутнічаюць свабодныя грузавікі\n"
+					<< "РќРµРјР°РіС‡С‹РјР° РїР°РґС†РІРµСЂРґР·С–С†СЊ Р·Р°СЏСћРєСѓ, Р±Рѕ Р°РґСЃСѓС‚РЅС–С‡Р°СЋС†СЊ СЃРІР°Р±РѕРґРЅС‹СЏ РіСЂСѓР·Р°РІС–РєС–\n"
 					<< "\x1b[0m";
 				break;
 			}
 
-			int i = 0;
 			std::vector<Lorry*> availableLorries;
-			std::cout << "\nСвабодныя грузавікі:\n";
+			std::cout << "\nРЎРІР°Р±РѕРґРЅС‹СЏ РіСЂСѓР·Р°РІС–РєС–:\n";
+			TablePrinter lorriesTable(Lorry::GetHeaders());
 			for (auto& lorry : lorries)
 			{
 				if (lorry.GetOwner() == nullptr)
 				{
-					std::cout << ++i << ".\n" << lorry << "\n\n";
+					lorriesTable.AddRow(lorry);
 					availableLorries.push_back(&lorry);
 				}
 			}
+			std::cout << lorriesTable << '\n';
 
-			if (i == 0)
+			if (availableLorries.empty())
 			{
 				std::cout << "\x1b[31;1m" 
-					<< "Немагчыма падцвердзіць заяўку, бо адсутнічаюць свабодныя грузавікі\n"
+					<< "РќРµРјР°РіС‡С‹РјР° РїР°РґС†РІРµСЂРґР·С–С†СЊ Р·Р°СЏСћРєСѓ, Р±Рѕ Р°РґСЃСѓС‚РЅС–С‡Р°СЋС†СЊ СЃРІР°Р±РѕРґРЅС‹СЏ РіСЂСѓР·Р°РІС–РєС–\n"
 					<< "\x1b[0m";
 				break;
 			}
 
-			choice = GetIntWithinRange(1, availableLorries.size(), "Выбярыце грузавік для кіроўцы: ");
+			choice = GetIntWithinRange(1, availableLorries.size(), "Р’С‹Р±СЏСЂС‹С†Рµ РіСЂСѓР·Р°РІС–Рє РґР»СЏ РєС–СЂРѕСћС†С‹: ");
 
 			auto application = applications.begin();
 			std::advance(application, choiceApp - 1);
@@ -1171,16 +1102,14 @@ namespace DeliverySystem
 			auto application = applications.begin();
 			std::advance(application, choiceApp - 1);
 			applications.erase(application);
-			std::cout << "Заяўка паспяхова адмоўлена\n";
+			std::cout << "Р—Р°СЏСћРєР° РїР°СЃРїСЏС…РѕРІР° Р°РґРјРѕСћР»РµРЅР°\n";
 			break;
 		}
 
 		if (applications.empty())
 			return;
 
-		std::cout << "Жадаеце працягнуць?\n1. Так\t2. Не\n";
-
-		choice = GetIntWithinRange(1, 2);
+		choice = ShowMenuWithNavigation({ "РўР°Рє", "РќРµ" }, "Р–Р°РґР°РµС†Рµ РїСЂР°С†СЏРіРЅСѓС†СЊ?");
 
 		switch (choice)
 		{
@@ -1192,14 +1121,14 @@ namespace DeliverySystem
 	}
 	void Manager::ModAdmQuit()
 	{
-		std::cout << "Гэта дзеянне нельга будзе адмовіць.\nВы ўпэўнены?\n1. Так\t2. Не\n" << std::endl;
-		int choice = GetIntWithinRange(1, 2);
+		std::cout << "Р“СЌС‚Р° РґР·РµСЏРЅРЅРµ РЅРµР»СЊРіР° Р±СѓРґР·Рµ Р°РґРјРѕРІС–С†СЊ.\n";
+		int choice = ShowMenuWithNavigation({ "РўР°Рє", "РќРµ" }, "Р’С‹ СћРїСЌСћРЅРµРЅС‹?");
 
 		switch (choice)
 		{
 		case 1:
 			account->SetType(Account::Type::User);
-			std::cout << "Вы звольнены." << std::endl;
+			std::cout << "Р’С‹ Р·РІРѕР»СЊРЅРµРЅС‹." << std::endl;
 			return;
 		case 2:
 			return;
@@ -1223,12 +1152,8 @@ namespace DeliverySystem
 		SortContainer container;
 		SortOrder order;
 
-		std::cout << "Выбярыце, што вы жадаеце адсартаваць\n"
-			<< "1. Спіс акаўнтаў\n"
-			<< "2. Спіс кіроўцаў\n"
-			<< "3. Спіс грузаў\n"
-			<< "4. Спіс прычэпаў\n";
-		int choice = GetIntWithinRange(1, 4);
+		int choice = ShowMenuWithNavigation({ "РЎРїС–СЃ Р°РєР°СћРЅС‚Р°Сћ", "РЎРїС–СЃ РєС–СЂРѕСћС†Р°Сћ", "РЎРїС–СЃ РіСЂСѓР·Р°Сћ", "РЎРїС–СЃ РїСЂС‹С‡СЌРїР°Сћ" },
+			"Р’С‹Р±СЏСЂС‹С†Рµ, С€С‚Рѕ РІС‹ Р¶Р°РґР°РµС†Рµ Р°РґСЃР°СЂС‚Р°РІР°С†СЊ");
 
 		container = static_cast<SortContainer>(choice - 1);
 
@@ -1244,16 +1169,16 @@ namespace DeliverySystem
 			};
 			SortAttribute attribute;
 
-			std::cout << "Выбярыце атрыбут сартавання:\n"
-				<< "1. Імя акаўнту\n"
-				<< "2. Уласнае імя\n"
-				<< "3. Прозвішча\n";
+			std::cout << "Р’С‹Р±СЏСЂС‹С†Рµ Р°С‚СЂС‹Р±СѓС‚ СЃР°СЂС‚Р°РІР°РЅРЅСЏ:\n"
+				<< "1. Р†РјСЏ Р°РєР°СћРЅС‚Сѓ\n"
+				<< "2. РЈР»Р°СЃРЅР°Рµ С–РјСЏ\n"
+				<< "3. РџСЂРѕР·РІС–С€С‡Р°\n";
 			choice = GetIntWithinRange(1, 3);
 			attribute = static_cast<SortAttribute>(choice - 1);
 
-			std::cout << "Выбярыце парадак сартавання:\n"
-				<< "1. Па ўзрастанні\n"
-				<< "2. Па змяншэнні\n";
+			std::cout << "Р’С‹Р±СЏСЂС‹С†Рµ РїР°СЂР°РґР°Рє СЃР°СЂС‚Р°РІР°РЅРЅСЏ:\n"
+				<< "1. РџР° СћР·СЂР°СЃС‚Р°РЅРЅС–\n"
+				<< "2. РџР° Р·РјСЏРЅС€СЌРЅРЅС–\n";
 			choice = GetIntWithinRange(1, 2);
 			order = static_cast<SortOrder>(choice - 1);
 
@@ -1290,18 +1215,18 @@ namespace DeliverySystem
 			};
 			SortAttribute attribute;
 
-			std::cout << "Выбярыце атрыбут сартавання:\n"
-				<< "1. Імя акаўнту\n"
-				<< "2. Уласнае імя\n"
-				<< "3. Прозвішча\n"
-				<< "4. Горад адпраўлення\n"
-				<< "5. Горад прыбыцця\n";
+			std::cout << "Р’С‹Р±СЏСЂС‹С†Рµ Р°С‚СЂС‹Р±СѓС‚ СЃР°СЂС‚Р°РІР°РЅРЅСЏ:\n"
+				<< "1. Р†РјСЏ Р°РєР°СћРЅС‚Сѓ\n"
+				<< "2. РЈР»Р°СЃРЅР°Рµ С–РјСЏ\n"
+				<< "3. РџСЂРѕР·РІС–С€С‡Р°\n"
+				<< "4. Р“РѕСЂР°Рґ Р°РґРїСЂР°СћР»РµРЅРЅСЏ\n"
+				<< "5. Р“РѕСЂР°Рґ РїСЂС‹Р±С‹С†С†СЏ\n";
 			choice = GetIntWithinRange(1, 5);
 			attribute = static_cast<SortAttribute>(choice - 1);
 
-			std::cout << "Выбярыце парадак сартавання:\n"
-				<< "1. Па ўзрастанні\n"
-				<< "2. Па змяншэнні\n";
+			std::cout << "Р’С‹Р±СЏСЂС‹С†Рµ РїР°СЂР°РґР°Рє СЃР°СЂС‚Р°РІР°РЅРЅСЏ:\n"
+				<< "1. РџР° СћР·СЂР°СЃС‚Р°РЅРЅС–\n"
+				<< "2. РџР° Р·РјСЏРЅС€СЌРЅРЅС–\n";
 			choice = GetIntWithinRange(1, 2);
 			order = static_cast<SortOrder>(choice - 1);
 
@@ -1354,19 +1279,19 @@ namespace DeliverySystem
 			};
 			SortAttribute attribute;
 
-			std::cout << "Выбярыце атрыбут сартавання:\n"
-				<< "1. Назва груза\n"
-				<< "2. Маса груза\n"
-				<< "3. Горад адпраўлення\n"
-				<< "4. Горад прыбыцця\n"
-				<< "5. Тып груза\n";
+			std::cout << "Р’С‹Р±СЏСЂС‹С†Рµ Р°С‚СЂС‹Р±СѓС‚ СЃР°СЂС‚Р°РІР°РЅРЅСЏ:\n"
+				<< "1. РќР°Р·РІР° РіСЂСѓР·Р°\n"
+				<< "2. РњР°СЃР° РіСЂСѓР·Р°\n"
+				<< "3. Р“РѕСЂР°Рґ Р°РґРїСЂР°СћР»РµРЅРЅСЏ\n"
+				<< "4. Р“РѕСЂР°Рґ РїСЂС‹Р±С‹С†С†СЏ\n"
+				<< "5. РўС‹Рї РіСЂСѓР·Р°\n";
 
 			int choice = GetIntWithinRange(1, 5);
 			attribute = static_cast<SortAttribute>(choice - 1);
 
-			std::cout << "Выбярыце парадак сартавання:\n"
-				<< "1. Па ўзрастанні\n"
-				<< "2. Па змяншэнні\n";
+			std::cout << "Р’С‹Р±СЏСЂС‹С†Рµ РїР°СЂР°РґР°Рє СЃР°СЂС‚Р°РІР°РЅРЅСЏ:\n"
+				<< "1. РџР° СћР·СЂР°СЃС‚Р°РЅРЅС–\n"
+				<< "2. РџР° Р·РјСЏРЅС€СЌРЅРЅС–\n";
 
 			choice = GetIntWithinRange(1, 2);
 			order = static_cast<SortOrder>(choice - 1);
@@ -1413,18 +1338,18 @@ namespace DeliverySystem
 			};
 			SortAttribute attribute;
 
-			std::cout << "Выбярыце атрыбут сартавання:\n"
-				<< "1. Даўжыня\n"
-				<< "2. Максімальная загрузка\n"
-				<< "3. Горад адпраўлення\n"
-				<< "4. Горад прыбыцця\n"
-				<< "5. Тып прычепу\n";
+			std::cout << "Р’С‹Р±СЏСЂС‹С†Рµ Р°С‚СЂС‹Р±СѓС‚ СЃР°СЂС‚Р°РІР°РЅРЅСЏ:\n"
+				<< "1. Р”Р°СћР¶С‹РЅСЏ\n"
+				<< "2. РњР°РєСЃС–РјР°Р»СЊРЅР°СЏ Р·Р°РіСЂСѓР·РєР°\n"
+				<< "3. Р“РѕСЂР°Рґ Р°РґРїСЂР°СћР»РµРЅРЅСЏ\n"
+				<< "4. Р“РѕСЂР°Рґ РїСЂС‹Р±С‹С†С†СЏ\n"
+				<< "5. РўС‹Рї РїСЂС‹С‡РµРїСѓ\n";
 			choice = GetIntWithinRange(1, 5);
 			attribute = static_cast<SortAttribute>(choice - 1);
 
-			std::cout << "Выбярыце парадак сартавання:\n"
-				<< "1. Па ўзрастанні\n"
-				<< "2. Па змяншэнні\n";
+			std::cout << "Р’С‹Р±СЏСЂС‹С†Рµ РїР°СЂР°РґР°Рє СЃР°СЂС‚Р°РІР°РЅРЅСЏ:\n"
+				<< "1. РџР° СћР·СЂР°СЃС‚Р°РЅРЅС–\n"
+				<< "2. РџР° Р·РјСЏРЅС€СЌРЅРЅС–\n";
 			choice = GetIntWithinRange(1, 2);
 			order = static_cast<SortOrder>(choice - 1);
 
@@ -1471,18 +1396,16 @@ namespace DeliverySystem
 	//Admin
 	void Manager::ShowAllAccounts()
 	{
-		int i = 0;
-		for (const auto& account : accounts)
-			std::cout << ++i << ".\n" << account << "\n\n";
+		TablePrinter table(accounts);
+		std::cout << table << '\n';
 	}
 	void Manager::EditAccounts()
 	{
-		std::cout << "\nСпіс уліковых запісаў:\n";
-		int i = 0;
-		for (const auto& acc : accounts)
-			std::cout << ++i << '\n' << acc << '\n';
+		std::cout << "\nРЎРїС–СЃ СѓР»С–РєРѕРІС‹С… Р·Р°РїС–СЃР°Сћ:\n";
+		TablePrinter table(accounts);
+		std::cout << table << '\n';
 
-		std::cout << "\nВыбярыце пункт меню:\n1. Змяніць тып акаўнту\n2. Выдаліць акаўнт\n3. Выхад\n";
+		std::cout << "\nР’С‹Р±СЏСЂС‹С†Рµ РїСѓРЅРєС‚ РјРµРЅСЋ:\n1. Р—РјСЏРЅС–С†СЊ С‚С‹Рї Р°РєР°СћРЅС‚Сѓ\n2. Р’С‹РґР°Р»С–С†СЊ Р°РєР°СћРЅС‚\n3. Р’С‹С…Р°Рґ\n";
 		int choice = GetIntWithinRange(1, 3);
 
 		switch (choice)
@@ -1490,13 +1413,13 @@ namespace DeliverySystem
 		case 1:
 		{
 			int accountChoice, typeChoice;
-			accountChoice = GetIntWithinRange(1, accounts.size(), "Увядзіце нумар акаўнту для змены: ");
+			accountChoice = GetIntWithinRange(1, accounts.size(), "РЈРІСЏРґР·С–С†Рµ РЅСѓРјР°СЂ Р°РєР°СћРЅС‚Сѓ РґР»СЏ Р·РјРµРЅС‹: ");
 
 			auto account = accounts.begin();
 			std::advance(account, accountChoice - 1);
 
-			std::cout << "Выбярыце новы тып акаўнту:\n";
-			std::cout << "1. Карыстальнік\n2. Мадэратар\n3. Адміністратар\n";
+			std::cout << "Р’С‹Р±СЏСЂС‹С†Рµ РЅРѕРІС‹ С‚С‹Рї Р°РєР°СћРЅС‚Сѓ:\n";
+			std::cout << "1. РљР°СЂС‹СЃС‚Р°Р»СЊРЅС–Рє\n2. РњР°РґСЌСЂР°С‚Р°СЂ\n3. РђРґРјС–РЅС–СЃС‚СЂР°С‚Р°СЂ\n";
 			typeChoice = GetIntWithinRange(1, 3);
 
 			Account::Type newType;
@@ -1514,13 +1437,13 @@ namespace DeliverySystem
 			}
 
 			account->SetType(newType);
-			std::cout << "Тып акаўнту паспяхова зменены!\n";
+			std::cout << "РўС‹Рї Р°РєР°СћРЅС‚Сѓ РїР°СЃРїСЏС…РѕРІР° Р·РјРµРЅРµРЅС‹!\n";
 
 			break;
 		}
 		case 2:
 		{
-			int accountChoice = GetIntWithinRange(1, accounts.size(), "Увядзіце нумар акаўнту для выдалення: ");
+			int accountChoice = GetIntWithinRange(1, accounts.size(), "РЈРІСЏРґР·С–С†Рµ РЅСѓРјР°СЂ Р°РєР°СћРЅС‚Сѓ РґР»СЏ РІС‹РґР°Р»РµРЅРЅСЏ: ");
 
 			auto account = accounts.begin();
 			std::advance(account, accountChoice - 1);
@@ -1529,7 +1452,7 @@ namespace DeliverySystem
 			{
 				if (driver.GetAccount() == &*account)
 				{
-					std::cout << "\x1b[31;1m" << "Немагчыма выдаліць акаўнт, які выкарыстоўваецца кіроўцай!"
+					std::cout << "\x1b[31;1m" << "РќРµРјР°РіС‡С‹РјР° РІС‹РґР°Р»С–С†СЊ Р°РєР°СћРЅС‚, СЏРєС– РІС‹РєР°СЂС‹СЃС‚РѕСћРІР°РµС†С†Р° РєС–СЂРѕСћС†Р°Р№!"
 						<< "\x1b[0m" << std::endl;
 
 					break;
@@ -1538,7 +1461,7 @@ namespace DeliverySystem
 
 			if (!account->GetCargos().empty())
 			{
-				std::cout << "\x1b[31;1m" << "Немагчыма выдаліць акаўнт, які мае актыўныя дастаўкі!"
+				std::cout << "\x1b[31;1m" << "РќРµРјР°РіС‡С‹РјР° РІС‹РґР°Р»С–С†СЊ Р°РєР°СћРЅС‚, СЏРєС– РјР°Рµ Р°РєС‚С‹СћРЅС‹СЏ РґР°СЃС‚Р°СћРєС–!"
 					<< "\x1b[0m" << std::endl;
 
 				break;
@@ -1546,16 +1469,16 @@ namespace DeliverySystem
 
 			if (*account == *Manager::account)
 			{
-				std::cout << "Вы ўпэўнены, што хаціце выдаліць уласны акаўнт?\n1. Так\t2. Не\n";
+				std::cout << "Р’С‹ СћРїСЌСћРЅРµРЅС‹, С€С‚Рѕ С…Р°С†С–С†Рµ РІС‹РґР°Р»С–С†СЊ СѓР»Р°СЃРЅС‹ Р°РєР°СћРЅС‚?\n1. РўР°Рє\t2. РќРµ\n";
 				int choice = GetIntWithinRange(1, 2);
 
 				if (choice == 2)
 					return;
 
 				accounts.erase(account);
-				std::cout << "Акаўнт паспяхова выдалены\n";
+				std::cout << "РђРєР°СћРЅС‚ РїР°СЃРїСЏС…РѕРІР° РІС‹РґР°Р»РµРЅС‹\n";
 
-				std::cout << "\nУвядзіце любае значэнне для працягнення\n";
+				std::cout << "\nРЈРІСЏРґР·С–С†Рµ Р»СЋР±Р°Рµ Р·РЅР°С‡СЌРЅРЅРµ РґР»СЏ РїСЂР°С†СЏРіРЅРµРЅРЅСЏ\n";
 				GetString("");
 
 				std::cout << "\x1b[2J\x1b[1;1H";
@@ -1565,7 +1488,7 @@ namespace DeliverySystem
 			}
 
 			accounts.erase(account);
-			std::cout << "Акаўнт паспяхова выдалены!\n";
+			std::cout << "РђРєР°СћРЅС‚ РїР°СЃРїСЏС…РѕРІР° РІС‹РґР°Р»РµРЅС‹!\n";
 
 			break;
 		}
@@ -1575,12 +1498,11 @@ namespace DeliverySystem
 	}
 	void Manager::DriversList()
 	{
-		std::cout << "Спіс кіроўцаў:\n";
-		int i = 0;
-		for (const auto& driver : drivers)
-			std::cout << ++i << ".\n" << driver << "\n\n";
+		std::cout << "РЎРїС–СЃ РєС–СЂРѕСћС†Р°Сћ:\n";
+		TablePrinter table(drivers);
+		std::cout << table << '\n';
 
-		std::cout << "Выбярыце пункт меню:\n1. Зволніць кіроўцу\n2. Выхад\n";
+		std::cout << "Р’С‹Р±СЏСЂС‹С†Рµ РїСѓРЅРєС‚ РјРµРЅСЋ:\n1. Р—РІРѕР»РЅС–С†СЊ РєС–СЂРѕСћС†Сѓ\n2. Р’С‹С…Р°Рґ\n";
 		int choice = GetIntWithinRange(1, 2);
 
 		switch (choice)
@@ -1588,7 +1510,7 @@ namespace DeliverySystem
 		case 1:
 		{
 			int driverChoice = GetIntWithinRange(0, drivers.size(), 
-				"Выбярыце кіроўцу да звальнення (0 для адмовы): ");
+				"Р’С‹Р±СЏСЂС‹С†Рµ РєС–СЂРѕСћС†Сѓ РґР° Р·РІР°Р»СЊРЅРµРЅРЅСЏ (0 РґР»СЏ Р°РґРјРѕРІС‹): ");
 			if (driverChoice == 0)
 				return;
 
@@ -1613,12 +1535,11 @@ namespace DeliverySystem
 	{
 		int choice;
 
-		std::cout << "\nСпіс грузавікоў:\n";
-		int i = 0;
-		for (const auto& lorry : lorries)
-			std::cout << ++i << ".\n" << lorry << "\n\n";
+		std::cout << "\nРЎРїС–СЃ РіСЂСѓР·Р°РІС–РєРѕСћ:\n";
+		TablePrinter table(lorries);
+		std::cout << table << '\n';
 
-		std::cout << "\nВыбярыце пункт меню:\n1. Дадаць грузавік\n2. Выдаліць грузавік\n3. Выхад\n";
+		std::cout << "\nР’С‹Р±СЏСЂС‹С†Рµ РїСѓРЅРєС‚ РјРµРЅСЋ:\n1. Р”Р°РґР°С†СЊ РіСЂСѓР·Р°РІС–Рє\n2. Р’С‹РґР°Р»С–С†СЊ РіСЂСѓР·Р°РІС–Рє\n3. Р’С‹С…Р°Рґ\n";
 		choice = GetIntWithinRange(1, 3);
 
 		switch (choice)
@@ -1630,67 +1551,64 @@ namespace DeliverySystem
 			float gasolineCost;
 			int countryChoice, cityChoice;
 
-			std::cout << "Увядзіце марку грузавіка: ";
+			std::cout << "РЈРІСЏРґР·С–С†Рµ РјР°СЂРєСѓ РіСЂСѓР·Р°РІС–РєР°: ";
 			std::getline(std::cin, make);
 
-			std::cout << "Увядзіце мадэль грузавіка: ";
+			std::cout << "РЈРІСЏРґР·С–С†Рµ РјР°РґСЌР»СЊ РіСЂСѓР·Р°РІС–РєР°: ";
 			std::getline(std::cin, model);
 
-			std::cout << "Увядзіце пробег: ";
+			std::cout << "РЈРІСЏРґР·С–С†Рµ РїСЂРѕР±РµРі: ";
 			std::cin >> mileage;
 			std::cin.ignore();
 
-			gasolineCost = GetFloat("Увядзіце кошт паліва (на 100км): ");
+			gasolineCost = GetFloat("РЈРІСЏРґР·С–С†Рµ РєРѕС€С‚ РїР°Р»С–РІР° (РЅР° 100РєРј): ");
 
-			std::cout << "Даступныя краіны:\n";
+			std::cout << "Р”Р°СЃС‚СѓРїРЅС‹СЏ РєСЂР°С–РЅС‹:\n";
 			int j = 0;
 			for (const auto& country : countries)
 			{
 				std::cout << ++j << ". " << country.GetName() << std::endl;
 			}
 
-			countryChoice = GetIntWithinRange(1, countries.size(), "Выбярыце краіну: ");
+			countryChoice = GetIntWithinRange(1, countries.size(), "Р’С‹Р±СЏСЂС‹С†Рµ РєСЂР°С–РЅСѓ: ");
 
 			auto country = countries.begin();
 			std::advance(country, countryChoice - 1);
 
-			std::cout << "Даступныя гарады:\n";
-			int k = 0;
-			for (const auto& city : country->GetCities())
-			{
-				std::cout << ++k << ". " << city.GetName() << std::endl;
-			}
+			std::cout << "Р”Р°СЃС‚СѓРїРЅС‹СЏ РіР°СЂР°РґС‹:\n";
+			TablePrinter table(country->GetCities());
+			std::cout << table << '\n';
 
-			std::cout << "Выбярыце горад: ";
+			std::cout << "Р’С‹Р±СЏСЂС‹С†Рµ РіРѕСЂР°Рґ: ";
 			cityChoice = GetIntWithinRange(1, country->GetCities().size());
 
 			auto city = country->GetCitiesL().begin();
 			std::advance(city, cityChoice - 1);
 
-			std::cout << "Увядзіце рэгістрацыйныя знакі: ";
+			std::cout << "РЈРІСЏРґР·С–С†Рµ СЂСЌРіС–СЃС‚СЂР°С†С‹Р№РЅС‹СЏ Р·РЅР°РєС–: ";
 			std::getline(std::cin, registrationSigns);
 
 			lorries.emplace_back(make, model, mileage, *country, *city,
 				registrationSigns, gasolineCost, lorries);
-			std::cout << "Грузавік паспяхова дададзены!\n";
+			std::cout << "Р“СЂСѓР·Р°РІС–Рє РїР°СЃРїСЏС…РѕРІР° РґР°РґР°РґР·РµРЅС‹!\n";
 			break;
 		}
 		case 2:
 		{
-			int lorryChoice = GetIntWithinRange(1, lorries.size(), "Увядзіце нумар грузавіка для выдалення: ");
+			int lorryChoice = GetIntWithinRange(1, lorries.size(), "РЈРІСЏРґР·С–С†Рµ РЅСѓРјР°СЂ РіСЂСѓР·Р°РІС–РєР° РґР»СЏ РІС‹РґР°Р»РµРЅРЅСЏ: ");
 
 			auto lorry = lorries.begin();
 			std::advance(lorry, lorryChoice- 1);
 
 			if (lorry->GetOwner() != nullptr)
 			{
-				std::cout << "\x1b[31;1m" << "Немагчыма выдаліць грузавік, які выкарыстоўваецца кіроўцай!"
+				std::cout << "\x1b[31;1m" << "РќРµРјР°РіС‡С‹РјР° РІС‹РґР°Р»С–С†СЊ РіСЂСѓР·Р°РІС–Рє, СЏРєС– РІС‹РєР°СЂС‹СЃС‚РѕСћРІР°РµС†С†Р° РєС–СЂРѕСћС†Р°Р№!"
 					<< "\x1b[0m" << std::endl;
 				break;
 			}
 
 			lorries.erase(lorry);
-			std::cout << "Грузавік паспяхова выдалены!\n";
+			std::cout << "Р“СЂСѓР·Р°РІС–Рє РїР°СЃРїСЏС…РѕРІР° РІС‹РґР°Р»РµРЅС‹!\n";
 
 			break;
 		}
@@ -1700,15 +1618,12 @@ namespace DeliverySystem
 	}
 	void Manager::AreasList()
 	{
-		std::cout << "\nСпіс краін і гарадоў:\n";
-		int i = 0;
-		for (const auto& country : countries)
-		{
-			std::cout << ++i << ". " << country << std::endl;
-		}
+		std::cout << "\nРЎРїС–СЃ РєСЂР°С–РЅ С– РіР°СЂР°РґРѕСћ:\n";
+		TablePrinter table(countries);
+		std::cout << table << '\n';
 
-		std::cout << "\nВыбярыце пункт меню:\n1. Дадаць краіну\n2. Дадаць горад\n"
-			<< "3. Выдаліць краіну\n4. Выдаліць горад\n5. Выхад\n";
+		std::cout << "\nР’С‹Р±СЏСЂС‹С†Рµ РїСѓРЅРєС‚ РјРµРЅСЋ:\n1. Р”Р°РґР°С†СЊ РєСЂР°С–РЅСѓ\n2. Р”Р°РґР°С†СЊ РіРѕСЂР°Рґ\n"
+			<< "3. Р’С‹РґР°Р»С–С†СЊ РєСЂР°С–РЅСѓ\n4. Р’С‹РґР°Р»С–С†СЊ РіРѕСЂР°Рґ\n5. Р’С‹С…Р°Рґ\n";
 		int choice = GetIntWithinRange(1, 5);
 
 		switch (choice)
@@ -1717,24 +1632,24 @@ namespace DeliverySystem
 		{
 			std::string name, abbreviation, phoneCode;
 
-			std::cout << "Увядзіце назву краіны: ";
+			std::cout << "РЈРІСЏРґР·С–С†Рµ РЅР°Р·РІСѓ РєСЂР°С–РЅС‹: ";
 			std::getline(std::cin, name);
 
-			std::cout << "Увядзіце абрэвіятуру краіны: ";
+			std::cout << "РЈРІСЏРґР·С–С†Рµ Р°Р±СЂСЌРІС–СЏС‚СѓСЂСѓ РєСЂР°С–РЅС‹: ";
 			std::getline(std::cin, abbreviation);
 
-			std::cout << "Увядзіце тэлефонны код краіны: ";
+			std::cout << "РЈРІСЏРґР·С–С†Рµ С‚СЌР»РµС„РѕРЅРЅС‹ РєРѕРґ РєСЂР°С–РЅС‹: ";
 			std::getline(std::cin, phoneCode);
 
 			countries.emplace_back(name, abbreviation, phoneCode);
-			std::cout << "Краіна паспяхова дададзена!\n";
+			std::cout << "РљСЂР°С–РЅР° РїР°СЃРїСЏС…РѕРІР° РґР°РґР°РґР·РµРЅР°!\n";
 			break;
 		}
 		case 2:
 		{
 			if (countries.empty())
 			{
-				std::cout << "\x1b[31;1m" << "Спачатку дадайце краіну!" << "\x1b[0m" << std::endl;
+				std::cout << "\x1b[31;1m" << "РЎРїР°С‡Р°С‚РєСѓ РґР°РґР°Р№С†Рµ РєСЂР°С–РЅСѓ!" << "\x1b[0m" << std::endl;
 				break;
 			}
 
@@ -1742,29 +1657,29 @@ namespace DeliverySystem
 			int x, y;
 			int countryChoice;
 
-			std::cout << "Даступныя краіны:\n";
+			std::cout << "Р”Р°СЃС‚СѓРїРЅС‹СЏ РєСЂР°С–РЅС‹:\n";
 			int j = 0;
 			for (const auto& country : countries)
 			{
 				std::cout << ++j << ". " << country.GetName() << std::endl;
 			}
 
-			countryChoice = GetIntWithinRange(1, countries.size(), "Выбярыце краіну: ");
+			countryChoice = GetIntWithinRange(1, countries.size(), "Р’С‹Р±СЏСЂС‹С†Рµ РєСЂР°С–РЅСѓ: ");
 
-			std::cout << "Увядзіце назву горада: ";
+			std::cout << "РЈРІСЏРґР·С–С†Рµ РЅР°Р·РІСѓ РіРѕСЂР°РґР°: ";
 			std::getline(std::cin, name);
 
-			std::cout << "Увядзіце абрэвіятуру горада: ";
+			std::cout << "РЈРІСЏРґР·С–С†Рµ Р°Р±СЂСЌРІС–СЏС‚СѓСЂСѓ РіРѕСЂР°РґР°: ";
 			std::getline(std::cin, abbreviation);
 
-			x = GetInt("Увядзіце каардынату X: ");
-			y = GetInt("Увядзіце каардынату Y: ");
+			x = GetInt("РЈРІСЏРґР·С–С†Рµ РєР°Р°СЂРґС‹РЅР°С‚Сѓ X: ");
+			y = GetInt("РЈРІСЏРґР·С–С†Рµ РєР°Р°СЂРґС‹РЅР°С‚Сѓ Y: ");
 
 			auto country = countries.begin();
 			std::advance(country, countryChoice - 1);
 
 			City(name, abbreviation, *country, x, y, countries);
-			std::cout << "Горад паспяхова дададзены!\n";
+			std::cout << "Р“РѕСЂР°Рґ РїР°СЃРїСЏС…РѕРІР° РґР°РґР°РґР·РµРЅС‹!\n";
 			break;
 		}
 		case 3:
@@ -1772,24 +1687,24 @@ namespace DeliverySystem
 			std::vector<Country*> availableCountries;
 			for (auto& country : countries)
 				if (!country.GetCities().empty())
-					std::cout << "Немагчыма выдаліць краіну " << country.GetName()
-					<< ", бо яна мае гарады\n";
+					std::cout << "РќРµРјР°РіС‡С‹РјР° РІС‹РґР°Р»С–С†СЊ РєСЂР°С–РЅСѓ " << country.GetName()
+					<< ", Р±Рѕ СЏРЅР° РјР°Рµ РіР°СЂР°РґС‹\n";
 				else
 					availableCountries.push_back(&country);
 
 			if (availableCountries.empty())
 			{
-				std::cout << "Няма даступных краін да выдалення\n";
+				std::cout << "РќСЏРјР° РґР°СЃС‚СѓРїРЅС‹С… РєСЂР°С–РЅ РґР° РІС‹РґР°Р»РµРЅРЅСЏ\n";
 				return;
 			}
 
 			int i = 0;
-			std::cout << "\nДаступныя краіны да выдалення:";
-			for (auto& country : availableCountries)
-				std::cout << ++i << '\n' << *country << "\n\n";
+			std::cout << "\nР”Р°СЃС‚СѓРїРЅС‹СЏ РєСЂР°С–РЅС‹ РґР° РІС‹РґР°Р»РµРЅРЅСЏ:";
+			TablePrinter table(availableCountries);
+			std::cout << table << '\n';
 
-			int countryChoice = GetIntWithinRange(0, countries.size(),
-				"Увядзіце нумар краіны для выдалення (0 для адмовы): ");
+			int countryChoice = GetIntWithinRange(0, availableCountries.size(),
+				"РЈРІСЏРґР·С–С†Рµ РЅСѓРјР°СЂ РєСЂР°С–РЅС‹ РґР»СЏ РІС‹РґР°Р»РµРЅРЅСЏ (0 РґР»СЏ Р°РґРјРѕРІС‹): ");
 			if (countryChoice == 0)
 				return;
 
@@ -1805,7 +1720,7 @@ namespace DeliverySystem
 				}
 			}
 
-			std::cout << "Краіна паспяхова выдалена!\n";
+			std::cout << "РљСЂР°С–РЅР° РїР°СЃРїСЏС…РѕРІР° РІС‹РґР°Р»РµРЅР°!\n";
 
 			break;
 		}
@@ -1813,11 +1728,10 @@ namespace DeliverySystem
 		{
 			int countryChoice, cityChoice;
 
-			int i = 0;
-			for (const auto& country : countries)
-				std::cout << ++i << ". " << country.GetName() << '\n';
+			TablePrinter table(countries);
+			std::cout << table << '\n';
 
-			countryChoice = GetIntWithinRange(0, countries.size(), "Выбярыце краіну (0 для адмовы): ");
+			countryChoice = GetIntWithinRange(0, countries.size(), "Р’С‹Р±СЏСЂС‹С†Рµ РєСЂР°С–РЅСѓ (0 РґР»СЏ Р°РґРјРѕРІС‹): ");
 			if (countryChoice == 0)
 				return;
 
@@ -1826,7 +1740,7 @@ namespace DeliverySystem
 
 			if (country->GetCities().empty())
 			{
-				std::cout << "\x1b[31;1m" << "У гэтай краіне няма гарадоў!" << "\x1b[0m" << std::endl;
+				std::cout << "\x1b[31;1m" << "РЈ РіСЌС‚Р°Р№ РєСЂР°С–РЅРµ РЅСЏРјР° РіР°СЂР°РґРѕСћ!" << "\x1b[0m" << std::endl;
 				break;
 			}
 
@@ -1838,8 +1752,8 @@ namespace DeliverySystem
 				{
 					if (*cargo.GetCityFrom() == city || (cargo.GetCityTo() != nullptr && *cargo.GetCityTo() == city))
 					{
-						std::cout << "Немагчыма выдаліць горад " << city.GetName()
-							<< ", бо ён існуе ў адным з грузаў\n";
+						std::cout << "РќРµРјР°РіС‡С‹РјР° РІС‹РґР°Р»С–С†СЊ РіРѕСЂР°Рґ " << city.GetName()
+							<< ", Р±Рѕ С‘РЅ С–СЃРЅСѓРµ Сћ Р°РґРЅС‹Рј Р· РіСЂСѓР·Р°Сћ\n";
 						isUsed = true;
 					}
 				}
@@ -1852,24 +1766,21 @@ namespace DeliverySystem
 
 			if (availableCities.empty())
 			{
-				std::cout << "Дадзеная краіна не мае даступных гарадоў да выдалення\n";
+				std::cout << "Р”Р°РґР·РµРЅР°СЏ РєСЂР°С–РЅР° РЅРµ РјР°Рµ РґР°СЃС‚СѓРїРЅС‹С… РіР°СЂР°РґРѕСћ РґР° РІС‹РґР°Р»РµРЅРЅСЏ\n";
 				break;
 			}
 
-			std::cout << "Даступныя гарады да выдалення:\n";
-			int j = 0;
-			for (const auto& city : availableCities)
-			{
-				std::cout << ++j << ". " << city->GetName() << std::endl;
-			}
+			std::cout << "Р”Р°СЃС‚СѓРїРЅС‹СЏ РіР°СЂР°РґС‹ РґР° РІС‹РґР°Р»РµРЅРЅСЏ:\n";
+			TablePrinter citiesTable(availableCities);
+			std::cout << citiesTable << '\n';
 
 			cityChoice = GetIntWithinRange(0, availableCities.size(),
-				"Увядзіце нумар горада для выдалення (0 для адмовы): ");
+				"РЈРІСЏРґР·С–С†Рµ РЅСѓРјР°СЂ РіРѕСЂР°РґР° РґР»СЏ РІС‹РґР°Р»РµРЅРЅСЏ (0 РґР»СЏ Р°РґРјРѕРІС‹): ");
 			if (cityChoice == 0)
 				return;
 
 			country->RemoveCity(availableCities[cityChoice - 1]);
-			std::cout << "Горад паспяхова выдалены!\n";
+			std::cout << "Р“РѕСЂР°Рґ РїР°СЃРїСЏС…РѕРІР° РІС‹РґР°Р»РµРЅС‹!\n";
 			
 			break;
 		}
@@ -1879,19 +1790,18 @@ namespace DeliverySystem
 	}
 	void Manager::DeliveriesList()
 	{
-		std::cout << "\nСпіс даставак:\n";
-		int i = 0;
-		for (const auto& delivery : deliveries)
-			std::cout << ++i << '\n' << delivery << '\n';
+		std::cout << "\nРЎРїС–СЃ РґР°СЃС‚Р°РІР°Рє:\n";
+		TablePrinter table(deliveries);
+		std::cout << table << '\n';
 
-		std::cout << "\nВыбярыце пункт меню:\n1. Выдаліць дастаўку\n2. Выхад\n";
+		std::cout << "\nР’С‹Р±СЏСЂС‹С†Рµ РїСѓРЅРєС‚ РјРµРЅСЋ:\n1. Р’С‹РґР°Р»С–С†СЊ РґР°СЃС‚Р°СћРєСѓ\n2. Р’С‹С…Р°Рґ\n";
 		int choice = GetIntWithinRange(1, 2);
 
 		switch (choice)
 		{
 		case 1:
 		{
-			int deliveryChoice = GetIntWithinRange(1, deliveries.size(), "Увядзіце нумар дастаўкі для выдалення: ");
+			int deliveryChoice = GetIntWithinRange(1, deliveries.size(), "РЈРІСЏРґР·С–С†Рµ РЅСѓРјР°СЂ РґР°СЃС‚Р°СћРєС– РґР»СЏ РІС‹РґР°Р»РµРЅРЅСЏ: ");
 
 			auto delivery = deliveries.begin();
 			std::advance(delivery, deliveryChoice);
@@ -1899,7 +1809,7 @@ namespace DeliverySystem
 			delivery->StopDelivery(deliveries);
 
 			deliveries.erase(delivery);
-			std::cout << "Дастаўка паспяхова выдалена!\n";
+			std::cout << "Р”Р°СЃС‚Р°СћРєР° РїР°СЃРїСЏС…РѕРІР° РІС‹РґР°Р»РµРЅР°!\n";
 		
 			break;
 		}
@@ -1929,15 +1839,15 @@ namespace DeliverySystem
 		SortContainer container;
 		SortOrder order;
 
-		std::cout << "Выбярыце, што вы жадаеце адсартаваць\n"
-			<< "1. Спіс краін\n"
-			<< "2. Спіс гарадоў\n"
-			<< "3. Спіс акаўнтаў\n"
-			<< "4. Спіс кіроўцаў\n"
-			<< "5. Спіс грузавікоў\n"
-			<< "6. Спіс грузаў\n"
-			<< "7. Спіс даставак\n"
-			<< "8. Спіс прычэпаў\n";
+		std::cout << "Р’С‹Р±СЏСЂС‹С†Рµ, С€С‚Рѕ РІС‹ Р¶Р°РґР°РµС†Рµ Р°РґСЃР°СЂС‚Р°РІР°С†СЊ\n"
+			<< "1. РЎРїС–СЃ РєСЂР°С–РЅ\n"
+			<< "2. РЎРїС–СЃ РіР°СЂР°РґРѕСћ\n"
+			<< "3. РЎРїС–СЃ Р°РєР°СћРЅС‚Р°Сћ\n"
+			<< "4. РЎРїС–СЃ РєС–СЂРѕСћС†Р°Сћ\n"
+			<< "5. РЎРїС–СЃ РіСЂСѓР·Р°РІС–РєРѕСћ\n"
+			<< "6. РЎРїС–СЃ РіСЂСѓР·Р°Сћ\n"
+			<< "7. РЎРїС–СЃ РґР°СЃС‚Р°РІР°Рє\n"
+			<< "8. РЎРїС–СЃ РїСЂС‹С‡СЌРїР°Сћ\n";
 		int choice = GetIntWithinRange(1, 8);
 
 		container = static_cast<SortContainer>(choice - 1);
@@ -1952,16 +1862,16 @@ namespace DeliverySystem
 				Code
 			};
 			SortAttribute attribute;
-			std::cout << "Выбярыце атрыбут сартавання:\n"
-				<< "1. Назва краіны\n"
-				<< "2. Тэлефонны код краіны\n";
+			std::cout << "Р’С‹Р±СЏСЂС‹С†Рµ Р°С‚СЂС‹Р±СѓС‚ СЃР°СЂС‚Р°РІР°РЅРЅСЏ:\n"
+				<< "1. РќР°Р·РІР° РєСЂР°С–РЅС‹\n"
+				<< "2. РўСЌР»РµС„РѕРЅРЅС‹ РєРѕРґ РєСЂР°С–РЅС‹\n";
 
 			choice = GetIntWithinRange(1, 2);
 			attribute = static_cast<SortAttribute>(choice - 1);
 
-			std::cout << "Выбярыце парадак сартавання:\n"
-				<< "1. Па ўзрастанні\n"
-				<< "2. Па змяншэнні\n";
+			std::cout << "Р’С‹Р±СЏСЂС‹С†Рµ РїР°СЂР°РґР°Рє СЃР°СЂС‚Р°РІР°РЅРЅСЏ:\n"
+				<< "1. РџР° СћР·СЂР°СЃС‚Р°РЅРЅС–\n"
+				<< "2. РџР° Р·РјСЏРЅС€СЌРЅРЅС–\n";
 
 			choice = GetIntWithinRange(1, 2);
 			order = static_cast<SortOrder>(choice - 1);
@@ -1994,16 +1904,16 @@ namespace DeliverySystem
 			};
 
 			SortAttribute attribute;
-			std::cout << "Выбярыце атрыбут сартавання:\n"
-				<< "1. Назва горада\n"
-				<< "2. Абрэвіатура краіны\n";
+			std::cout << "Р’С‹Р±СЏСЂС‹С†Рµ Р°С‚СЂС‹Р±СѓС‚ СЃР°СЂС‚Р°РІР°РЅРЅСЏ:\n"
+				<< "1. РќР°Р·РІР° РіРѕСЂР°РґР°\n"
+				<< "2. РђР±СЂСЌРІС–Р°С‚СѓСЂР° РєСЂР°С–РЅС‹\n";
 
 			choice = GetIntWithinRange(1, 2);
 			attribute = static_cast<SortAttribute>(choice - 1);
 
-			std::cout << "Выбярыце парадак сартавання:\n"
-				<< "1. Па ўзрастанні\n"
-				<< "2. Па змяншэнні\n";
+			std::cout << "Р’С‹Р±СЏСЂС‹С†Рµ РїР°СЂР°РґР°Рє СЃР°СЂС‚Р°РІР°РЅРЅСЏ:\n"
+				<< "1. РџР° СћР·СЂР°СЃС‚Р°РЅРЅС–\n"
+				<< "2. РџР° Р·РјСЏРЅС€СЌРЅРЅС–\n";
 
 			choice = GetIntWithinRange(1, 2);
 			order = static_cast<SortOrder>(choice - 1);
@@ -2040,16 +1950,16 @@ namespace DeliverySystem
 			};
 			SortAttribute attribute;
 
-			std::cout << "Выбярыце атрыбут сартавання:\n"
-				<< "1. Імя акаўнту\n"
-				<< "2. Уласнае імя\n"
-				<< "3. Прозвішча\n";
+			std::cout << "Р’С‹Р±СЏСЂС‹С†Рµ Р°С‚СЂС‹Р±СѓС‚ СЃР°СЂС‚Р°РІР°РЅРЅСЏ:\n"
+				<< "1. Р†РјСЏ Р°РєР°СћРЅС‚Сѓ\n"
+				<< "2. РЈР»Р°СЃРЅР°Рµ С–РјСЏ\n"
+				<< "3. РџСЂРѕР·РІС–С€С‡Р°\n";
 			choice = GetIntWithinRange(1, 3);
 			attribute = static_cast<SortAttribute>(choice - 1);
 
-			std::cout << "Выбярыце парадак сартавання:\n"
-				<< "1. Па ўзрастанні\n"
-				<< "2. Па змяншэнні\n";
+			std::cout << "Р’С‹Р±СЏСЂС‹С†Рµ РїР°СЂР°РґР°Рє СЃР°СЂС‚Р°РІР°РЅРЅСЏ:\n"
+				<< "1. РџР° СћР·СЂР°СЃС‚Р°РЅРЅС–\n"
+				<< "2. РџР° Р·РјСЏРЅС€СЌРЅРЅС–\n";
 			choice = GetIntWithinRange(1, 2);
 			order = static_cast<SortOrder>(choice - 1);
 
@@ -2086,18 +1996,18 @@ namespace DeliverySystem
 			};
 			SortAttribute attribute;
 
-			std::cout << "Выбярыце атрыбут сартавання:\n"
-				<< "1. Імя акаўнту\n"
-				<< "2. Уласнае імя\n"
-				<< "3. Прозвішча\n"
-				<< "4. Горад адпраўлення\n"
-				<< "5. Горад прыбыцця\n";
+			std::cout << "Р’С‹Р±СЏСЂС‹С†Рµ Р°С‚СЂС‹Р±СѓС‚ СЃР°СЂС‚Р°РІР°РЅРЅСЏ:\n"
+				<< "1. Р†РјСЏ Р°РєР°СћРЅС‚Сѓ\n"
+				<< "2. РЈР»Р°СЃРЅР°Рµ С–РјСЏ\n"
+				<< "3. РџСЂРѕР·РІС–С€С‡Р°\n"
+				<< "4. Р“РѕСЂР°Рґ Р°РґРїСЂР°СћР»РµРЅРЅСЏ\n"
+				<< "5. Р“РѕСЂР°Рґ РїСЂС‹Р±С‹С†С†СЏ\n";
 			choice = GetIntWithinRange(1, 5);
 			attribute = static_cast<SortAttribute>(choice - 1);
 
-			std::cout << "Выбярыце парадак сартавання:\n"
-				<< "1. Па ўзрастанні\n"
-				<< "2. Па змяншэнні\n";
+			std::cout << "Р’С‹Р±СЏСЂС‹С†Рµ РїР°СЂР°РґР°Рє СЃР°СЂС‚Р°РІР°РЅРЅСЏ:\n"
+				<< "1. РџР° СћР·СЂР°СЃС‚Р°РЅРЅС–\n"
+				<< "2. РџР° Р·РјСЏРЅС€СЌРЅРЅС–\n";
 			choice = GetIntWithinRange(1, 2);
 			order = static_cast<SortOrder>(choice - 1);
 
@@ -2146,16 +2056,16 @@ namespace DeliverySystem
 				Mileage
 			};
 
-			std::cout << "Выбярыце атрыбут сартавання\n"
-				<< "1. Марка\n"
-				<< "2. Прабег\n";
+			std::cout << "Р’С‹Р±СЏСЂС‹С†Рµ Р°С‚СЂС‹Р±СѓС‚ СЃР°СЂС‚Р°РІР°РЅРЅСЏ\n"
+				<< "1. РњР°СЂРєР°\n"
+				<< "2. РџСЂР°Р±РµРі\n";
 			choice = GetIntWithinRange(1, 2);
 
 			SortAttribute attribute = static_cast<SortAttribute>(choice - 1);
 			
-			std::cout << "Выбярыце парадак сартавання:\n"
-				<< "1. Па ўзрастанні\n"
-				<< "2. Па змяншэнні\n";
+			std::cout << "Р’С‹Р±СЏСЂС‹С†Рµ РїР°СЂР°РґР°Рє СЃР°СЂС‚Р°РІР°РЅРЅСЏ:\n"
+				<< "1. РџР° СћР·СЂР°СЃС‚Р°РЅРЅС–\n"
+				<< "2. РџР° Р·РјСЏРЅС€СЌРЅРЅС–\n";
 
 			choice = GetIntWithinRange(1, 2);
 			order = static_cast<SortOrder>(choice - 1);
@@ -2191,19 +2101,19 @@ namespace DeliverySystem
 			};
 
 			SortAttribute attribute;
-			std::cout << "Выбярыце атрыбут сартавання:\n"
-				<< "1. Назва груза\n"
-				<< "2. Маса груза\n"
-				<< "3. Горад адпраўлення\n"
-				<< "4. Горад прыбыцця\n"
-				<< "5. Тып груза\n";
+			std::cout << "Р’С‹Р±СЏСЂС‹С†Рµ Р°С‚СЂС‹Р±СѓС‚ СЃР°СЂС‚Р°РІР°РЅРЅСЏ:\n"
+				<< "1. РќР°Р·РІР° РіСЂСѓР·Р°\n"
+				<< "2. РњР°СЃР° РіСЂСѓР·Р°\n"
+				<< "3. Р“РѕСЂР°Рґ Р°РґРїСЂР°СћР»РµРЅРЅСЏ\n"
+				<< "4. Р“РѕСЂР°Рґ РїСЂС‹Р±С‹С†С†СЏ\n"
+				<< "5. РўС‹Рї РіСЂСѓР·Р°\n";
 
 			choice = GetIntWithinRange(1, 5);
 			attribute = static_cast<SortAttribute>(choice - 1);
 
-			std::cout << "Выбярыце парадак сартавання:\n"
-				<< "1. Па ўзрастанні\n"
-				<< "2. Па змяншэнні\n";
+			std::cout << "Р’С‹Р±СЏСЂС‹С†Рµ РїР°СЂР°РґР°Рє СЃР°СЂС‚Р°РІР°РЅРЅСЏ:\n"
+				<< "1. РџР° СћР·СЂР°СЃС‚Р°РЅРЅС–\n"
+				<< "2. РџР° Р·РјСЏРЅС€СЌРЅРЅС–\n";
 
 			choice = GetIntWithinRange(1, 2);
 			order = static_cast<SortOrder>(choice - 1);
@@ -2251,20 +2161,20 @@ namespace DeliverySystem
 			};
 
 			SortAttribute attribute;
-			std::cout << "Выбярыце атрыбут сартавання:\n"
-				<< "1. Імя кіроўцы\n"
-				<< "2. Назва груза\n"
-				<< "3. Маса груза\n"
-				<< "4. Горад адпраўлення\n"
-				<< "5. Горад прыбыцця\n"
-				<< "6. Тып груза\n";
+			std::cout << "Р’С‹Р±СЏСЂС‹С†Рµ Р°С‚СЂС‹Р±СѓС‚ СЃР°СЂС‚Р°РІР°РЅРЅСЏ:\n"
+				<< "1. Р†РјСЏ РєС–СЂРѕСћС†С‹\n"
+				<< "2. РќР°Р·РІР° РіСЂСѓР·Р°\n"
+				<< "3. РњР°СЃР° РіСЂСѓР·Р°\n"
+				<< "4. Р“РѕСЂР°Рґ Р°РґРїСЂР°СћР»РµРЅРЅСЏ\n"
+				<< "5. Р“РѕСЂР°Рґ РїСЂС‹Р±С‹С†С†СЏ\n"
+				<< "6. РўС‹Рї РіСЂСѓР·Р°\n";
 
 			choice = GetIntWithinRange(1, 6);
 			attribute = static_cast<SortAttribute>(choice - 1);
 
-			std::cout << "Выбярыце парадак сартавання:\n"
-				<< "1. Па ўзрастанні\n"
-				<< "2. Па змяншэнні\n";
+			std::cout << "Р’С‹Р±СЏСЂС‹С†Рµ РїР°СЂР°РґР°Рє СЃР°СЂС‚Р°РІР°РЅРЅСЏ:\n"
+				<< "1. РџР° СћР·СЂР°СЃС‚Р°РЅРЅС–\n"
+				<< "2. РџР° Р·РјСЏРЅС€СЌРЅРЅС–\n";
 
 			choice = GetIntWithinRange(1, 2);
 			order = static_cast<SortOrder>(choice - 1);
@@ -2315,18 +2225,18 @@ namespace DeliverySystem
 			};
 			SortAttribute attribute;
 
-			std::cout << "Выбярыце атрыбут сартавання:\n"
-				<< "1. Даўжыня\n"
-				<< "2. Максімальная загрузка\n"
-				<< "3. Горад адпраўлення\n"
-				<< "4. Горад прыбыцця\n"
-				<< "5. Тып прычепу\n";
+			std::cout << "Р’С‹Р±СЏСЂС‹С†Рµ Р°С‚СЂС‹Р±СѓС‚ СЃР°СЂС‚Р°РІР°РЅРЅСЏ:\n"
+				<< "1. Р”Р°СћР¶С‹РЅСЏ\n"
+				<< "2. РњР°РєСЃС–РјР°Р»СЊРЅР°СЏ Р·Р°РіСЂСѓР·РєР°\n"
+				<< "3. Р“РѕСЂР°Рґ Р°РґРїСЂР°СћР»РµРЅРЅСЏ\n"
+				<< "4. Р“РѕСЂР°Рґ РїСЂС‹Р±С‹С†С†СЏ\n"
+				<< "5. РўС‹Рї РїСЂС‹С‡РµРїСѓ\n";
 			choice = GetIntWithinRange(1, 5);
 			attribute = static_cast<SortAttribute>(choice - 1);
 
-			std::cout << "Выбярыце парадак сартавання:\n"
-				<< "1. Па ўзрастанні\n"
-				<< "2. Па змяншэнні\n";
+			std::cout << "Р’С‹Р±СЏСЂС‹С†Рµ РїР°СЂР°РґР°Рє СЃР°СЂС‚Р°РІР°РЅРЅСЏ:\n"
+				<< "1. РџР° СћР·СЂР°СЃС‚Р°РЅРЅС–\n"
+				<< "2. РџР° Р·РјСЏРЅС€СЌРЅРЅС–\n";
 			choice = GetIntWithinRange(1, 2);
 			order = static_cast<SortOrder>(choice - 1);
 
@@ -2384,15 +2294,15 @@ namespace DeliverySystem
 			Less
 		};
 
-		std::cout << "Выбярыце, што вы хаціце адфільтраваць:\n"
-			<< "1. Акаўнты па колькасці даставак\n"
-			<< "2. Грузавікі па прабегу\n"
-			<< "3. Грузы па масе\n"
-			<< "4. Прычэпы па максімальнай грузападымальнасці\n";
+		std::cout << "Р’С‹Р±СЏСЂС‹С†Рµ, С€С‚Рѕ РІС‹ С…Р°С†С–С†Рµ Р°РґС„С–Р»СЊС‚СЂР°РІР°С†СЊ:\n"
+			<< "1. РђРєР°СћРЅС‚С‹ РїР° РєРѕР»СЊРєР°СЃС†С– РґР°СЃС‚Р°РІР°Рє\n"
+			<< "2. Р“СЂСѓР·Р°РІС–РєС– РїР° РїСЂР°Р±РµРіСѓ\n"
+			<< "3. Р“СЂСѓР·С‹ РїР° РјР°СЃРµ\n"
+			<< "4. РџСЂС‹С‡СЌРїС‹ РїР° РјР°РєСЃС–РјР°Р»СЊРЅР°Р№ РіСЂСѓР·Р°РїР°РґС‹РјР°Р»СЊРЅР°СЃС†С–\n";
 		int choice = GetIntWithinRange(1, 4);
 		Container container = static_cast<Container>(choice - 1);
 
-		std::cout << "Выбярыце рэжым фільтрацыі.\n1. Паказваць больш за значэнне\n2. Паказваць менш за значэнне\n";
+		std::cout << "Р’С‹Р±СЏСЂС‹С†Рµ СЂСЌР¶С‹Рј С„С–Р»СЊС‚СЂР°С†С‹С–.\n1. РџР°РєР°Р·РІР°С†СЊ Р±РѕР»СЊС€ Р·Р° Р·РЅР°С‡СЌРЅРЅРµ\n2. РџР°РєР°Р·РІР°С†СЊ РјРµРЅС€ Р·Р° Р·РЅР°С‡СЌРЅРЅРµ\n";
 		choice = GetIntWithinRange(1, 2);
 		Mode mode = static_cast<Mode>(choice - 1);
 
@@ -2401,8 +2311,8 @@ namespace DeliverySystem
 		switch (container)
 		{
 		case Container::Account:
-			value = mode == Mode::Greater ? GetInt("Увядзіце мінімальную колькасць\n")
-				: GetInt("Увядзіце максімальную колькасць\n");
+			value = mode == Mode::Greater ? GetInt("РЈРІСЏРґР·С–С†Рµ РјС–РЅС–РјР°Р»СЊРЅСѓСЋ РєРѕР»СЊРєР°СЃС†СЊ\n")
+				: GetInt("РЈРІСЏРґР·С–С†Рµ РјР°РєСЃС–РјР°Р»СЊРЅСѓСЋ РєРѕР»СЊРєР°СЃС†СЊ\n");
 
 			for (const auto& account : accounts)
 				if(mode == Mode::Greater)
@@ -2416,8 +2326,8 @@ namespace DeliverySystem
 
 			break;
 		case Container::Lorry:
-			value = mode == Mode::Greater ? GetInt("Увядзіце мінімальны прабег\n")
-				: GetInt("Увядзіце максімальны прабег\n");
+			value = mode == Mode::Greater ? GetInt("РЈРІСЏРґР·С–С†Рµ РјС–РЅС–РјР°Р»СЊРЅС‹ РїСЂР°Р±РµРі\n")
+				: GetInt("РЈРІСЏРґР·С–С†Рµ РјР°РєСЃС–РјР°Р»СЊРЅС‹ РїСЂР°Р±РµРі\n");
 
 			for (const auto& lorry : lorries)
 				if (mode == Mode::Greater)
@@ -2430,8 +2340,8 @@ namespace DeliverySystem
 						std::cout << ++i << ".\n" << lorry << "\n\n";
 			break;
 		case Container::Cargo:
-			value = mode == Mode::Greater ? GetInt("Увядзіце мінімальную масу\n")
-				: GetInt("Увядзіце максімальную масу\n");
+			value = mode == Mode::Greater ? GetInt("РЈРІСЏРґР·С–С†Рµ РјС–РЅС–РјР°Р»СЊРЅСѓСЋ РјР°СЃСѓ\n")
+				: GetInt("РЈРІСЏРґР·С–С†Рµ РјР°РєСЃС–РјР°Р»СЊРЅСѓСЋ РјР°СЃСѓ\n");
 
 			for (const auto& cargo : cargos)
 				if (mode == Mode::Greater)
@@ -2445,8 +2355,8 @@ namespace DeliverySystem
 
 			break;
 		case Container::Trailer:
-			value = mode == Mode::Greater ? GetInt("Увядзіце мінімальную грузападымальнасць\n")
-				: GetInt("Увядзіце максімальную грузападымальнасць\n");
+			value = mode == Mode::Greater ? GetInt("РЈРІСЏРґР·С–С†Рµ РјС–РЅС–РјР°Р»СЊРЅСѓСЋ РіСЂСѓР·Р°РїР°РґС‹РјР°Р»СЊРЅР°СЃС†СЊ\n")
+				: GetInt("РЈРІСЏРґР·С–С†Рµ РјР°РєСЃС–РјР°Р»СЊРЅСѓСЋ РіСЂСѓР·Р°РїР°РґС‹РјР°Р»СЊРЅР°СЃС†СЊ\n");
 
 			for (const auto& trailer : trailers)
 				if (mode == Mode::Greater)
@@ -2475,15 +2385,15 @@ namespace DeliverySystem
 			Delivery
 		};
 
-		std::cout << "Выбярыце, што вы шукаеце:\n"
-			<< "1. Акаўнт\n"
-			<< "2. Кіроўца\n"
-			<< "3. Грузавік\n"
-			<< "4. Груз\n"
-			<< "5. Краіна\n"
-			<< "6. Горад\n"
-			<< "7. Прычэп\n"
-			<< "8. Дастаўка\n";
+		std::cout << "Р’С‹Р±СЏСЂС‹С†Рµ, С€С‚Рѕ РІС‹ С€СѓРєР°РµС†Рµ:\n"
+			<< "1. РђРєР°СћРЅС‚\n"
+			<< "2. РљС–СЂРѕСћС†Р°\n"
+			<< "3. Р“СЂСѓР·Р°РІС–Рє\n"
+			<< "4. Р“СЂСѓР·\n"
+			<< "5. РљСЂР°С–РЅР°\n"
+			<< "6. Р“РѕСЂР°Рґ\n"
+			<< "7. РџСЂС‹С‡СЌРї\n"
+			<< "8. Р”Р°СЃС‚Р°СћРєР°\n";
 		int choice = GetIntWithinRange(1, 8);
 		Container container = static_cast<Container>(choice - 1);
 
@@ -2491,61 +2401,61 @@ namespace DeliverySystem
 		{
 		case Container::Account:
 		{
-			std::string nickname = GetString("Увядзіце імя акаўнту:\n");
+			std::string nickname = GetString("РЈРІСЏРґР·С–С†Рµ С–РјСЏ Р°РєР°СћРЅС‚Сѓ:\n");
 
 			for(const auto& account : accounts)
 				if(account.GetNickname() == nickname)
 				{
-					std::cout << "\nАкаўнт знойдзены!\n\n" << account << '\n';
+					std::cout << "\nРђРєР°СћРЅС‚ Р·РЅРѕР№РґР·РµРЅС‹!\n\n" << account << '\n';
 					return;
 				}
 
-			std::cout << "\nАкаўнт не знойдзены\n";
+			std::cout << "\nРђРєР°СћРЅС‚ РЅРµ Р·РЅРѕР№РґР·РµРЅС‹\n";
 
 			break;
 		}
 		case Container::Driver:
 		{
-			std::string nickname = GetString("Увядзіце імя акаўнту кіроўцы:\n");
+			std::string nickname = GetString("РЈРІСЏРґР·С–С†Рµ С–РјСЏ Р°РєР°СћРЅС‚Сѓ РєС–СЂРѕСћС†С‹:\n");
 
 			for (const auto& driver : drivers)
 				if (driver.GetAccount()->GetNickname() == nickname)
 				{
-					std::cout << "\nКіроўца знойдзены!\n\n" << driver << '\n';
+					std::cout << "\nРљС–СЂРѕСћС†Р° Р·РЅРѕР№РґР·РµРЅС‹!\n\n" << driver << '\n';
 					return;
 				}
 
-			std::cout << "\nКіроўца не знойдзены\n";
+			std::cout << "\nРљС–СЂРѕСћС†Р° РЅРµ Р·РЅРѕР№РґР·РµРЅС‹\n";
 
 			break;
 		}
 		case Container::Lorry:
 		{
-			int id = GetInt("Увядзіце айдзі грузавіку: ");
+			int id = GetInt("РЈРІСЏРґР·С–С†Рµ Р°Р№РґР·С– РіСЂСѓР·Р°РІС–РєСѓ: ");
 
 			for(const auto& lorry : lorries)
 				if (lorry.GetID() == id)
 				{
-					std::cout << "\nГрузавік знойдзены!\n\n" << lorry << '\n';
+					std::cout << "\nР“СЂСѓР·Р°РІС–Рє Р·РЅРѕР№РґР·РµРЅС‹!\n\n" << lorry << '\n';
 					return;
 				}
 
-			std::cout << "\nГрузавік не знойдзены\n";
+			std::cout << "\nР“СЂСѓР·Р°РІС–Рє РЅРµ Р·РЅРѕР№РґР·РµРЅС‹\n";
 
 			break;
 		}
 		case Container::Cargo:
 		{
-			int id = GetInt("Увядзіце айдзі грузу: ");
+			int id = GetInt("РЈРІСЏРґР·С–С†Рµ Р°Р№РґР·С– РіСЂСѓР·Сѓ: ");
 
 			for (const auto& cargo : cargos)
 				if (cargo.GetID() == id)
 				{
-					std::cout << "\nГруз знойдзены!\n\n" << cargo << '\n';
+					std::cout << "\nР“СЂСѓР· Р·РЅРѕР№РґР·РµРЅС‹!\n\n" << cargo << '\n';
 					return;
 				}
 
-			std::cout << "\nГруз не знойдзены\n";
+			std::cout << "\nР“СЂСѓР· РЅРµ Р·РЅРѕР№РґР·РµРЅС‹\n";
 
 			break;
 		}
@@ -2558,56 +2468,56 @@ namespace DeliverySystem
 				PhoneCode
 			};
 
-			std::cout << "Выбярыце поле, па якому будзе адбывацца пошук:\n"
-				<< "1. Назва краіны\n"
-				<< "2. Абрэвіятура краіны\n"
-				<< "3. Тэлефонны код краіны\n";
+			std::cout << "Р’С‹Р±СЏСЂС‹С†Рµ РїРѕР»Рµ, РїР° СЏРєРѕРјСѓ Р±СѓРґР·Рµ Р°РґР±С‹РІР°С†С†Р° РїРѕС€СѓРє:\n"
+				<< "1. РќР°Р·РІР° РєСЂР°С–РЅС‹\n"
+				<< "2. РђР±СЂСЌРІС–СЏС‚СѓСЂР° РєСЂР°С–РЅС‹\n"
+				<< "3. РўСЌР»РµС„РѕРЅРЅС‹ РєРѕРґ РєСЂР°С–РЅС‹\n";
 			SearchField field = static_cast<SearchField>(GetIntWithinRange(1, 3) - 1);
 
 			switch (field)
 			{
 			case SearchField::Name:
 			{
-				std::string name = GetString("Увядзіце назву краіны:\n");
+				std::string name = GetString("РЈРІСЏРґР·С–С†Рµ РЅР°Р·РІСѓ РєСЂР°С–РЅС‹:\n");
 
 				for(const auto& country : countries)
 					if (country.GetName() == name)
 					{
-						std::cout << "\nКраіна знойдзена!\n\n" << country << '\n';
+						std::cout << "\nРљСЂР°С–РЅР° Р·РЅРѕР№РґР·РµРЅР°!\n\n" << country << '\n';
 						return;
 					}
 
-				std::cout << "Краіна не знойдзена\n";
+				std::cout << "РљСЂР°С–РЅР° РЅРµ Р·РЅРѕР№РґР·РµРЅР°\n";
 
 				break;
 			}
 			case SearchField::Abbreviation:
 			{
-				std::string abbreviation = GetString("Увядзіце абрэвіятуру краіны:\n", 2, 2);
+				std::string abbreviation = GetString("РЈРІСЏРґР·С–С†Рµ Р°Р±СЂСЌРІС–СЏС‚СѓСЂСѓ РєСЂР°С–РЅС‹:\n", 2, 2);
 
 				for (const auto& country : countries)
 					if (country.GetAbbreviation() == abbreviation)
 					{
-						std::cout << "\nКраіна знойдзена!\n\n" << country << '\n';
+						std::cout << "\nРљСЂР°С–РЅР° Р·РЅРѕР№РґР·РµРЅР°!\n\n" << country << '\n';
 						return;
 					}
 
-				std::cout << "Краіна не знойдзена\n";
+				std::cout << "РљСЂР°С–РЅР° РЅРµ Р·РЅРѕР№РґР·РµРЅР°\n";
 
 				break;
 			}
 			case SearchField::PhoneCode:
 			{
-				std::string phoneCode = "+" + GetString("Увядзіце тэлефонны код краіны:\n+", 1, 3);
+				std::string phoneCode = "+" + GetString("РЈРІСЏРґР·С–С†Рµ С‚СЌР»РµС„РѕРЅРЅС‹ РєРѕРґ РєСЂР°С–РЅС‹:\n+", 1, 3);
 
 				for(const auto& country : countries)
 					if(country.GetPhoneCode() == phoneCode)
 					{
-						std::cout << "\nКраіна знойдзена!\n\n" << country << '\n';
+						std::cout << "\nРљСЂР°С–РЅР° Р·РЅРѕР№РґР·РµРЅР°!\n\n" << country << '\n';
 						return;
 					}
 
-				std::cout << "Краіна не знойдзена\n";
+				std::cout << "РљСЂР°С–РЅР° РЅРµ Р·РЅРѕР№РґР·РµРЅР°\n";
 
 				break;
 			}
@@ -2617,7 +2527,7 @@ namespace DeliverySystem
 		}
 		case Container::City:
 		{
-			std::string name = GetString("Увядзіце назву горада:\n");
+			std::string name = GetString("РЈРІСЏРґР·С–С†Рµ РЅР°Р·РІСѓ РіРѕСЂР°РґР°:\n");
 			int i = 0;
 
 			for(const auto& country : countries)
@@ -2625,28 +2535,28 @@ namespace DeliverySystem
 					if (city.GetName() == name)
 					{
 						if (i == 0)
-							std::cout << "\nГорад знойдзены!\n";
+							std::cout << "\nР“РѕСЂР°Рґ Р·РЅРѕР№РґР·РµРЅС‹!\n";
 
 						std::cout << '\n' << ++i << ".\n" << city << '\n';
 					}
 
 			if (i == 0)
-				std::cout << "Горад не знойдзены";
+				std::cout << "Р“РѕСЂР°Рґ РЅРµ Р·РЅРѕР№РґР·РµРЅС‹";
 
 			break;
 		}
 		case Container::Trailer:	
 		{
-			int id = GetInt("Увядзіце айдзі прычэпу: ");
+			int id = GetInt("РЈРІСЏРґР·С–С†Рµ Р°Р№РґР·С– РїСЂС‹С‡СЌРїСѓ: ");
 
 			for (const auto& trailer : trailers)
 				if (trailer->GetID() == id)
 				{
-					std::cout << "\nПрычэп знойдзены!\n\n" << *trailer << '\n';
+					std::cout << "\nРџСЂС‹С‡СЌРї Р·РЅРѕР№РґР·РµРЅС‹!\n\n" << *trailer << '\n';
 					return;
 				}
 
-			std::cout << "\nПрычэп не знойдзены\n";
+			std::cout << "\nРџСЂС‹С‡СЌРї РЅРµ Р·РЅРѕР№РґР·РµРЅС‹\n";
 
 			break;
 		}
@@ -2660,72 +2570,72 @@ namespace DeliverySystem
 				TrailerID
 			};
 
-			std::cout << "Выбярыце поле, па якому будзе адбывацца пошук:\n"
-				<< "1. Імя кіроўцы\n"
-				<< "2. Айдзі грузавіку\n"
-				<< "3. Айдзі грузу\n"
-				<< "4. Айдзі прычэпу\n";
+			std::cout << "Р’С‹Р±СЏСЂС‹С†Рµ РїРѕР»Рµ, РїР° СЏРєРѕРјСѓ Р±СѓРґР·Рµ Р°РґР±С‹РІР°С†С†Р° РїРѕС€СѓРє:\n"
+				<< "1. Р†РјСЏ РєС–СЂРѕСћС†С‹\n"
+				<< "2. РђР№РґР·С– РіСЂСѓР·Р°РІС–РєСѓ\n"
+				<< "3. РђР№РґР·С– РіСЂСѓР·Сѓ\n"
+				<< "4. РђР№РґР·С– РїСЂС‹С‡СЌРїСѓ\n";
 			SearchField field = static_cast<SearchField>(GetIntWithinRange(1, 4) - 1);
 
 			switch (field)
 			{
 			case SearchField::DriverName:
 			{
-				std::string nickname = GetString("Увядзіце імя акаўнту кіроўцы:\n");
+				std::string nickname = GetString("РЈРІСЏРґР·С–С†Рµ С–РјСЏ Р°РєР°СћРЅС‚Сѓ РєС–СЂРѕСћС†С‹:\n");
 
 				for(const auto& delivery : deliveries)
 					if (delivery.GetDriver()->GetAccount()->GetNickname() == nickname)
 					{
-						std::cout << "\nДастаўка знойдзена!\n\n" << delivery << '\n';
+						std::cout << "\nР”Р°СЃС‚Р°СћРєР° Р·РЅРѕР№РґР·РµРЅР°!\n\n" << delivery << '\n';
 						return;
 					}
 
-				std::cout << "\nДастаўка не знойдзена\n";
+				std::cout << "\nР”Р°СЃС‚Р°СћРєР° РЅРµ Р·РЅРѕР№РґР·РµРЅР°\n";
 
 				break;
 			}
 			case SearchField::LorryID:
 			{
-				int id = GetInt("Увядзіце айдзі грузавіку: ");
+				int id = GetInt("РЈРІСЏРґР·С–С†Рµ Р°Р№РґР·С– РіСЂСѓР·Р°РІС–РєСѓ: ");
 
 				for (const auto& delivery : deliveries)
 					if (delivery.GetLorry()->GetID() == id)
 					{
-						std::cout << "\nДастўка знойдзена!\n\n" << delivery << '\n';
+						std::cout << "\nР”Р°СЃС‚СћРєР° Р·РЅРѕР№РґР·РµРЅР°!\n\n" << delivery << '\n';
 						return;
 					}
 
-				std::cout << "\nДастаўка не знойдзена\n";
+				std::cout << "\nР”Р°СЃС‚Р°СћРєР° РЅРµ Р·РЅРѕР№РґР·РµРЅР°\n";
 
 				break;
 			}
 			case SearchField::CargoID:
 			{
-				int id = GetInt("Увядзіце айдзі грузу: ");
+				int id = GetInt("РЈРІСЏРґР·С–С†Рµ Р°Р№РґР·С– РіСЂСѓР·Сѓ: ");
 
 				for (const auto& delivery : deliveries)
 					if (delivery.GetCargo()->GetID() == id)
 					{
-						std::cout << "\nДастаўка знойдзена!\n\n" << delivery << '\n';
+						std::cout << "\nР”Р°СЃС‚Р°СћРєР° Р·РЅРѕР№РґР·РµРЅР°!\n\n" << delivery << '\n';
 						return;
 					}
 
-				std::cout << "\nДастаўка не знойдзена\n";
+				std::cout << "\nР”Р°СЃС‚Р°СћРєР° РЅРµ Р·РЅРѕР№РґР·РµРЅР°\n";
 
 				break;
 			}
 			case SearchField::TrailerID:
 			{
-				int id = GetInt("Увядзіце айдзі прычэпу: ");
+				int id = GetInt("РЈРІСЏРґР·С–С†Рµ Р°Р№РґР·С– РїСЂС‹С‡СЌРїСѓ: ");
 
 				for (const auto& delivery : deliveries)
 					if (delivery.GetTrailer()->GetID() == id)
 					{
-						std::cout << "\nДастаўка знойдзена!\n\n" << delivery << '\n';
+						std::cout << "\nР”Р°СЃС‚Р°СћРєР° Р·РЅРѕР№РґР·РµРЅР°!\n\n" << delivery << '\n';
 						return;
 					}
 
-				std::cout << "\nДастаўка не знойдзена\n";
+				std::cout << "\nР”Р°СЃС‚Р°СћРєР° РЅРµ Р·РЅРѕР№РґР·РµРЅР°\n";
 
 				break;
 			}
@@ -2737,20 +2647,20 @@ namespace DeliverySystem
 	}
 	void Manager::Report()
 	{
-		std::cout << "\nДаклад аб працы праграмы захоўваецца ў файл: " << REPORT << ".\n";
+		std::cout << "\nР”Р°РєР»Р°Рґ Р°Р± РїСЂР°С†С‹ РїСЂР°РіСЂР°РјС‹ Р·Р°С…РѕСћРІР°РµС†С†Р° Сћ С„Р°Р№Р»: " << REPORT << ".\n";
 
 		std::ofstream report(REPORT);
 		if (!report.is_open())
-			throw(std::exception("Памылка пры адкрыцці файла"));
+			throw(std::exception("РџР°РјС‹Р»РєР° РїСЂС‹ Р°РґРєСЂС‹С†С†С– С„Р°Р№Р»Р°"));
 		else
 		{
-			report << "Краіны і гарады:\n";
+			report << "РљСЂР°С–РЅС‹ С– РіР°СЂР°РґС‹:\n";
 			int i = 0;
 			for (const auto& country : countries)
 			{
 				report << ++i << ".\t" << country.GetName() << '\t' << country.GetAbbreviation() << '\t'
 					<< country.GetPhoneCode();
-				report << "\nСпіс гарадоў:\n";
+				report << "\nРЎРїС–СЃ РіР°СЂР°РґРѕСћ:\n";
 
 				int j = 0;
 				for (const auto& city : country.GetCities())
@@ -2761,144 +2671,144 @@ namespace DeliverySystem
 
 			report << "*****************************************\n\n";
 
-			report << "Акаўнты:\n";
+			report << "РђРєР°СћРЅС‚С‹:\n";
 			i = 0;
 			for (const auto& account : accounts)
 			{
 				report << ++i << ".\t" << account.GetNickname() << '\n'
 					<< account.GetFirstName() << ' ' << account.GetLastName() << '\t' << account.GetPhoneNumber()
 					<< '\n' << account.GetType() << '\n';
-				report << "Спіс грузаў:\n";
+				report << "РЎРїС–СЃ РіСЂСѓР·Р°Сћ:\n";
 				int j = 0;
 				for (const auto& cargo : account.GetCargos())
 				{
 					report << '\t' << ++j << ".\t" << cargo->GetName() << '\t' << cargo->GetID() << "\n\t"
-						<< "З: " << cargo->GetCityFrom()->GetName() << '\t' 
+						<< "Р—: " << cargo->GetCityFrom()->GetName() << '\t' 
 						<< cargo->GetCityFrom()->GetCountryAbbreviation() << "\n\t";
 					if (cargo->GetCityTo() != nullptr)
-						report << "Да: " << cargo->GetCityTo()->GetName() << '\t'
+						report << "Р”Р°: " << cargo->GetCityTo()->GetName() << '\t'
 						<< cargo->GetCityTo()->GetCountryAbbreviation();
-					report << "\n\t" << cargo->GetMass() << " кг"
+					report << "\n\t" << cargo->GetMass() << " РєРі"
 						<< "\n\t" << cargo->GetType() << "\n\n";
 				}
 				if (j == 0)
-					report << "Няма\n\n";
+					report << "РќСЏРјР°\n\n";
 			}
 
 			report << "*****************************************\n\n";
 
-			report << "Кіроўцы:\n";
+			report << "РљС–СЂРѕСћС†С‹:\n";
 			i = 0;
 			for (const auto& driver : drivers)
 			{
 				report << ++i << ".\t" << driver.GetAccount()->GetNickname() << '\t'
 					<< driver.GetAccount()->GetFirstName() << ' ' << driver.GetAccount()->GetLastName() << '\n';
-				report << "Грузавік кіроўцы: " << driver.GetLorry()->GetMake() << ' ' << driver.GetLorry()->GetModel()
+				report << "Р“СЂСѓР·Р°РІС–Рє РєС–СЂРѕСћС†С‹: " << driver.GetLorry()->GetMake() << ' ' << driver.GetLorry()->GetModel()
 					<< '\n';
-				driver.GetCurrentDelivery() == nullptr ? report << "\nНяма задання\n\n" :
-					report << "Заданне: " << driver.GetCurrentDelivery()->GetCargo()->GetName() << '\t'
+				driver.GetCurrentDelivery() == nullptr ? report << "\nРќСЏРјР° Р·Р°РґР°РЅРЅСЏ\n\n" :
+					report << "Р—Р°РґР°РЅРЅРµ: " << driver.GetCurrentDelivery()->GetCargo()->GetName() << '\t'
 					<< driver.GetCurrentDelivery()->GetCityFrom()->GetName() << " - "
 					<< driver.GetCurrentDelivery()->GetCityTo()->GetName() << "\n\n";
 			}
 
 			report << "*****************************************\n\n";
 
-			report << "Грузавікі:\n";
+			report << "Р“СЂСѓР·Р°РІС–РєС–:\n";
 			i = 0;
 			for (const auto& lorry : lorries)
 			{
 				report << ++i << ".\t" << lorry.GetMake() << ' ' << lorry.GetModel() << '\t'
 					<< lorry.GetID() << '\n';
-				lorry.GetCurrentDelivery() == nullptr ? report << "\nНяма задання\n\n" :
-					report << "Заданне: " << lorry.GetCurrentDelivery()->GetCargo()->GetName() << '\t'
+				lorry.GetCurrentDelivery() == nullptr ? report << "\nРќСЏРјР° Р·Р°РґР°РЅРЅСЏ\n\n" :
+					report << "Р—Р°РґР°РЅРЅРµ: " << lorry.GetCurrentDelivery()->GetCargo()->GetName() << '\t'
 					<< lorry.GetCurrentDelivery()->GetCityFrom()->GetName() << " - "
 					<< lorry.GetCurrentDelivery()->GetCityTo()->GetName() << "\n\n";
 			}
 
 			report << "*****************************************\n\n";
 
-			report << "Прычэпы:\n";
+			report << "РџСЂС‹С‡СЌРїС‹:\n";
 			i = 0;
 			for (const auto& trailer : trailers)
 			{
 				report << ++i << ".\t" << trailer->GetTypeString() << '\t' << trailer->GetID()
-					<< "\nДаўжыня: " << trailer->GetLength()
-					<< "\nМаксімальная грузападымальнасць: " << trailer->GetMaxPayload();
-				trailer->GetCurrentDelivery() == nullptr ? report << "\nНяма задання\n\n" :
-					report << "Заданне: " << trailer->GetCurrentDelivery()->GetCargo()->GetName() << '\t'
+					<< "\nР”Р°СћР¶С‹РЅСЏ: " << trailer->GetLength()
+					<< "\nРњР°РєСЃС–РјР°Р»СЊРЅР°СЏ РіСЂСѓР·Р°РїР°РґС‹РјР°Р»СЊРЅР°СЃС†СЊ: " << trailer->GetMaxPayload();
+				trailer->GetCurrentDelivery() == nullptr ? report << "\nРќСЏРјР° Р·Р°РґР°РЅРЅСЏ\n\n" :
+					report << "Р—Р°РґР°РЅРЅРµ: " << trailer->GetCurrentDelivery()->GetCargo()->GetName() << '\t'
 					<< trailer->GetCurrentDelivery()->GetCityFrom()->GetName() << " - "
 					<< trailer->GetCurrentDelivery()->GetCityTo()->GetName() << "\n\n";
 			}
 
 			report << "*****************************************\n\n";
 
-			report << "Грузы:\n";
+			report << "Р“СЂСѓР·С‹:\n";
 			i = 0;
 			for (const auto& cargo : cargos)
 			{
 				report << ++i << ".\t" << cargo.GetName() << '\t' << cargo.GetID() << '\t'
-					<< cargo.GetMass() << " кг" << '\n';
-				report << "З: " << cargo.GetCityFrom()->GetName();
+					<< cargo.GetMass() << " РєРі" << '\n';
+				report << "Р—: " << cargo.GetCityFrom()->GetName();
 				if (cargo.GetCityTo() != nullptr)
 				{
-					report << "Да: " << cargo.GetCityTo()->GetName() << '\n'
-						<< "Заказчык: " << cargo.GetClient()->GetNickname() << '\n';
+					report << "Р”Р°: " << cargo.GetCityTo()->GetName() << '\n'
+						<< "Р—Р°РєР°Р·С‡С‹Рє: " << cargo.GetClient()->GetNickname() << '\n';
 
 					if (cargo.GetCurrentDelivery() != nullptr)
 					{
-						report << "Дастаўляецца\n\n";
+						report << "Р”Р°СЃС‚Р°СћР»СЏРµС†С†Р°\n\n";
 					}
 					else
-						report << "Не дастаўляецца\n\n";
+						report << "РќРµ РґР°СЃС‚Р°СћР»СЏРµС†С†Р°\n\n";
 				}
 				else
-					report << "Не заказаны\n\n";
+					report << "РќРµ Р·Р°РєР°Р·Р°РЅС‹\n\n";
 			}
 
 			report << "*****************************************\n\n";
 
-			report << "Заяўкі на працу:\n";
+			report << "Р—Р°СЏСћРєС– РЅР° РїСЂР°С†Сѓ:\n";
 			i = 0;
 			for (const auto& application : applications)
 			{
 				report << ++i << ".\t" << application.GetAccount()->GetNickname() << '\n'
 					<< application.GetAccount()->GetFirstName() << ' ' << application.GetAccount()->GetLastName()
-					<< '\n' << application.GetMessage() << "\n\n";
+					<< '\n' << application.GetAppMessage() << "\n\n";
 			}
 		}
 
 		report.close();
 
-		std::cout << "Даклад паспяхова сфарміраваны\n";
+		std::cout << "Р”Р°РєР»Р°Рґ РїР°СЃРїСЏС…РѕРІР° СЃС„Р°СЂРјС–СЂР°РІР°РЅС‹\n";
 	}
-
-	void Manager::Menu()
+	
+	void Manager::Menu() 
 	{
 	menu_begin:
-
 		int choice;
 
-		switch (account->GetType())
+		switch (account->GetType()) 
 		{
-		case Account::Type::User:
+		case Account::Type::User: 
 		{
-			while(true)
+			std::vector<std::string> menuItems = 
 			{
-				std::cout << std::endl << std::setw(20) << "\x1b[33;1m" << "Меню:" << "\x1b[0m" << std::endl;
-				std::cout << "1. Замовіць дастаўку" << std::endl
-					<< "2. Праглядзець актыўныя заказы" << std::endl
-					<< "3. Рэдагаваць асабістыя дадзеныя" << std::endl
-					<< "4. Праглядзець даступныя гарады і краіны" << std::endl
-					<< "5. Аднавіць дастаўкі" << std::endl
-					<< "6. Сартаванне" << std::endl
-					<< "7. Стань кіроўцай!" << std::endl
-					<< "8. Выхад" << std::endl;
+				"Р—Р°РјРѕРІС–С†СЊ РґР°СЃС‚Р°СћРєСѓ",
+				"РџСЂР°РіР»СЏРґР·РµС†СЊ Р°РєС‚С‹СћРЅС‹СЏ Р·Р°РєР°Р·С‹",
+				"Р СЌРґР°РіР°РІР°С†СЊ Р°СЃР°Р±С–СЃС‚С‹СЏ РґР°РґР·РµРЅС‹СЏ",
+				"РџСЂР°РіР»СЏРґР·РµС†СЊ РґР°СЃС‚СѓРїРЅС‹СЏ РіР°СЂР°РґС‹ С– РєСЂР°С–РЅС‹",
+				"РђРґРЅР°РІС–С†СЊ РґР°СЃС‚Р°СћРєС–",
+				"РЎР°СЂС‚Р°РІР°РЅРЅРµ",
+				"РЎС‚Р°РЅСЊ РєС–СЂРѕСћС†Р°Р№!",
+				"Р’С‹С…Р°Рґ"
+			};
 
-				choice = GetIntWithinRange(1, 8, "Выбярыце пункт меню: ");
-
+			while (true) 
+			{
+				choice = ShowMenuWithNavigation(menuItems, "РњРµРЅСЋ:");
 				std::cout << std::endl;
 
-				switch (choice)
+				switch (choice) 
 				{
 				case 1:
 					UserRequestDelivery();
@@ -2925,29 +2835,30 @@ namespace DeliverySystem
 					return;
 				}
 			}
-
 			break;
 		}
-		case Account::Type::Driver:
+		case Account::Type::Driver: 
 		{
 			Driver* driver = FindDriver(account->GetNickname());
-			while (true)
-			{
-				if (driver->GetCurrentDelivery() == nullptr)
+
+			while (true) {
+				if (driver->GetCurrentDelivery() == nullptr) 
 				{
-					std::cout << std::endl << std::setw(20) << "\x1b[33;1m" << "Меню:" << "\x1b[0m" << std::endl;
-					std::cout << "1. Прыняць замову" << std::endl
-						<< "2. Сартаванне грузаў" << std::endl
-						<< "3. Рэдагаваць асабістыя дадзеныя" << std::endl
-						<< "4. Аднавіць дастаўкі" << std::endl
-						<< "5. Звольніцца" << std::endl
-						<< "6. Выхад" << std::endl;
+					// РњРµРЅСЋ РІРѕРґРёС‚РµР»СЏ Р±РµР· С‚РµРєСѓС‰РµР№ РґРѕСЃС‚Р°РІРєРё
+					std::vector<std::string> menuItems = 
+					{
+						"РџСЂС‹РЅСЏС†СЊ Р·Р°РјРѕРІСѓ",
+						"РЎР°СЂС‚Р°РІР°РЅРЅРµ РіСЂСѓР·Р°Сћ",
+						"Р СЌРґР°РіР°РІР°С†СЊ Р°СЃР°Р±С–СЃС‚С‹СЏ РґР°РґР·РµРЅС‹СЏ",
+						"РђРґРЅР°РІС–С†СЊ РґР°СЃС‚Р°СћРєС–",
+						"Р—РІРѕР»СЊРЅС–С†С†Р°",
+						"Р’С‹С…Р°Рґ"
+					};
 
-					choice = GetIntWithinRange(1, 6, "Выбярыце пункт меню: ");
-
+					choice = ShowMenuWithNavigation(menuItems, "РњРµРЅСЋ:");
 					std::cout << std::endl;
 
-					switch (choice)
+					switch (choice) 
 					{
 					case 1:
 						AcceptDelivery(driver);
@@ -2968,21 +2879,21 @@ namespace DeliverySystem
 						return;
 					}
 				}
-				else
+				else 
 				{
-					std::cout << std::endl << std::setw(20) << "\x1b[33;1m" << "Меню:" << "\x1b[0m" << std::endl;
-					std::cout << "1. Праглядзець бягучую замову" << std::endl
-						<< "2. Аднавіць дастаўкі" << std::endl
-						<< "3. Адмовіцца ад замовы" << std::endl
-						<< "4. Рэдагаваць асабістыя дадзеныя" << std::endl
-						<< "5. Выхад" << std::endl;
+					std::vector<std::string> menuItems = 
+					{
+						"РџСЂР°РіР»СЏРґР·РµС†СЊ Р±СЏРіСѓС‡СѓСЋ Р·Р°РјРѕРІСѓ",
+						"РђРґРЅР°РІС–С†СЊ РґР°СЃС‚Р°СћРєС–",
+						"РђРґРјРѕРІС–С†С†Р° Р°Рґ Р·Р°РјРѕРІС‹",
+						"Р СЌРґР°РіР°РІР°С†СЊ Р°СЃР°Р±С–СЃС‚С‹СЏ РґР°РґР·РµРЅС‹СЏ",
+						"Р’С‹С…Р°Рґ"
+					};
 
-					choice = GetIntWithinRange(1, 5, "Выбярыце пункт меню: ");
-
+					choice = ShowMenuWithNavigation(menuItems, "РњРµРЅСЋ:");
 					std::cout << std::endl;
 
-					switch (choice)
-					{
+					switch (choice) {
 					case 1:
 						ShowCurrentDelivery(driver);
 						break;
@@ -3000,30 +2911,30 @@ namespace DeliverySystem
 					}
 				}
 			}
-
 			break;
 		}
-		case Account::Type::Moderator:
+		case Account::Type::Moderator: 
 		{
-			while (true)
+			std::vector<std::string> menuItems = 
 			{
-				std::cout << std::endl << std::setw(20) << "\x1b[33;1m" << "Меню:" << "\x1b[0m" << std::endl;
-				std::cout << "1. Рэдагаваць асабістыя дадзеныя" << std::endl
-					<< "2. Праглядзець усіх карыстальнікаў" << std::endl
-					<< "3. Праглядзець усіх кіроўцаў" << std::endl
-					<< "4. Спіс грузаў" << std::endl
-					<< "5. Спіс прычэпаў" << std::endl
-					<< "6. Разглядзець заяўкі на працу" << std::endl
-					<< "7. Аднавіць дастаўкі" << std::endl
-					<< "8. Сартаванне" << std::endl
-					<< "9. Звольніцца" << std::endl
-					<< "10. Выхад" << std::endl;
-				
-				choice = GetIntWithinRange(1, 10, "Выбярыце пункт меню: ");
+				"Р СЌРґР°РіР°РІР°С†СЊ Р°СЃР°Р±С–СЃС‚С‹СЏ РґР°РґР·РµРЅС‹СЏ",
+				"РџСЂР°РіР»СЏРґР·РµС†СЊ СѓСЃС–С… РєР°СЂС‹СЃС‚Р°Р»СЊРЅС–РєР°Сћ",
+				"РџСЂР°РіР»СЏРґР·РµС†СЊ СѓСЃС–С… РєС–СЂРѕСћС†Р°Сћ",
+				"РЎРїС–СЃ РіСЂСѓР·Р°Сћ",
+				"РЎРїС–СЃ РїСЂС‹С‡СЌРїР°Сћ",
+				"Р Р°Р·РіР»СЏРґР·РµС†СЊ Р·Р°СЏСћРєС– РЅР° РїСЂР°С†Сѓ",
+				"РђРґРЅР°РІС–С†СЊ РґР°СЃС‚Р°СћРєС–",
+				"РЎР°СЂС‚Р°РІР°РЅРЅРµ",
+				"Р—РІРѕР»СЊРЅС–С†С†Р°",
+				"Р’С‹С…Р°Рґ"
+			};
 
+			while (true) 
+			{
+				choice = ShowMenuWithNavigation(menuItems, "РњРµРЅСЋ:");
 				std::cout << std::endl;
 
-				switch (choice)
+				switch (choice) 
 				{
 				case 1:
 					EditAccount();
@@ -3056,38 +2967,36 @@ namespace DeliverySystem
 					return;
 				}
 			}
-
 			break;
 		}
-		case Account::Type::Admin:
+		case Account::Type::Admin: 
 		{
-			while (true)
+			std::vector<std::string> menuItems = 
 			{
-				std::cout << std::endl << std::setw(20) << "\x1b[33;1m" << "Меню:" << "\x1b[0m" << std::endl;
-				std::cout << "1. Рэдагаваць асабістыя дадзеныя" << std::endl
-					<< "2. Праглядзець усі ўліковыя запісы" << std::endl
-					<< "3. Кіраванне ўліковымі запісамі" << std::endl
-					<< "4. Спіс кіроўцаў" << std::endl
-					<< "5. Спіс грузаў" << std::endl
-					<< "6. Спіс грузавікоў" << std::endl
-					<< "7. Спіс прычэпаў" << std::endl
-					<< "8. Спіс гарадоў і краін" << std::endl
-					<< "9. Спіс даставак" << std::endl
-					<< "10. Разглядзець заяўкі на працу" << std::endl
-					<< "11. Аднавіць дастаўкі" << std::endl
-					<< "12. Сартаванне" << std::endl
-					<< "13. Фільтр" << std::endl
-					<< "14. Пошук" << std::endl
-					<< "15. Звольніцца" << std::endl
-					<< "16. Даклад у файл" << std::endl
-					<< "17. Выхад" << std::endl;
+				"Р СЌРґР°РіР°РІР°С†СЊ Р°СЃР°Р±С–СЃС‚С‹СЏ РґР°РґР·РµРЅС‹СЏ",
+				"РџСЂР°РіР»СЏРґР·РµС†СЊ СѓСЃС– СћР»С–РєРѕРІС‹СЏ Р·Р°РїС–СЃС‹",
+				"РљС–СЂР°РІР°РЅРЅРµ СћР»С–РєРѕРІС‹РјС– Р·Р°РїС–СЃР°РјС–",
+				"РЎРїС–СЃ РєС–СЂРѕСћС†Р°Сћ",
+				"РЎРїС–СЃ РіСЂСѓР·Р°Сћ",
+				"РЎРїС–СЃ РіСЂСѓР·Р°РІС–РєРѕСћ",
+				"РЎРїС–СЃ РїСЂС‹С‡СЌРїР°Сћ",
+				"РЎРїС–СЃ РіР°СЂР°РґРѕСћ С– РєСЂР°С–РЅ",
+				"РЎРїС–СЃ РґР°СЃС‚Р°РІР°Рє",
+				"Р Р°Р·РіР»СЏРґР·РµС†СЊ Р·Р°СЏСћРєС– РЅР° РїСЂР°С†Сѓ",
+				"РђРґРЅР°РІС–С†СЊ РґР°СЃС‚Р°СћРєС–",
+				"РЎР°СЂС‚Р°РІР°РЅРЅРµ",
+				"Р¤С–Р»СЊС‚СЂ",
+				"РџРѕС€СѓРє",
+				"Р—РІРѕР»СЊРЅС–С†С†Р°",
+				"Р”Р°РєР»Р°Рґ Сѓ С„Р°Р№Р»",
+				"Р’С‹С…Р°Рґ"
+			};
 
-				choice = GetIntWithinRange(1, 17, "Выбярыце пункт меню: ");
-
+			while (true) {
+				choice = ShowMenuWithNavigation(menuItems, "РњРµРЅСЋ:");
 				std::cout << std::endl;
 
-				switch (choice)
-				{
+				switch (choice) {
 				case 1:
 					EditAccount();
 					break;
@@ -3145,7 +3054,6 @@ namespace DeliverySystem
 					return;
 				}
 			}
-
 			break;
 		}
 		}

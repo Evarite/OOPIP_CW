@@ -135,6 +135,21 @@ namespace DeliverySystem
 		return distance * gasolineCost / 100;
 	}
 
+	std::vector<std::string> Lorry::ToTableRow() const
+	{
+		return { std::to_string(id), make, model, std::to_string(gasolineCost), registrationNumber,
+			owner != nullptr ? owner->GetAccount()->GetFirstName() + ' ' + owner->GetAccount()->GetLastName()
+			: "-", currentDelivery != nullptr ? currentDelivery->GetCargo()->GetName() + ": " +
+			currentDelivery->GetCityFrom()->GetName() + ' ' + currentDelivery->GetCityFrom()->GetCountryAbbreviation() +
+			" - " + currentDelivery->GetCityTo()->GetName() + ' ' + currentDelivery->GetCityTo()->GetCountryAbbreviation()
+			: "-" };
+	}
+	std::vector<std::string> Lorry::GetHeaders()
+	{
+		return { "ID", "Марка", "Мадэль", "Каштоўнасць паліва на 100км", "Рэгістрацыйны нумар", "Уладалец", 
+			"Бягучае заданне"};
+	}
+
 	std::ostream& operator<<(std::ostream& os, const Lorry& obj)
 	{
 		os << "ID: " << obj.id << std::endl;

@@ -1,6 +1,7 @@
 #include "DeliverySystem.h"
 #include <iostream>
 #include <fstream>
+#include <sstream>
 
 namespace DeliverySystem
 {
@@ -71,6 +72,22 @@ namespace DeliverySystem
 	void Trailer::InitialiseType(const Type& type)
 	{
 		this->type = type;
+	}
+
+	std::vector<std::string> Trailer::ToTableRow() const
+	{
+		std::stringstream sstype;
+		sstype << type;
+
+		return { std::to_string(id), sstype.str(), std::to_string(length), std::to_string(maxPayload),
+			currentDelivery != nullptr ? currentDelivery->GetCargo()->GetName() + ": " +
+			currentDelivery->GetCityFrom()->GetName() + ' ' + currentDelivery->GetCityFrom()->GetCountryAbbreviation() +
+			" - " + currentDelivery->GetCityTo()->GetName() + ' ' + currentDelivery->GetCityTo()->GetCountryAbbreviation()
+			: "-" };
+	}
+	std::vector<std::string> Trailer::GetHeaders()
+	{
+		return { "ID", "Тып", "Даўжыня", "Максімальная грузападымальнасць (кг)", "Бягучае заданне" };
 	}
 
 	std::ostream& operator<<(std::ostream& os, const Trailer& obj)

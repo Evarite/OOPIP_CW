@@ -20,18 +20,28 @@ namespace DeliverySystem
     { 
         return account; 
     }
-    std::string Application::GetMessage() const
+    std::string Application::GetAppMessage() const
     {
         return std::string(message);
     }
 
+    std::vector<std::string> Application::ToTableRow() const
+    {
+        return { account->GetNickname(), account->GetFirstName(), account->GetLastName(), account->GetPhoneNumber(),
+            std::string(message) };
+    }
+    std::vector<std::string> Application::GetHeaders()
+    {
+        return { "Імя акаўнта", "Імя карыстальніка", "Прозвішча", "Нумар тэлефона", "Паведамленне" };
+    }
+
     std::ostream& operator<<(std::ostream& os, const Application& obj) 
     {
-        return os << "Никнейм: " << obj.account->GetNickname() << "\n"
-            << "Имя: " << obj.account->GetFirstName() << "\n"
-            << "Фамилия: " << obj.account->GetLastName() << "\n"
-            << "Номер телефона: " << obj.account->GetPhoneNumber() << "\n"
-            << "Сообщение: " << obj.message;
+        return os << "Імя акаўнта: " << obj.account->GetNickname() << "\n"
+            << "Імя карыстальніка: " << obj.account->GetFirstName() << "\n"
+            << "Прозвішча: " << obj.account->GetLastName() << "\n"
+            << "Нумар тэлефона: " << obj.account->GetPhoneNumber() << "\n"
+            << "Паведамленне: " << obj.message;
     }
 
     std::ostream& operator<<(std::ofstream& os, const Application& obj) 

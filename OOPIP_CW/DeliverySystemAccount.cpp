@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <limits>
 #include <string>
+#include <sstream>
 
 namespace DeliverySystem
 {
@@ -115,11 +116,7 @@ namespace DeliverySystem
 		authorisation_beginning:
 		while(true)
 		{
-			std::cout << std::endl;
-			std::cout << "1. Стварыць акаўнт" << std::endl;
-			std::cout << "2. Увайсці ў акаўнт" << std::endl;
-			std::cout << "3. Выхад" << std::endl;
-			choice = GetIntWithinRange(1, 3);
+			choice = ShowMenuWithNavigation({ "Стварыць акаўнт", "Увайсці ў акаўнт", "Выхад" });
 
 			switch (choice)
 			{
@@ -325,6 +322,20 @@ namespace DeliverySystem
 				return nullptr;
 			}
 		}
+	}
+
+	std::vector<std::string> Account::ToTableRow() const
+	{
+		std::stringstream sstype;
+		sstype << type;
+
+		return { std::string(nickname), std::string(firstName), std::string(lastName), std::string(phoneNumber),
+			sstype.str(), std::to_string(cargos.size()) };
+	}
+	std::vector<std::string> Account::GetHeaders()
+	{
+		return { "Імя акаўнта", "Імя карыстальніка", "Прозвішча", "Нумар тэлефона", "Тып акаўнта",
+			"Колькасць бягучых даставак" };
 	}
 
 	bool Account::operator==(const Account& other) const

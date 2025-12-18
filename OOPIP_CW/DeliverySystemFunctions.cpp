@@ -2,6 +2,7 @@
 #include <iostream>
 #include <conio.h>
 #include <cwctype>
+#include <iomanip>
 #define NOMINMAX
 #include <Windows.h>
 
@@ -241,5 +242,107 @@ namespace DeliverySystem
 		dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
 		SetConsoleMode(hOut, dwMode);
 	#endif
+	}
+
+	void GotoXY(int x, int y)
+	{
+		COORD coord;
+		coord.X = x;
+		coord.Y = y;
+		SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+	}
+
+	void HideCursor()
+	{
+		CONSOLE_CURSOR_INFO cursorInfo;
+		GetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
+		cursorInfo.bVisible = false;
+		SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
+	}
+
+	void ShowCursor()
+	{
+		CONSOLE_CURSOR_INFO cursorInfo;
+		GetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
+		cursorInfo.bVisible = true;
+		SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
+	}
+
+	int ShowMenuWithNavigation(const std::vector<std::string>& menuItems, const std::string& title)
+	{
+		HideCursor();
+
+		int selected = 0;
+		int key;
+		bool chosen = false;
+
+		while (!chosen)
+		{
+			system("cls");
+
+			std::cout << std::endl << std::setw(20) << "\x1b[33;1m" << title << "\x1b[0m" << std::endl;
+
+			for (int i = 0; i < menuItems.size(); i++)
+				if (i == selected)
+					std::cout << "\x1b[1m> " << menuItems[i] << "\x1b[0m" << std::endl;
+				else
+					std::cout << "  " << menuItems[i] << std::endl;
+
+			key = _getch();
+
+			if (key == 224)
+			{
+				key = _getch();
+
+				switch (key)
+				{
+				case 72:
+					selected--;
+					if (selected < 0) selected = menuItems.size() - 1;
+					break;
+				case 80:
+					selected++;
+					if (selected >= menuItems.size()) selected = 0;
+					break;
+				case 77:
+				case 75:
+					break;
+				}
+			}
+			else if (key == 13)
+				chosen = true;
+			else if (key == 27)
+			{
+				selected = menuItems.size() - 1;
+				chosen = true;
+			}
+			else if (key >= '1' && key <= '9')
+			{
+				int num = key - '0';
+				if (num >= 1 && num <= menuItems.size())
+				{
+					selected = num - 1;
+					chosen = true;
+				}
+			}
+			else if (key >= '0' && key <= '9' && menuItems.size() >= 10)
+			{
+				int firstDigit = key - '0';
+				key = _getch();
+				if (key >= '0' && key <= '9')
+				{
+					int secondDigit = key - '0';
+					int num = firstDigit * 10 + secondDigit;
+					if (num >= 1 && num <= menuItems.size())
+					{
+						selected = num - 1;
+						chosen = true;
+					}
+				}
+			}
+		}
+
+		ShowCursor();
+		return selected + 1;
 	}
 }

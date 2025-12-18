@@ -83,6 +83,19 @@ namespace DeliverySystem
 			std::advance(i, 1);
 		}
 	}
+
+	std::vector<std::string> Country::ToTableRow() const
+	{
+		std::stringstream sscities;
+		for (const auto& city : cities)
+			sscities << city.GetName() << ' ' << city.GetCountryAbbreviation() << '\n';
+
+		return { name, abbreviation, phoneCode, sscities.str() };
+	}
+	std::vector<std::string> Country::GetHeaders()
+	{
+		return { "Назва", "Абрэвіятура", "Тэлефонны код", "Гарады" };
+	}
 	
 	bool Country::operator==(const Country& other)
 	{
